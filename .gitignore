@@ -1,4 +1,8 @@
-logs
-uploads
-data
 .DS_Store
+.$erd.svg.bkp
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
