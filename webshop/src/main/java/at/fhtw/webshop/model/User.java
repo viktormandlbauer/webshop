@@ -1,4 +1,4 @@
-package at.fhtw.webshop.user;
+package at.fhtw.webshop.model;
 
 import jakarta.persistence.*;
 import org.hibernate.annotations.ColumnDefault;
