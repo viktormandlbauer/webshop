@@ -24,31 +24,25 @@ class UserController {
         this.repository = repository;
     }
 
-
-    // Aggregate root
-    // tag::get-aggregate-root[]
     @GetMapping("/users")
-    List<User> all() {
+    List<User> getAllUsers() {
         return repository.findAll();
     }
-    // end::get-aggregate-root[]
 
     @PostMapping("/users")
-     User newEmployee(@RequestBody User newEmployee) {
+     User newUser(@RequestBody User newEmployee) {
         return repository.save(newEmployee);
     }
 
-    // Single item
-
     @GetMapping("/users/{id}")
-    User one(@PathVariable Integer id) {
+    User getUser(@PathVariable Integer id) {
 
         return repository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("User with id " + id + " not found"));
     }
 
     @PutMapping("/users/{id}")
-    User replaceEmployee(@RequestBody User newUser, @PathVariable Integer id) {
+    User replaceUser(@RequestBody User newUser, @PathVariable Integer id) {
 
         return repository.findById(id)
                 .map(user -> {
@@ -61,7 +55,7 @@ class UserController {
     }
 
     @DeleteMapping("/users/{id}")
-    void deleteEmployee(@PathVariable Integer id) {
+    void deleteUser(@PathVariable Integer id) {
         repository.deleteById(id);
     }
 }
