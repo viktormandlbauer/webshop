@@ -1,6 +1,6 @@
 package at.fhtw.webshop.config;
 
-import at.fhtw.webshop.service.MyUserDetailsService;
+import at.fhtw.webshop.service.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,14 +14,13 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig {
 
     @Autowired
-    private MyUserDetailsService myUserDetailsService;
+    private CustomUserDetailsService customUserDetailsService;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -34,13 +33,13 @@ public class WebSecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers("/login**", "/register**", "/error**", "/js/**", "/css/**")
+                        .requestMatchers("/login**", "/register**","/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/error**", "/js/**", "/css/**")
                         .permitAll()
                         .anyRequest()
                         .authenticated())
                 .formLogin(form -> form
                         .loginPage("/login")
-                        .successHandler( new CustomAuthenticationSuccessHandler()))
+                        .successHandler(new CustomAuthenticationSuccessHandler()))
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .deleteCookies("JSESSIONID"))
@@ -58,14 +57,13 @@ public class WebSecurityConfig {
         // @TODO Change password encoder to hashing algorithm
         authenticationProvider.setPasswordEncoder(NoOpPasswordEncoder.getInstance());
 
-        authenticationProvider.setUserDetailsService(myUserDetailsService);
+        authenticationProvider.setUserDetailsService(userDetailsService());
 
         return authenticationProvider;
     }
 
     @Bean
     public UserDetailsService userDetailsService() {
-
-        return new InMemoryUserDetailsManager();
+        return new CustomUserDetailsService();
     }
 }

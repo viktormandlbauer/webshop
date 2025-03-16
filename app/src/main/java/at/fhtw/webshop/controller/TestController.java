@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class CsrfController {
+public class TestController {
 
     @GetMapping("/csrf-token")
     public CsrfToken getCsrfToken(CsrfToken token) {
