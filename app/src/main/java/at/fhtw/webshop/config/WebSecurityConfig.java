@@ -1,6 +1,7 @@
 package at.fhtw.webshop.config;
 
 import at.fhtw.webshop.service.CustomUserDetailsService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,8 +13,13 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfToken;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Map;
 
 @Configuration
 @EnableWebSecurity
@@ -27,13 +33,13 @@ public class WebSecurityConfig {
 
         // CSRF protection with cookie
         // @TODO Enable CSRF protection
-        //http.csrf(customizer -> customizer.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()));
 
         // Disable CSRF protection
         http
-                .csrf(AbstractHttpConfigurer::disable)
+                .csrf(customizer -> customizer.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
+                //.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers("/login**", "/register**","/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/error**", "/js/**", "/css/**")
+                        .requestMatchers("/login**", "/register**","/csrf-token","/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/error**", "/js/**", "/css/**")
                         .permitAll()
                         .anyRequest()
                         .authenticated())
@@ -47,6 +53,22 @@ public class WebSecurityConfig {
         ;
 
         return http.build();
+    }
+
+    // Custom request handler for CSRF token
+    @RestController
+    public static class CsrfTokenController {
+        @GetMapping("/csrf-token")
+        public Map<String, String> getCsrfToken(HttpServletRequest request) {
+            CsrfToken csrfToken = (CsrfToken) request.getAttribute(CsrfToken.class.getName());
+            if (csrfToken == null) {
+                throw new IllegalStateException("CSRF token not generated");
+            }
+            return Map.of(
+                    "headerName", csrfToken.getHeaderName(), // X-CSRF-TOKEN
+                    "token", csrfToken.getToken()            // Actual encoded token
+            );
+        }
     }
 
     @Bean

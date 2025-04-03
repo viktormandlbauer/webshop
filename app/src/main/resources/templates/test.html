@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+</head>
+<body>
+    <button onclick="makeSecureRequest('/test','test')">Test with CSRF Token</button>
+
+    <form method="post" action="/test-csrf">
+        <input type="hidden" name="_csrf" th:value="${_csrf.token}" />
+        <!-- other form fields -->
+        <button type="submit">Post using _csrf</button>
+    </form>
+
+    <button onClick="insertUsers()">Load users</button>
+    <div>
+        <table id="userTable">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Username</th>
+                    <th>createdAt</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+
+</body>
+<footer>
+    <script src="/js/xsrfTokenRequest.js"></script>
+    <script src="/js/users.js"></script>
+</footer>
+</html>

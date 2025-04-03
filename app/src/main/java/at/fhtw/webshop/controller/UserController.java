@@ -6,6 +6,7 @@ import at.fhtw.webshop.exception.UserNotFoundException;
 import at.fhtw.webshop.repository.UserRepository;
 import at.fhtw.webshop.model.User;
 
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
