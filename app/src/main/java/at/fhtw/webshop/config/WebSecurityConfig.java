@@ -39,7 +39,7 @@ public class WebSecurityConfig {
                 .csrf(customizer -> customizer.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
                 //.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers("/login**", "/register**","/csrf-token","/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/error**", "/js/**", "/css/**")
+                        .requestMatchers("**","/login**", "/register**","/csrf-token","/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/error**", "/js/**", "/css/**")
                         .permitAll()
                         .anyRequest()
                         .authenticated())

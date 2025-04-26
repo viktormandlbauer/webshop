@@ -3,10 +3,10 @@ package at.fhtw.webshop.controller;
 import java.util.List;
 
 import at.fhtw.webshop.exception.UserNotFoundException;
-import at.fhtw.webshop.repository.UserRepository;
 import at.fhtw.webshop.model.User;
+import at.fhtw.webshop.repository.UserRepository;
 
-import org.springframework.stereotype.Controller;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,7 +21,7 @@ class UserController {
 
     private final UserRepository repository;
 
-    UserController(UserRepository repository) {
+    UserController(@Qualifier("userRepository") UserRepository repository) {
         this.repository = repository;
     }
 

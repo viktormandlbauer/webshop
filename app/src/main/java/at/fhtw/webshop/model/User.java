@@ -1,42 +1,50 @@
 package at.fhtw.webshop.model;
 
 import jakarta.persistence.*;
-import org.hibernate.annotations.ColumnDefault;
-
-import java.time.Instant;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 @Entity
 public class User {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
+    @Column(name = "UserID", nullable = false)
     private Integer id;
 
-    @Column(name = "username", nullable = false)
+    @Size(max = 100)
+    @NotNull
+    @Column(name = "Email", nullable = false, length = 100)
+    private String email;
+
+    @Size(max = 50)
+    @NotNull
+    @Column(name = "Username", nullable = false, length = 50)
     private String username;
 
-    @Column(name = "password", nullable = false)
+    @Size(max = 255)
+    @NotNull
+    @Column(name = "Password", nullable = false)
     private String password;
 
-    @ColumnDefault("CURRENT_TIMESTAMP")
-    @Column(name = "created_at")
-    private Instant createdAt;
+    @Size(max = 255)
+    @NotNull
+    @Column(name = "Salt", nullable = false)
+    private String salt;
 
-    public Instant getCreatedAt() {
-        return createdAt;
+    public Integer getId() {
+        return id;
     }
 
-    public void setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
-    public String getPassword() {
-        return password;
+    public String getEmail() {
+        return email;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getUsername() {
@@ -47,11 +55,20 @@ public class User {
         this.username = username;
     }
 
-    public Integer getId() {
-        return id;
+    public String getPassword() {
+        return password;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public void setPassword(String password) {
+        this.password = password;
     }
+
+    public String getSalt() {
+        return salt;
+    }
+
+    public void setSalt(String salt) {
+        this.salt = salt;
+    }
+
 }
