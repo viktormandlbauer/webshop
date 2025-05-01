@@ -7,26 +7,11 @@ CREATE TABLE User (
     UserID INT AUTO_INCREMENT PRIMARY KEY,
     Email VARCHAR(100) NOT NULL UNIQUE,
     Username VARCHAR(50) NOT NULL UNIQUE,
-    Password VARCHAR(255) NOT NULL, -- Password should be hashed, so using VARCHAR(255)
-    Salt VARCHAR(255) NOT NULL -- Salt for password hashing
-);
-
--- Create the Customer table (for customer-specific data)
-CREATE TABLE Customer (
-    CustomerID INT AUTO_INCREMENT PRIMARY KEY,
-    UserID INT NOT NULL UNIQUE, -- One-to-one relationship with User
+    Password VARCHAR(255) NOT NULL,
     FirstName VARCHAR(50) NOT NULL,
     LastName VARCHAR(50) NOT NULL,
-    TelephoneNumber VARCHAR(20),
-    FOREIGN KEY (UserID) REFERENCES User(UserID) ON DELETE CASCADE
-);
-
--- Create the Administrator table (for admin-specific data)
-CREATE TABLE Administrator (
-    AdministratorID INT AUTO_INCREMENT PRIMARY KEY,
-    UserID INT NOT NULL UNIQUE, -- One-to-one relationship with User
-    Role VARCHAR(50) NOT NULL, -- e.g., 'SuperAdmin', 'SupportAdmin'
-    FOREIGN KEY (UserID) REFERENCES User(UserID) ON DELETE CASCADE
+    Salutation VARCHAR(10) NOT NULL,
+    ROLE ENUM('Customer', 'Admin') NOT NULL DEFAULT 'Customer'
 );
 
 -- Create the Category table
@@ -38,12 +23,12 @@ CREATE TABLE Category (
 -- Create the Address table
 CREATE TABLE Address (
     AddressID INT AUTO_INCREMENT PRIMARY KEY,
-    CustomerID INT NOT NULL,
+    UserID INT NOT NULL,
     PostalCode VARCHAR(20) NOT NULL,
     Country VARCHAR(100) NOT NULL,
     City VARCHAR(100) NOT NULL,
     StreetAddress VARCHAR(255) NOT NULL,
-    FOREIGN KEY (CustomerID) REFERENCES Customer(CustomerID) ON DELETE CASCADE
+    FOREIGN KEY (UserID) REFERENCES User(UserID) ON DELETE CASCADE
 );
 
 -- Create the Product table
@@ -63,21 +48,21 @@ CREATE TABLE Product (
 CREATE TABLE Review (
     ReviewID INT AUTO_INCREMENT PRIMARY KEY,
     ProductID INT NOT NULL,
-    CustomerID INT NOT NULL,
+    UserID INT NOT NULL,
     Review TEXT,
     Rating INT NOT NULL CHECK (Rating >= 1 AND Rating <= 5), -- Rating between 1 and 5
     FOREIGN KEY (ProductID) REFERENCES Product(ProductID) ON DELETE CASCADE,
-    FOREIGN KEY (CustomerID) REFERENCES Customer(CustomerID) ON DELETE CASCADE
+    FOREIGN KEY (UserID) REFERENCES User(UserID) ON DELETE CASCADE
 );
 
 -- Create the Order table
 CREATE TABLE `Order` (
     OrderID INT AUTO_INCREMENT PRIMARY KEY,
-    CustomerID INT NOT NULL,
+    UserID INT NOT NULL,
     AddressID INT NOT NULL,
     `Date` DATE NOT NULL,
     SumPrice DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
-    FOREIGN KEY (CustomerID) REFERENCES Customer(CustomerID) ON DELETE RESTRICT,
+    FOREIGN KEY (UserID) REFERENCES User(UserID) ON DELETE RESTRICT,
     FOREIGN KEY (AddressID) REFERENCES Address(AddressID) ON DELETE RESTRICT
 );
 

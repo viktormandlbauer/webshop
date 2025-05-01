@@ -14,11 +14,11 @@
 
                 <h1 class="mb-4 text-center">Login</h1>
 
-                <form action="#" method="post">
+                <form th:action="@{/auth/login}" method="post">
 
                     <div class="mb-3">
-                        <label for="usernameOrEmail" class="form-label">Benutzername oder E-Mail</label>
-                        <input type="text" id="usernameOrEmail" name="usernameOrEmail" class="form-control" placeholder="Benutzername oder E-Mail" required>
+                        <label for="username" class="form-label">Benutzername oder E-Mail</label>
+                        <input type="text" id="username" name="username" class="form-control" placeholder="Benutzername oder E-Mail" required>
                     </div>
 
                     <div class="mb-3">

@@ -17,11 +17,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController
-class UserController {
+class UserRestController {
 
     private final UserRepository repository;
 
-    UserController(@Qualifier("userRepository") UserRepository repository) {
+    UserRestController(@Qualifier("userRepository") UserRepository repository) {
         this.repository = repository;
     }
 

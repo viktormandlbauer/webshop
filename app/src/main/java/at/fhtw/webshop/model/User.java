@@ -3,6 +3,7 @@ package at.fhtw.webshop.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 public class User {
@@ -26,10 +27,26 @@ public class User {
     @Column(name = "Password", nullable = false)
     private String password;
 
-    @Size(max = 255)
+    @Size(max = 50)
     @NotNull
-    @Column(name = "Salt", nullable = false)
-    private String salt;
+    @Column(name = "FirstName", nullable = false, length = 50)
+    private String firstName;
+
+    @Size(max = 50)
+    @NotNull
+    @Column(name = "LastName", nullable = false, length = 50)
+    private String lastName;
+
+    @Size(max = 10)
+    @NotNull
+    @Column(name = "Salutation", nullable = false, length = 10)
+    private String salutation;
+
+    @NotNull
+    @ColumnDefault("'Customer'")
+    @Lob
+    @Column(name = "ROLE", nullable = false)
+    private String role;
 
     public Integer getId() {
         return id;
@@ -63,12 +80,36 @@ public class User {
         this.password = password;
     }
 
-    public String getSalt() {
-        return salt;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setSalt(String salt) {
-        this.salt = salt;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getSalutation() {
+        return salutation;
+    }
+
+    public void setSalutation(String salutation) {
+        this.salutation = salutation;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 
 }
