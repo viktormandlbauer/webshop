@@ -1,29 +1,31 @@
 package at.fhtw.webshop.config;
 
 import at.fhtw.webshop.service.CustomUserDetailsService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.data.web.config.EnableSpringDataWebSupport;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+
+import static org.springframework.data.web.config.EnableSpringDataWebSupport.PageSerializationMode.VIA_DTO;
 
 
 @Configuration
 @EnableWebSecurity
-public class WebSecurityConfig {
+@EnableSpringDataWebSupport(pageSerializationMode = VIA_DTO)
+public class WebConfig {
 
     private final CustomUserDetailsService customUserDetailsService;
 
-    public WebSecurityConfig(CustomUserDetailsService customUserDetailsService) {
+    public WebConfig(CustomUserDetailsService customUserDetailsService) {
         this.customUserDetailsService = customUserDetailsService;
     }
 
@@ -33,7 +35,7 @@ public class WebSecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers("**","/auth/**", "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/error**", "/js/**", "/css/**")
+                        .requestMatchers("/","/auth/**", "/api/**", "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/error**", "/scripts/**", "/css/**")
                         .permitAll()
                         .anyRequest()
                         .authenticated())
@@ -54,10 +56,10 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    public AuthenticationProvider authenticationProvider() {
+    public AuthenticationManager authenticationManager() throws Exception {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         authProvider.setUserDetailsService(customUserDetailsService);
         authProvider.setPasswordEncoder(passwordEncoder());
-        return authProvider;
+        return new ProviderManager(authProvider);
     }
 }

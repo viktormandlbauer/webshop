@@ -21,4 +21,16 @@ public class ProductSearchCriteria {
     public void setMinRating(Double minRating) { this.minRating = minRating; }
     public Double getMaxRating() { return maxRating; }
     public void setMaxRating(Double maxRating) { this.maxRating = maxRating; }
+
+    @Override
+    public String toString() {
+        return "ProductSearchCriteria{" +
+                "name='" + name + '\'' +
+                ", categoryName='" + categoryName + '\'' +
+                ", minPrice=" + minPrice +
+                ", maxPrice=" + maxPrice +
+                ", minRating=" + minRating +
+                ", maxRating=" + maxRating +
+                '}';
+    }
 }

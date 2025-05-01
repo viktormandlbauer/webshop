@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ProductSpecifications {
+
     public static Specification<Product> withCriteria(ProductSearchCriteria criteria) {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
