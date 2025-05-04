@@ -7,6 +7,7 @@ import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "UserID", nullable = false)
@@ -43,10 +44,9 @@ public class User {
     private String salutation;
 
     @NotNull
-    @ColumnDefault("'Customer'")
-    @Lob
+    @Enumerated(EnumType.STRING)
     @Column(name = "ROLE", nullable = false)
-    private String role;
+    private Role role = Role.Customer;
 
     public Integer getId() {
         return id;
@@ -105,11 +105,11 @@ public class User {
     }
 
     public String getRole() {
-        return role;
+        return role.toString();
     }
 
     public void setRole(String role) {
-        this.role = role;
+        this.role = Role.valueOf(role);
     }
 
     @Override

@@ -32,7 +32,7 @@ public class Product {
     @NotNull
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "CategoryID", nullable = false)
-    private Category categoryID;
+    private Category category;
 
     @NotNull
     @ColumnDefault("0")
@@ -79,12 +79,12 @@ public class Product {
         this.imageURL = imageURL;
     }
 
-    public Category getCategoryID() {
-        return categoryID;
+    public Category getCategory() {
+        return category;
     }
 
-    public void setCategoryID(Category categoryID) {
-        this.categoryID = categoryID;
+    public void setCategory(Category categoryID) {
+        this.category = categoryID;
     }
 
     public Integer getStock() {

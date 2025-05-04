@@ -50,4 +50,8 @@ public class ProductService {
         logger.info("Searching products with criteria: {}", criteria);
         return productRepository.findAll(ProductSpecifications.withCriteria(criteria), pageable);
     }
+
+    public Page<Product> findByCategoryName(String categoryName, Pageable pageable) {
+        logger.info("Finding products by category: {}", categoryName);
+        return productRepository.findByCategory_NameIgnoreCase(categoryName, pageable);    }
 }

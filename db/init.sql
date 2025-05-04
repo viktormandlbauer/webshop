@@ -11,7 +11,7 @@ CREATE TABLE User (
     FirstName VARCHAR(50) NOT NULL,
     LastName VARCHAR(50) NOT NULL,
     Salutation VARCHAR(10) NOT NULL,
-    ROLE ENUM('Customer', 'Admin') NOT NULL DEFAULT 'Customer'
+    ROLE NOT NULL
 );
 
 -- Create the Category table
