@@ -1,34 +1,58 @@
 package at.fhtw.webshop.controller;
 
+import at.fhtw.webshop.dto.LoginDto;
 import at.fhtw.webshop.dto.RegistrationDto;
+import at.fhtw.webshop.model.User;
+import at.fhtw.webshop.repository.UserRepository;
+import at.fhtw.webshop.service.AuthService;
 import at.fhtw.webshop.service.UserService;
 import jakarta.validation.Valid;
-import org.springframework.stereotype.Controller;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
+import at.fhtw.webshop.security.JwtUtil;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
-@Controller
-@RequestMapping("/auth")
+import org.slf4j.Logger;
+
+import java.util.Map;
+
+@RestController
+@RequestMapping("/api/auth")
 public class AuthController {
     private final UserService userService;
+    private final AuthService authService;
+    private final UserRepository userRepository;
 
-    public AuthController(UserService userService) {
+    private final AuthenticationManager authenticationManager;
+
+    private final JwtUtil jwtUtils;
+
+    private static final Logger logger = org.slf4j.LoggerFactory.getLogger(AuthController.class);
+
+    public AuthController(UserService userService, AuthService authService, UserRepository userRepository, AuthenticationManager authenticationManager, JwtUtil jwtUtils) {
         this.userService = userService;
+        this.authService = authService;
+        this.userRepository = userRepository;
+        this.authenticationManager = authenticationManager;
+        this.jwtUtils = jwtUtils;
     }
 
-    @GetMapping("/login")
-    public String showLoginForm() {
-        return "auth/login";
-    }
+    @PostMapping("/login")
+    public Map<String, String> authenticateUser(@RequestBody User user) {
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        user.getUsername(),
+                        user.getPassword()
+                )
+        );
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        String token = jwtUtils.generateToken(userDetails.getUsername());
 
-    @GetMapping("/register")
-    public String showRegistrationForm(Model model) {
-        model.addAttribute("registrationDto", new RegistrationDto());
-        return "auth/register";
+        return Map.of("token", token);
     }
 
     @PostMapping("/register")
@@ -37,24 +61,22 @@ public class AuthController {
             BindingResult bindingResult,
             Model model) {
 
-        // Formularvalidierung prüfen
         if (bindingResult.hasErrors()) {
-            return "register";
+            return "auth/register";
         }
 
-        // Überprüfen ob E-Mail oder Username schon existieren
         if (userService.emailExists(registrationDto.getEmail())) {
             bindingResult.rejectValue("email", "error.registrationDto", "E-Mail existiert bereits");
-            return "register";
+            return "auth/register";
         }
 
         if (userService.usernameExists(registrationDto.getUsername())) {
             bindingResult.rejectValue("username", "error.registrationDto", "Benutzername existiert bereits");
-            return "register";
+            return "auth/register";
         }
 
-        userService.registerUser(registrationDto);
+        authService.registerUser(registrationDto);
 
-        return "redirect:/welcome"; // Temporäre Weiterleitung nach erfolgreicher Validierung
+        return "redirect:/welcome";
     }
 }

@@ -12,13 +12,11 @@ import org.slf4j.Logger;
 @Service
 public class UserService {
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
 
     private static final Logger logger = org.slf4j.LoggerFactory.getLogger(UserService.class);
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
     }
 
     public boolean emailExists(String email) {
@@ -27,26 +25,5 @@ public class UserService {
 
     public boolean usernameExists(String username) {
         return userRepository.findByUsername(username) != null;
-    }
-
-    public void registerUser(RegistrationDto registrationDto) {
-
-        User user = new User();
-        user.setSalutation(registrationDto.getSalutation());
-        user.setFirstName(registrationDto.getFirstName());
-        user.setLastName(registrationDto.getLastName());
-        user.setEmail(registrationDto.getEmail());
-        user.setUsername(registrationDto.getUsername());
-
-        //@TODO: Adresse Objekt erstellen und setzen
-
-        String hashedPassword = passwordEncoder.encode(registrationDto.getPassword());
-        user.setPassword(hashedPassword);
-
-        user.setRole("Customer");
-
-        userRepository.save(user);
-
-        logger.info("Registered user: {}", user);
     }
 }
