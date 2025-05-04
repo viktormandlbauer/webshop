@@ -2,6 +2,9 @@ package at.fhtw.webshop.service;
 
 import at.fhtw.webshop.model.User;
 import at.fhtw.webshop.repository.UserRepository;
+import at.fhtw.webshop.security.CustomUserDetails;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -9,6 +12,9 @@ import org.springframework.stereotype.Service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Collection;
+import java.util.List;
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
@@ -37,10 +43,11 @@ public class CustomUserDetailsService implements UserDetailsService {
 
         logger.info("User found: {}", user);
 
-        return org.springframework.security.core.userdetails.User.builder()
-                .username(user.getUsername())
-                .password(user.getPassword())
-                .roles(user.getRole())
-                .build();
+        return new CustomUserDetails(
+                user.getUsername(),
+                user.getPassword(),
+                user.getEmail(),
+                List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole()))
+        );
     }
 }

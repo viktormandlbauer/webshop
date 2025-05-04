@@ -4,7 +4,9 @@ import at.fhtw.webshop.dto.LoginDto;
 import at.fhtw.webshop.dto.RegistrationDto;
 import at.fhtw.webshop.model.User;
 import at.fhtw.webshop.repository.UserRepository;
+import at.fhtw.webshop.security.CustomUserDetails;
 import at.fhtw.webshop.service.AuthService;
+import at.fhtw.webshop.service.CustomUserDetailsService;
 import at.fhtw.webshop.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -26,17 +28,18 @@ public class AuthController {
     private final UserService userService;
     private final AuthService authService;
     private final UserRepository userRepository;
-
+    private final CustomUserDetailsService customUserDetailsService;
     private final AuthenticationManager authenticationManager;
 
     private final JwtUtil jwtUtils;
 
     private static final Logger logger = org.slf4j.LoggerFactory.getLogger(AuthController.class);
 
-    public AuthController(UserService userService, AuthService authService, UserRepository userRepository, AuthenticationManager authenticationManager, JwtUtil jwtUtils) {
+    public AuthController(UserService userService, AuthService authService, UserRepository userRepository, CustomUserDetailsService customUserDetailsService, AuthenticationManager authenticationManager, JwtUtil jwtUtils) {
         this.userService = userService;
         this.authService = authService;
         this.userRepository = userRepository;
+        this.customUserDetailsService = customUserDetailsService;
         this.authenticationManager = authenticationManager;
         this.jwtUtils = jwtUtils;
     }
@@ -49,8 +52,12 @@ public class AuthController {
                         user.getPassword()
                 )
         );
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        String token = jwtUtils.generateToken(userDetails.getUsername());
+
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+
+        String token = jwtUtils.generateToken(userDetails);
+
+        logger.info(token);
 
         return Map.of("token", token);
     }
