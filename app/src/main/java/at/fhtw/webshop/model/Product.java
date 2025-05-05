@@ -83,8 +83,12 @@ public class Product {
         return category;
     }
 
-    public void setCategory(Category categoryID) {
-        this.category = categoryID;
+    public String getCategoryName() {
+        return category != null ? category.getName() : null;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
     }
 
     public Integer getStock() {

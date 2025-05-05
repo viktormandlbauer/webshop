@@ -3,6 +3,8 @@ package at.fhtw.webshop.controller;
 import at.fhtw.webshop.model.Product;
 import at.fhtw.webshop.repository.CategoryRepository;
 import at.fhtw.webshop.service.ProductService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -12,10 +14,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import at.fhtw.webshop.model.Category;
+
 @Controller
 @RequestMapping("/products")
 public class ProductViewController {
-
+    private static final Logger log = LoggerFactory.getLogger(ProductViewController.class);
     private final ProductService productService;
     private final CategoryRepository categoryRepository;
 
@@ -31,18 +35,18 @@ public class ProductViewController {
             Model model
     ) {
         Pageable pageable = PageRequest.of(page, 10);
-        Page<Product> products;
+        Page<Product> products = (category != null && !category.isBlank())
+                ? productService.findByCategoryName(category, pageable)
+                : productService.getAllProducts(pageable);
 
-        if (category != null && !category.isEmpty()) {
-            products = productService.findByCategoryName(category, pageable);
-        } else {
-            products = productService.getAllProducts(pageable);
-            //logging der products
-            products.getContent().forEach(product -> System.out.println(product.getName()));
-        }
+        // Debug‑Log
+        products.forEach(p -> log.debug("Loaded product: {}", p.getName()));
+
 
         model.addAttribute("products", products);
-        model.addAttribute("category", category);
+        if (category != null) {
+            model.addAttribute("category", category);
+        }
         model.addAttribute("categories", categoryRepository.findAll());
 
         return "products/list";

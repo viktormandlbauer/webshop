@@ -23,7 +23,7 @@
             </div>
             <div class="col-auto">
                 <select class="form-select" name="category" id="category">
-                    <option th:value="" th:selected="${category == null}">Alle Kategorien</option>
+                    <option th:value="''" th:selected="${category == null}">Alle Kategorien</option>
                     <option th:each="cat : ${categories}"
                             th:value="${cat.name}"
                             th:text="${cat.name}"
