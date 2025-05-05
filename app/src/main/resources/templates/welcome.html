@@ -5,7 +5,12 @@
     <title>Welcome</title>
 </head>
 <body>
-    <h1 th:text="'Welcome ' + ${session.username}"></h1>
 
+    <p id="greeting"></p>
+
+    <script src="/scripts/util.js"></script>
 </body>
+<script>
+    document.getElementById("greeting").innerText = "Welcome " +  decodeJWT(getCookie("jwtToken")).payload.sub
+</script>
 </html>

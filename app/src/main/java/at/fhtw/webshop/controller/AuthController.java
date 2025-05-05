@@ -8,6 +8,8 @@ import at.fhtw.webshop.security.CustomUserDetails;
 import at.fhtw.webshop.service.AuthService;
 import at.fhtw.webshop.service.CustomUserDetailsService;
 import at.fhtw.webshop.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 
 import org.slf4j.Logger;
 
+import java.io.IOException;
 import java.util.Map;
 
 @RestController
@@ -56,8 +59,6 @@ public class AuthController {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 
         String token = jwtUtils.generateToken(userDetails);
-
-        logger.info(token);
 
         return Map.of("token", token);
     }

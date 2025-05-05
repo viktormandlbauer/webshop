@@ -18,7 +18,10 @@ async function handleLogin(event) {
         const data = await response.json();
 
         document.cookie = `jwtToken=${data.token}; path=/;`;
+
         message.textContent = 'Login successful!';
+
+        window.location.href = '/welcome';
 
     } catch (error) {
         message.textContent = error.message || 'Login failed. Please try again.';
