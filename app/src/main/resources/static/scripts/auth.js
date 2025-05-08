@@ -31,29 +31,46 @@ async function handleLogin(event) {
 
 async function handleRegister(event) {
     event.preventDefault();
-    const username = document.getElementById('register-username').value;
-    const password = document.getElementById('register-password').value;
+
+    const salutation = document.getElementById('salutation').value;
+    const firstName = document.getElementById('firstName').value;
+    const lastName = document.getElementById('lastName').value;
+    const address = document.getElementById('address').value;
+    const postalCode = document.getElementById('postalCode').value;
+    const city = document.getElementById('city').value;
+    const email = document.getElementById('email').value;
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
     const message = document.getElementById('register-message');
 
     try {
         const response = await fetch('/api/auth/register', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, password }),
+            body: JSON.stringify({
+                salutation,
+                firstName,
+                lastName,
+                address,
+                postalCode,
+                city,
+                email,
+                username,
+                password
+            }),
         });
 
         if (!response.ok) {
-            throw new Error('Registration failed. Username may already exist.');
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Registrierung fehlgeschlagen.');
         }
 
         const data = await response.json();
-        message.textContent = data.message || 'Registration successful! Please login.';
+        message.textContent = data.message || 'Registrierung erfolgreich! Bitte loggen Sie sich ein.';
         message.className = 'message success';
         document.getElementById('register-form').reset();
-
-        showLogin();
     } catch (error) {
-        message.textContent = error.message || 'Registration failed. Please try again.';
+        message.textContent = error.message || 'Registrierung fehlgeschlagen. Bitte versuchen Sie es erneut.';
         message.className = 'message error';
     }
 }

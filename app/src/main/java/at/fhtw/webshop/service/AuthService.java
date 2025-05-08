@@ -1,5 +1,6 @@
 package at.fhtw.webshop.service;
 
+import at.fhtw.webshop.dto.AuthDto;
 import at.fhtw.webshop.dto.LoginDto;
 import at.fhtw.webshop.dto.RegistrationDto;
 import at.fhtw.webshop.model.User;
@@ -41,36 +42,5 @@ public class AuthService {
         user.setRole("Customer");
 
         userRepository.save(user);
-
-        logger.info("Registered user: {}", user);
-    }
-
-    public boolean loginUser(LoginDto loginDto) {
-        User user = userRepository.findByUsername(loginDto.getUsername());
-
-        if (user == null) {
-            logger.warn("Benutzer mit Benutzername '{}' nicht gefunden.", loginDto.getUsername());
-            return false; // Benutzer existiert nicht
-        }
-
-        // Passwort überprüfen
-        if (!passwordEncoder.matches(loginDto.getPassword(), user.getPassword())) {
-            logger.warn("Ungültiges Passwort für Benutzer '{}'.", loginDto.getUsername());
-            return false; // Passwort ist falsch
-        }
-
-        // Benutzer in den Security-Kontext einloggen
-        UserDetails userDetails = org.springframework.security.core.userdetails.User.builder()
-                .username(user.getUsername())
-                .password(user.getPassword())
-                .roles(user.getRole())
-                .build();
-
-        Authentication authentication = new UsernamePasswordAuthenticationToken(
-                userDetails, userDetails.getPassword(), userDetails.getAuthorities());
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        logger.info("Benutzer '{}' erfolgreich eingeloggt.", loginDto.getUsername());
-        return true; // Login erfolgreich
     }
 }

@@ -1,5 +1,6 @@
 package at.fhtw.webshop.controller;
 
+import at.fhtw.webshop.dto.AuthDto;
 import at.fhtw.webshop.dto.LoginDto;
 import at.fhtw.webshop.dto.RegistrationDto;
 import at.fhtw.webshop.model.User;
@@ -14,15 +15,18 @@ import jakarta.validation.Valid;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import at.fhtw.webshop.security.JwtUtil;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.ResponseEntity;
 
 import org.slf4j.Logger;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -48,11 +52,11 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public Map<String, String> authenticateUser(@RequestBody User user) {
+    public AuthDto authenticateUser(@RequestBody LoginDto loginDto) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        user.getUsername(),
-                        user.getPassword()
+                        loginDto.getUsername(),
+                        loginDto.getPassword()
                 )
         );
 
@@ -60,31 +64,38 @@ public class AuthController {
 
         String token = jwtUtils.generateToken(userDetails);
 
-        return Map.of("token", token);
+        return new AuthDto(
+                token,
+                userDetails.getUsername(),
+                userDetails.getAuthorities().stream()
+                        .map(GrantedAuthority::getAuthority)
+                        .toList()
+        );
     }
 
     @PostMapping("/register")
-    public String registerUser(
-            @Valid @ModelAttribute("registrationDto") RegistrationDto registrationDto,
-            BindingResult bindingResult,
-            Model model) {
+    public ResponseEntity<?> registerUser(
+            @Valid @RequestBody RegistrationDto registrationDto,
+            BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
-            return "auth/register";
+            // Validierungsfehler sammeln
+            Map<String, String> errors = new HashMap<>();
+            bindingResult.getFieldErrors().forEach(error ->
+                    errors.put(error.getField(), error.getDefaultMessage())
+            );
+            return ResponseEntity.badRequest().body(errors);
         }
 
         if (userService.emailExists(registrationDto.getEmail())) {
-            bindingResult.rejectValue("email", "error.registrationDto", "E-Mail existiert bereits");
-            return "auth/register";
+            return ResponseEntity.badRequest().body(Map.of("email", "E-Mail existiert bereits"));
         }
 
         if (userService.usernameExists(registrationDto.getUsername())) {
-            bindingResult.rejectValue("username", "error.registrationDto", "Benutzername existiert bereits");
-            return "auth/register";
+            return ResponseEntity.badRequest().body(Map.of("username", "Benutzername existiert bereits"));
         }
 
         authService.registerUser(registrationDto);
-
-        return "redirect:/welcome";
+        return ResponseEntity.ok(Map.of("message", "Registrierung erfolgreich"));
     }
 }

@@ -41,13 +41,11 @@ public class CustomUserDetailsService implements UserDetailsService {
             throw new UsernameNotFoundException("User not found with identifier: " + identifier);
         }
 
-        logger.info("User found: {}", user);
-
         return new CustomUserDetails(
                 user.getUsername(),
                 user.getPassword(),
                 user.getEmail(),
-                List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole()))
+                List.of(new SimpleGrantedAuthority(user.getRole()))
         );
     }
 }
