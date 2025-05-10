@@ -1,5 +1,6 @@
 package at.fhtw.webshop.controller;
 
+import at.fhtw.webshop.model.Category;
 import at.fhtw.webshop.model.Product;
 import at.fhtw.webshop.dto.ProductSearchCriteria;
 import at.fhtw.webshop.service.ProductService;
@@ -9,6 +10,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/products")
@@ -33,5 +36,10 @@ public class ProductRestController {
     @GetMapping("/search")
     public Page<Product> searchProducts(@Valid ProductSearchCriteria criteria, Pageable pageable) {
         return productService.searchProducts(criteria, pageable);
+    }
+
+    @GetMapping("/categories")
+    public List<Category> getAllCategories() {
+        return productService.getAllCategories();
     }
 }
