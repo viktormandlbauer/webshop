@@ -26,3 +26,4 @@ dropzone.addEventListener('drop', (event) => {
     document.getElementById('fileElem').files = files;
     handleFiles(files);
 });
+""

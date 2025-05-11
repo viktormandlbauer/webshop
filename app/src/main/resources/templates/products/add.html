@@ -1,12 +1,9 @@
 <!DOCTYPE html>
-
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="de" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Produkt hinzufügen</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"></script>
 </head>
@@ -15,23 +12,26 @@
 <div th:replace="~{fragments/header :: header}"></div>
 
 <main class="container my-4">
-    <h2>Neues Produkt hinzufuegen</h2>
+    <h2 class="mb-4">Neues Produkt hinzufügen</h2>
+
     <form method="post" enctype="multipart/form-data">
-        <div class="form-group mb-3">
-            <label for="name">Name</label>
-            <input type="text" class="form-control" id="name" placeholder="Produktname" required/>
+        <!-- Name -->
+        <div class="mb-3">
+            <label for="productName" class="form-label">Name</label>
+            <input type="text" class="form-control" id="productName" name="name" placeholder="Produktname" required>
         </div>
-        <br>
-        <br>
-        <div class="form-group mb-3">
-            <label for="description">Beschreibung</label>
-            <textarea class="form-control" id="description" rows="3" placeholder="Produktbeschreibung"></textarea>
+
+        <!-- Beschreibung -->
+        <div class="mb-3">
+            <label for="productDescription" class="form-label">Beschreibung</label>
+            <textarea class="form-control" id="productDescription" name="description" rows="3" placeholder="Produktbeschreibung"></textarea>
         </div>
-        <br>
-        <div class="form-group mb-3">
+
+        <!-- Kategorie -->
+        <div class="mb-3">
             <label for="productCategory" class="form-label">Kategorie</label>
             <select class="form-select" id="productCategory" name="category" required>
-                <option value="" selected disabled>Waehlen Sie eine Kategorie</option>
+                <option value="" selected disabled>Wählen Sie eine Kategorie</option>
                 <option value="action">Action</option>
                 <option value="roleplay">RPGs</option>
                 <option value="strategy">Strategie</option>
@@ -44,37 +44,34 @@
                 <option value="openworld">Open World</option>
             </select>
         </div>
-        <br>
-        <div class="form-group mb-3">
-            <label for="stock">Bestand</label>
-            <input type="number" class="form-control" id="stock" placeholder="0" step="1" min="0" required/>
-        </div>
-        <br>
-        <div class="form-group mb-3">
-            <label for="price">Preis €</label>
-            <input type="number" class="form-control" id="price" placeholder="€0.00" step="0.01" min="0" required/>
-        </div>
-        <br>
-        <div class="form-group mb-3">
-            <p class="dropper">Produktbild</p>
-            <input type="file" id="fileElem" name="imageFile" accept="image/*"
-                   onchange="handleFiles(this.files)">
-        </div>
-        <br>
-        <button type="submit" class="btn btn-primary">Produkt hinzufuegen</button>
 
-        <br>
-        <button type="submit" class="btn btn-primary">Abbrechen</button>
-        <br>
+        <!-- Bestand -->
+        <div class="mb-3">
+            <label for="productStock" class="form-label">Bestand</label>
+            <input type="number" class="form-control" id="productStock" name="stock" min="0" step="1" required>
+        </div>
 
+        <!-- Preis -->
+        <div class="mb-3">
+            <label for="productPrice" class="form-label">Preis (€)</label>
+            <input type="number" class="form-control" id="productPrice" name="price" min="0" step="0.01" required>
+        </div>
 
+        <!-- Produktbild -->
+        <div class="mb-3">
+            <label for="productImage" class="form-label">Produktbild</label>
+            <input type="file" class="form-control" id="productImage" name="imageFile" accept="image/*">
+        </div>
+
+        <!-- Buttons -->
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary">Produkt hinzufügen</button>
+            <a href="/" class="btn btn-secondary">Abbrechen</a> <!-- Besser als submit für Abbrechen -->
+        </div>
     </form>
-
 </main>
 
 <div th:replace="~{fragments/footer :: footer}"></div>
-<script src='/scripts/dropzone.js'></script>
-
+<script src="/scripts/dropzone.js"></script>
 </body>
-
 </html>
