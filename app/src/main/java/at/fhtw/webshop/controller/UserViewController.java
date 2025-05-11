@@ -34,10 +34,10 @@ public class UserViewController {
         return "welcome";
     }
 
-    @GetMapping({"/impressum", "/products/impressum"})
+    @GetMapping("/impressum")
     public String viewImpressum() { return "impressum"; }
 
-    @GetMapping({"/help", "/products/help"})
+    @GetMapping("/help")
     public String viewHelp() { return "help"; }
 
 }
