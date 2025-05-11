@@ -33,4 +33,10 @@ public class UserViewController {
     public String viewProfile() {
         return "welcome";
     }
+
+    @GetMapping("/impressum")
+    public String viewImpressum() { return "impressum"; }
+
+    @GetMapping("/help")
+    public String viewHelp() { return "help"; }
 }
