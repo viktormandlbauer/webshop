@@ -61,7 +61,7 @@ public class WebSecurityConfig {
                         exceptionHandling.authenticationEntryPoint(unauthorizedHandler)
                 )
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers("/","/auth/**", "/api/auth/**","/api/test/all", "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/error**", "/scripts/**", "/css/**")
+                        .requestMatchers("/**","/auth/**", "/api/auth/**","/api/test/all", "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/error**", "/scripts/**", "/css/**")
                         .permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(sessionManagement ->

@@ -14,5 +14,7 @@ public class ProductViewController {
     }
 
     @GetMapping("/add")
-    public String addProduct() { return "products/add"; }
+    public String addProduct() {
+        return "products/add";
+    }
 }

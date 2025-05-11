@@ -10,20 +10,21 @@ function handleFiles(files) {
 }
 
 const dropzone = document.getElementById('dropzone');
-dropzone.addEventListener('dragover', (event) => {
-    event.preventDefault();
-    dropzone.classList.add('drag-over');
-});
+if (dropzone) {
+    dropzone.addEventListener('dragover', (event) => {
+        event.preventDefault();
+        dropzone.classList.add('drag-over');
+    });
 
-dropzone.addEventListener('dragleave', () => {
-    dropzone.classList.remove('drag-over');
-});
+    dropzone.addEventListener('dragleave', () => {
+        dropzone.classList.remove('drag-over');
+    });
 
-dropzone.addEventListener('drop', (event) => {
-    event.preventDefault();
-    dropzone.classList.remove('drag-over');
-    const files = event.dataTransfer.files;
-    document.getElementById('fileElem').files = files;
-    handleFiles(files);
-});
-""
+    dropzone.addEventListener('drop', (event) => {
+        event.preventDefault();
+        dropzone.classList.remove('drag-over');
+        const files = event.dataTransfer.files;
+        document.getElementById('fileElem').files = files;
+        handleFiles(files);
+    });
+}

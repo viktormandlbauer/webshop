@@ -65,5 +65,58 @@ function fetchProducts(page) {
 
 // Fetch the first page on load
 document.addEventListener('DOMContentLoaded', () => {
-    fetchProducts(currentPage);
+    const productGrid = document.getElementById('product-grid');
+    if (productGrid) {
+        fetchProducts(currentPage);
+    }
+});
+
+// === Produkt über add.html Formular hinzufügen ===
+async function handleProductUpload(event) {
+    event.preventDefault();
+
+    const form = document.getElementById('product-form');
+    const formData = new FormData(form);
+    const message = document.getElementById('product-message');
+
+    try {
+        const response = await fetch('/admin/products/add', {
+            method: 'POST',
+            body: formData
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(errorText || 'Fehler beim Speichern');
+        }
+
+        message.textContent = 'Produkt erfolgreich hinzugefügt!';
+        message.className = 'message success';
+        form.reset();
+    } catch (error) {
+        message.textContent = error.message || 'Fehler beim Hochladen';
+        message.className = 'message error';
+    }
+}
+
+// Produkt Kategorien dynamisch laden beim Seitenaufruf
+async function loadCategories() {
+    const categorySelect = document.getElementById('productCategory');
+    try {
+        const response = await fetch('/api/categories'); // Endpoint anpassen, falls nötig
+        const categories = await response.json();
+
+        categories.forEach(category => {
+            const option = document.createElement('option');
+            option.value = category.id;
+            option.textContent = category.name;
+            categorySelect.appendChild(option);
+        });
+    } catch (error) {
+        console.error('Kategorien konnten nicht geladen werden:', error);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    loadCategories(); // Beim Laden der Seite ausführen
 });

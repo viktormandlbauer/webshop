@@ -47,6 +47,17 @@ public class Product {
     @Column(name = "AvgRating", precision = 3, scale = 2)
     private BigDecimal avgRating;
 
+    public Product(String name, String description, BigDecimal price, int stock, String imageURL, Category category) {
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.stock = stock;
+        this.imageURL = imageURL;
+        this.categoryID = category;
+    }
+
+    public Product() {}
+
     public Integer getId() {
         return id;
     }
