@@ -31,7 +31,7 @@ class UserRestController {
     }
 
     @PostMapping("/users")
-     User newUser(@RequestBody User user) {
+    User newUser(@RequestBody User user) {
         return repository.save(user);
     }
 

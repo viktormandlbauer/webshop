@@ -4,10 +4,10 @@ import jakarta.validation.constraints.NotBlank;
 
 public class LoginDto {
 
-    @NotBlank(message = "Username is required")
+    @NotBlank
     private String username;
 
-    @NotBlank(message = "Password is required")
+    @NotBlank
     private String password;
 
     private boolean rememberMe;

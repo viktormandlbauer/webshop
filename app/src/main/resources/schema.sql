@@ -1,3 +1,5 @@
+USE webshop;
+
 -- Create the User table (for authentication and shared user data)
 CREATE TABLE IF NOT EXISTS User (
                                     UserID INT AUTO_INCREMENT PRIMARY KEY,
@@ -15,17 +17,31 @@ CREATE TABLE IF NOT EXISTS User (
 -- Create the Address table
 CREATE TABLE IF NOT EXISTS Address (
                                        AddressID INT AUTO_INCREMENT PRIMARY KEY,
-                                       UserID INT NOT NULL,
+                                       UserID INT,
                                        PostalCode VARCHAR(20) NOT NULL,
-                                       Country VARCHAR(100) NOT NULL,
                                        City VARCHAR(100) NOT NULL,
                                        StreetAddress VARCHAR(255) NOT NULL,
                                        FOREIGN KEY (UserID) REFERENCES User(UserID) ON DELETE CASCADE
 );
 
-ALTER TABLE User
-    ADD CONSTRAINT FK_User_BillingAddress
-        FOREIGN KEY (BillingAddressId) REFERENCES Address(AddressID) ON DELETE CASCADE;
+-- Check if the foreign key constraint already exists before adding it
+SET @constraint_exists = (
+    SELECT COUNT(*)
+    FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS
+    WHERE CONSTRAINT_SCHEMA = DATABASE()
+      AND TABLE_NAME = 'User'
+      AND CONSTRAINT_NAME = 'FK_User_BillingAddress'
+      AND CONSTRAINT_TYPE = 'FOREIGN KEY'
+);
+
+SET @sql = IF(@constraint_exists = 0,
+              'ALTER TABLE User ADD CONSTRAINT FK_User_BillingAddress FOREIGN KEY (BillingAddressId) REFERENCES Address(AddressID) ON DELETE CASCADE',
+              'SELECT ''Constraint FK_User_BillingAddress already exists'' AS status'
+           );
+
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
 
 -- Create the Category table
 CREATE TABLE IF NOT EXISTS Category (
