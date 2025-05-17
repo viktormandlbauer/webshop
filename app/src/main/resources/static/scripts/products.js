@@ -30,7 +30,7 @@ function fetchProducts(page) {
                                     <p class="card-text"><strong>Category:</strong> ${product.categoryID.name}</p>
                                     <p class="card-text"><strong>Price:</strong> $${product.price.toFixed(2)}</p>
                                     <p class="card-text"><strong>Stock:</strong> ${product.stock}</p>
-                                    <p class="card-text"><strong>Rating:</strong> ${product.avgRating.toFixed(2)} / 5</p>
+                                    <p class="card-text"><strong>Rating:</strong> ${(product.avgRating ?? 0).toFixed(2)} / 5</p>
                                     <a href="/products/${product.id}" class="btn btn-primary">View Details</a>
                                 </div>
                             </div>
@@ -38,23 +38,25 @@ function fetchProducts(page) {
                 productGrid.appendChild(card);
             });
 
-            // Render pagination controls
+            // Aktuelle Seite merken
+            currentPage = data?.number ?? 0;
+            const totalPages = data?.totalPages ?? 1;
+
             paginationControls.innerHTML = `
                         <nav aria-label="Product pagination">
                             <ul class="pagination">
                                 <li class="page-item ${data.first ? 'disabled' : ''}">
-                                    <button class="page-link" onclick="fetchProducts(${data.number - 1})" ${data.first ? 'disabled' : ''}>Previous</button>
+                                    <button class="page-link" onclick="fetchProducts(${currentPage - 1})" ${data.first ? 'disabled' : ''}>Previous</button>
                                 </li>
                                 <li class="page-item disabled">
-                                    <span class="page-link">Page ${data.number + 1} of ${data.totalPages}</span>
+                                    <span class="page-link">Page ${currentPage + 1} of ${totalPages}</span>
                                 </li>
                                 <li class="page-item ${data.last ? 'disabled' : ''}">
-                                    <button class="page-link" onclick="fetchProducts(${data.number + 1})" ${data.last ? 'disabled' : ''}>Next</button>
+                                    <button class="page-link" onclick="fetchProducts(${currentPage + 1})" ${data.last ? 'disabled' : ''}>Next</button>
                                 </li>
                             </ul>
                         </nav>
                     `;
-            currentPage = data.number;
         })
         .catch(error => {
             console.error('Error fetching products:', error);
@@ -102,6 +104,8 @@ async function handleProductUpload(event) {
 // Produkt Kategorien dynamisch laden beim Seitenaufruf
 async function loadCategories() {
     const categorySelect = document.getElementById('productCategory');
+    if (!categorySelect) return;
+
     try {
         const response = await fetch('/api/categories'); // Endpoint anpassen, falls nötig
         const categories = await response.json();
@@ -118,5 +122,9 @@ async function loadCategories() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    loadCategories(); // Beim Laden der Seite ausführen
+    loadCategories();
+    const productGrid = document.getElementById('product-grid');
+    if (productGrid) {
+        fetchProducts(currentPage);
+    }
 });

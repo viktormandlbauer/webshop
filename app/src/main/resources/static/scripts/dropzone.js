@@ -24,7 +24,7 @@ if (dropzone) {
         event.preventDefault();
         dropzone.classList.remove('drag-over');
         const files = event.dataTransfer.files;
-        document.getElementById('fileElem').files = files;
+        document.getElementById('productImage').files = files;
         handleFiles(files);
     });
 }

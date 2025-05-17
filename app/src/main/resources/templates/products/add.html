@@ -24,7 +24,8 @@
         <!-- Beschreibung -->
         <div class="mb-3">
             <label for="productDescription" class="form-label">Beschreibung</label>
-            <textarea class="form-control" id="productDescription" name="description" rows="3" placeholder="Produktbeschreibung" required></textarea>
+            <textarea class="form-control" id="productDescription" name="description" rows="3"
+                      placeholder="Produktbeschreibung" required></textarea>
         </div>
 
         <!-- Kategorie -->
@@ -51,7 +52,14 @@
         <!-- Produktbild -->
         <div class="mb-3">
             <label for="productImage" class="form-label">Produktbild</label>
-            <input type="file" class="form-control" id="productImage" name="imageFile" accept="image/*">
+            <input type="file" class="form-control" id="productImage" name="imageFile" accept="image/*"
+                   onchange="handleFiles(this.files)">
+        </div>
+
+        <!-- Vorschau anzeigen -->
+        <div class="mb-3">
+            <img id="preview" class="img-fluid mt-3 border rounded" style="display: none; max-height: 300px;"
+                 alt="Bildvorschau">
         </div>
 
         <!-- Buttons -->
