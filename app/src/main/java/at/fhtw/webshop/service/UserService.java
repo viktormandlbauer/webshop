@@ -1,6 +1,7 @@
 package at.fhtw.webshop.service;
 
 import at.fhtw.webshop.dto.RegistrationDto;
+import at.fhtw.webshop.dto.UserProfileEditDto;
 import at.fhtw.webshop.exception.UserNotFoundException;
 import at.fhtw.webshop.model.User;
 import at.fhtw.webshop.repository.UserRepository;
@@ -25,5 +26,34 @@ public class UserService {
 
     public boolean usernameExists(String username) {
         return userRepository.findByUsername(username) != null;
+    }
+
+    public UserProfileEditDto getUserProfile(String username) {
+        User user = userRepository.findByUsername(username);
+        if (user == null) {
+            throw new UserNotFoundException("Benutzer nicht gefunden: " + username);
+        }
+
+        UserProfileEditDto dto = new UserProfileEditDto();
+        dto.setSalutation(user.getSalutation());
+        dto.setFirstName(user.getFirstName());
+        dto.setLastName(user.getLastName());
+
+        dto.setEmail(user.getEmail());
+        return dto;
+    }
+    public void updateUserProfile(String username, UserProfileEditDto dto) {
+        User user = userRepository.findByUsername(username);
+        if (user == null) {
+            throw new UserNotFoundException("Benutzer nicht gefunden: " + username);
+        }
+
+        user.setSalutation(dto.getSalutation());
+        user.setFirstName(dto.getFirstName());
+        user.setLastName(dto.getLastName());
+
+        user.setEmail(dto.getEmail());
+
+        userRepository.save(user);
     }
 }
