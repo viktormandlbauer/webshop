@@ -12,4 +12,9 @@ public class ProductViewController {
     public String searchProduct() {
         return "products/list";
     }
+
+    @GetMapping("/add")
+    public String addProduct() {
+        return "products/add";
+    }
 }
