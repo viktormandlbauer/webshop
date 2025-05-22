@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS User
     Salutation       VARCHAR(10)                NOT NULL,
     BillingAddressId INT                        NOT NULL,
     DateOfBirth      DATE                       NOT NULL,
-    ROLE             ENUM ('Customer', 'Admin') NOT NULL DEFAULT 'Customer'
+    ROLE             ENUM ('CUSTOMER', 'ADMIN') NOT NULL DEFAULT 'CUSTOMER'
 );
 
 CREATE TABLE IF NOT EXISTS PaymentMethod

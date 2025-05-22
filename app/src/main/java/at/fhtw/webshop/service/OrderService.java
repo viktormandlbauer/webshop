@@ -17,8 +17,19 @@ public class OrderService {
         this.orderRepository = orderRepository;
     }
 
-    public List<OrderDto> getOrdersForCurrentUser(int userId) {
-        List<Order> orders = orderRepository.findByUserId(userId);
+
+    public List<OrderDto> getOrderForUser(String username) {
+        List<Order> orders = orderRepository.findByUsername(username);
+        return orders.stream().map(order -> new OrderDto(
+                order.getId(),
+                order.getDate(),
+                order.getTotal(),
+                order.getStatus()
+        )).collect(Collectors.toList());
+    }
+
+    public List<OrderDto> getAllOrders() {
+        List<Order> orders = orderRepository.findAll();
         return orders.stream().map(order -> new OrderDto(
                 order.getId(),
                 order.getDate(),

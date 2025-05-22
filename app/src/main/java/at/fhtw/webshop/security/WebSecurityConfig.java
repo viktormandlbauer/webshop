@@ -61,8 +61,8 @@ public class WebSecurityConfig {
                         exceptionHandling.authenticationEntryPoint(unauthorizedHandler)
                 )
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers("/admin/**", "/api/admin/**").hasRole("Admin")
-                        .requestMatchers("/user/**", "/api/user/**").hasAnyRole("Customer", "Admin")
+                        .requestMatchers("/admin/**", "/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/user/**", "/api/user/**", "/api/orders/**").hasAnyRole("CUSTOMER", "ADMIN")
                         .requestMatchers("/","/auth/**", "/api/auth/**","/api/**", "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/error**", "/scripts/**", "/css/**")
                         .permitAll()
                         .anyRequest().authenticated())

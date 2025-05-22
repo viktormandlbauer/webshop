@@ -11,6 +11,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,10 +35,25 @@ public class OrderRestController {
         this.orderService = orderService;
     }
 
-    @GetMapping
-    public List<OrderDto> getOrdersForUser(@AuthenticationPrincipal CustomUserDetails userDetails) {
-        int userId = Integer.parseInt(userDetails.getUsername());
-        return orderService.getOrdersForCurrentUser(userId);
+    @GetMapping("/all")
+    public List<OrderDto> getAllOrders(@AuthenticationPrincipal(errorOnInvalidType = true) CustomUserDetails userDetails) {
+
+        // @TODO: This mapping should be in the /api/admin route
+
+        boolean isAdmin = userDetails.getAuthorities().stream()
+                .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
+
+        if (isAdmin) {
+            return orderService.getAllOrders();
+        } else {
+            logger.warn("Unauthorized access attempt by user: {}", userDetails.getUsername());
+            return List.of(); // Return an empty list if not authorized
+        }
+    }
+
+    @GetMapping("/user")
+    public List<OrderDto> getOrdersForUser(@AuthenticationPrincipal(errorOnInvalidType = true) CustomUserDetails userDetails) {
+        return orderService.getOrderForUser(userDetails.getUsername());
     }
 
     /**

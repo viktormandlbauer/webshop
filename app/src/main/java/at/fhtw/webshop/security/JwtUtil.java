@@ -68,6 +68,11 @@ public class JwtUtil {
                 .toList();
     }
 
+    public String getEmailFromToken(String token) {
+        Claims claims = getClaimsFromToken(token);
+        return claims.get("email", String.class); // Holt den "email"-Claim aus dem Token
+    }
+
     // Validate JWT token
     public boolean validateJwtToken(String token) {
         try {
