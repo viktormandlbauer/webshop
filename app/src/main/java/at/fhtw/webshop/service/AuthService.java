@@ -103,6 +103,7 @@ public class AuthService {
 
         // Create address object and set properties for billing address
         Address address = new Address();
+        address.setCountry(registrationDto.getCountry());
         address.setStreetAddress(registrationDto.getAddress());
         address.setPostalCode(registrationDto.getPostalCode());
         address.setCity(registrationDto.getCity());
@@ -117,5 +118,10 @@ public class AuthService {
         address.setUserID(user);
         addressRepository.save(address);
 
+        LoginDto loginDto = new LoginDto();
+        loginDto.setUsername(user.getUsername());
+        loginDto.setPassword(registrationDto.getPassword());
+
+        return loginUser(loginDto);
     }
 }

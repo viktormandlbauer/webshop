@@ -32,6 +32,19 @@ public class Address {
     @JoinColumn(name = "UserID")
     private User userID;
 
+    @Size(max = 100)
+    @NotNull
+    @Column(name = "Country", nullable = false, length = 100)
+    private String country;
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
     public User getUserID() {
         return userID;
     }
@@ -55,7 +68,6 @@ public class Address {
     public void setPostalCode(String postalCode) {
         this.postalCode = postalCode;
     }
-
 
     public String getCity() {
         return city;

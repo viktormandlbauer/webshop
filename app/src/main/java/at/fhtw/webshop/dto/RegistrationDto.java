@@ -17,6 +17,9 @@ public class RegistrationDto {
     private String lastName;
 
     @NotBlank
+    private String country;
+
+    @NotBlank
     private String address;
 
     @NotBlank
@@ -72,6 +75,14 @@ public class RegistrationDto {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
     }
 
     public String getAddress() {
