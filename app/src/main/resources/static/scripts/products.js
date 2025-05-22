@@ -15,7 +15,7 @@ function renderProductCard(product) {
                 <p class="card-text"><strong>Price:</strong> $${product.price.toFixed(2)}</p>
                 <p class="card-text"><strong>Stock:</strong> ${product.stock}</p>
                 <p class="card-text"><strong>Rating:</strong> ${(product.avgRating ?? 0).toFixed(2)} / 5</p>
-                <a href="/products/${product.id}" class="btn btn-primary">View Details</a>
+                <a href="/products/view?id=${product.id}" class="btn btn-primary">View Details</a>
             </div>
         </div>
     `;
@@ -103,14 +103,26 @@ function searchProducts(query) {
 }
 
 // Sendet das Produktformular (Add Product)
+// Sendet das Produktformular (Add Product) mit Dropzone-Integration
 async function handleProductUpload(event) {
     event.preventDefault();
 
     const form = document.getElementById('product-form');
     const formData = new FormData(form);
     const message = document.getElementById('product-message');
+    const dropzone = Dropzone.forElement("div.my-dropzone");
 
     try {
+        // Überprüfen, ob eine Datei in der Dropzone vorhanden ist
+        if (dropzone.getQueuedFiles().length > 0) {
+            // Füge die Datei aus der Dropzone zum FormData hinzu
+            dropzone.getQueuedFiles().forEach(file => {
+                formData.append("imageFile", file);
+            });
+        } else {
+            throw new Error("Bitte ein Bild hochladen.");
+        }
+
         const response = await fetch('/admin/products/add', {
             method: 'POST',
             body: formData
@@ -124,6 +136,7 @@ async function handleProductUpload(event) {
         message.textContent = 'Produkt erfolgreich hinzugefügt!';
         message.className = 'message success';
         form.reset();
+        dropzone.removeAllFiles(); // Entfernt die Dateien aus der Dropzone
     } catch (error) {
         message.textContent = error.message || 'Fehler beim Hochladen';
         message.className = 'message error';
