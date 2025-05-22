@@ -34,7 +34,6 @@ public class ProductService {
     private String imageUploadDir;
 
     ProductRepository productRepository;
-    CategoryRepository categoryRepository;
     private static final Logger logger = LoggerFactory.getLogger(ProductService.class);
 
     public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository) {

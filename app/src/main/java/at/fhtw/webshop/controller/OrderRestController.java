@@ -2,6 +2,7 @@ package at.fhtw.webshop.controller;
 
 import at.fhtw.webshop.dto.OrderDto;
 import at.fhtw.webshop.dto.ReceiptDto;
+import at.fhtw.webshop.security.CustomUserDetails;
 import at.fhtw.webshop.service.OrderService;
 import at.fhtw.webshop.service.ReceiptPdfService;
 import org.slf4j.Logger;
@@ -34,7 +35,7 @@ public class OrderRestController {
     }
 
     @GetMapping
-    public List<OrderDto> getOrdersForUser(@AuthenticationPrincipal UserDetails userDetails) {
+    public List<OrderDto> getOrdersForUser(@AuthenticationPrincipal CustomUserDetails userDetails) {
         int userId = Integer.parseInt(userDetails.getUsername());
         return orderService.getOrdersForCurrentUser(userId);
     }
