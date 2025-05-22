@@ -8,6 +8,7 @@ import at.fhtw.webshop.repository.ProductRepository;
 import at.fhtw.webshop.repository.CategoryRepository;
 import at.fhtw.webshop.model.Category;
 import at.fhtw.webshop.specifications.ProductSpecifications;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +24,9 @@ import java.util.UUID;
 
 @Service
 public class ProductService {
+
+    @Value("${image.upload.path}")
+    private String imageUploadDir;
 
     ProductRepository productRepository;
     CategoryRepository categoryRepository;
@@ -97,7 +101,7 @@ public class ProductService {
     // === Produktbild speichern ===
     // Speichert das hochgeladene Bild lokal im Ordner /uploads und gibt den Pfad zurück
     private String saveImage(MultipartFile imageFile) {
-        String uploadDirPath = new File("src/main/resources/static/uploads/").getAbsolutePath();
+        String uploadDirPath = new File(imageUploadDir).getAbsolutePath();
         File uploadDir = new File(uploadDirPath);
         if (!uploadDir.exists()) uploadDir.mkdirs();
 
