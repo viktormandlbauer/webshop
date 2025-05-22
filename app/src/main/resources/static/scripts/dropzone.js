@@ -1,30 +1,18 @@
-function handleFiles(files) {
-    const preview = document.getElementById('preview');
-    if (files.length > 0) {
-        const file = files[0];
-        preview.src = URL.createObjectURL(file);
-        preview.style.display = 'block';
-    } else {
-        preview.style.display = 'none';
-    }
-}
+document.addEventListener("DOMContentLoaded", function () {
+    Dropzone.autoDiscover = false;
 
-const dropzone = document.getElementById('dropzone');
-if (dropzone) {
-    dropzone.addEventListener('dragover', (event) => {
-        event.preventDefault();
-        dropzone.classList.add('drag-over');
+    const dropzone = new Dropzone("div.my-dropzone", {
+        url: "form-data", // Wird nicht verwendet
+        paramName: "imageFile", // Parametername
+        maxFiles: 1, // Nur ein Bild zulassen
+        acceptedFiles: "image/*", // Nur Bilder erlauben
+        dictDefaultMessage: "Ziehe ein Bild hierher oder klicke, um es hochzuladen.",
+        autoProcessQueue: false, // Verhindert automatisches Hochladen
+        init: function () {
+            this.on("maxfilesexceeded", function (file) {
+                this.removeFile(file); // Entfernt zusätzliche Dateien
+                alert("Es kann nur ein Bild hochgeladen werden.");
+            });
+        }
     });
-
-    dropzone.addEventListener('dragleave', () => {
-        dropzone.classList.remove('drag-over');
-    });
-
-    dropzone.addEventListener('drop', (event) => {
-        event.preventDefault();
-        dropzone.classList.remove('drag-over');
-        const files = event.dataTransfer.files;
-        document.getElementById('productImage').files = files;
-        handleFiles(files);
-    });
-}
+});
