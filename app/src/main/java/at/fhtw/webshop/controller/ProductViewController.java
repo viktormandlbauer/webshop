@@ -3,13 +3,29 @@ package at.fhtw.webshop.controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequestMapping("/products")
 public class ProductViewController {
 
-    @GetMapping("/list")
+    @GetMapping()
     public String searchProduct() {
         return "products/list";
+    }
+
+    @GetMapping("/add")
+    public String addProduct() {
+        return "products/add";
+    }
+
+    @GetMapping("/view")
+    public String viewProduct(@RequestParam("id") Long id) {
+        return "products/view";
+    }
+
+    @GetMapping("/checkout")
+    public String checkout() {
+        return "products/checkout";
     }
 }

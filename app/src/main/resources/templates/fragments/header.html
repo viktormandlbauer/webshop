@@ -27,7 +27,7 @@
             <a class="nav-link" href="/auth/register">Register</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/products/list">Produkte</a>
+            <a class="nav-link" href="/products">Produkte</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="#">Einkaufswagen</a>
@@ -51,8 +51,8 @@
         </ul>
 
         <!-- Suchzeile -->
-        <form class="d-flex" role="search">
-          <input class="form-control me-2" type="search" placeholder="Suche" aria-label="Suche">
+        <form class="d-flex" role="search" onsubmit="return false;">
+          <input id="productSearchInput" class="form-control me-2" type="search" placeholder="Suche" aria-label="Suche" autocomplete="off">
           <button class="btn btn-outline-success" type="submit">Suchen</button>
         </form>
 

@@ -1,0 +1,32 @@
+<div th:fragment="cart" id="cart-button" class="cart-floating shadow-lg">
+    <link rel="stylesheet" href="/css/cart.css">
+    <script src="/scripts/cart.js"></script>
+    <div class="cart-icon">
+        🛒
+        <span class="cart-count">0</span>
+    </div>
+    <div class="cart-details">
+        <!-- Dummy-Element (versteckt) -->
+        <div class="cart-item d-none" id="cart-item-template">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="title cart-item-title">Produktname</div>
+                    <div class="cart-item-quantity">
+                        <button class="btn btn-sm btn-outline-secondary decrease-quantity">-</button>
+                        <span class="quantity-value">0</span>
+                        <button class="btn btn-sm btn-outline-secondary increase-quantity">+</button>
+                    </div>
+                    <div class="price cart-item-price">€0.00</div>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <div class="cart-total">
+            <strong>Total:</strong> <span id="cart-total-price">€0.00</span>
+        </div>
+        <div class="cart-actions">
+            <a href="/products/checkout" class="btn btn-sm btn-outline-secondary">View Cart</a>
+            <a href="/products/checkout" class="btn btn-sm btn-success">Checkout</a>
+        </div>
+    </div>
+</div>

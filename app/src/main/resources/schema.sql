@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS User
     BillingAddressId INT                        NOT NULL,
     DateOfBirth      DATE                       NOT NULL,
     ROLE             ENUM ('Customer', 'Admin') NOT NULL DEFAULT 'Customer'
-    );
+);
 
 CREATE TABLE IF NOT EXISTS PaymentMethod
 (
@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS Address
     City          VARCHAR(100) NOT NULL,
     StreetAddress VARCHAR(255) NOT NULL,
     FOREIGN KEY (UserID) REFERENCES User (UserID) ON DELETE CASCADE
-    );
+);
 
 -- Check if the foreign key constraint already exists before adding it
 SET @constraint_exists = (SELECT COUNT(*)
@@ -60,7 +60,7 @@ CREATE TABLE IF NOT EXISTS Category
 (
     CategoryID INT AUTO_INCREMENT PRIMARY KEY,
     Name       VARCHAR(100) NOT NULL UNIQUE
-    );
+);
 
 -- Create the Product table
 CREATE TABLE IF NOT EXISTS Product
@@ -74,7 +74,7 @@ CREATE TABLE IF NOT EXISTS Product
     Price       DECIMAL(10, 2) NOT NULL,
     AvgRating   DECIMAL(3, 2)           DEFAULT 0.00, -- Rating between 0 and 5, e.g., 4.75
     FOREIGN KEY (CategoryID) REFERENCES Category (CategoryID) ON DELETE RESTRICT
-    );
+);
 
 -- Create the Review table
 CREATE TABLE IF NOT EXISTS Review
@@ -86,7 +86,7 @@ CREATE TABLE IF NOT EXISTS Review
     Rating    INT NOT NULL CHECK (Rating >= 1 AND Rating <= 5), -- Rating between 1 and 5
     FOREIGN KEY (ProductID) REFERENCES Product (ProductID) ON DELETE CASCADE,
     FOREIGN KEY (UserID) REFERENCES User (UserID) ON DELETE CASCADE
-    );
+);
 
 -- Create the Order table
 CREATE TABLE IF NOT EXISTS `Order`
@@ -99,7 +99,7 @@ CREATE TABLE IF NOT EXISTS `Order`
     SumPrice  DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
     FOREIGN KEY (UserID) REFERENCES User (UserID) ON DELETE RESTRICT,
     FOREIGN KEY (AddressID) REFERENCES Address (AddressID) ON DELETE RESTRICT
-    );
+);
 
 -- Create the OrderItem table
 CREATE TABLE IF NOT EXISTS OrderItem
@@ -110,7 +110,7 @@ CREATE TABLE IF NOT EXISTS OrderItem
     Quantity    INT NOT NULL CHECK (Quantity > 0),
     FOREIGN KEY (ProductID) REFERENCES Product (ProductID) ON DELETE RESTRICT,
     FOREIGN KEY (OrderID) REFERENCES `Order` (OrderID) ON DELETE CASCADE
-    );
+);
 
 CREATE TABLE IF NOT EXISTS Receipt
 (

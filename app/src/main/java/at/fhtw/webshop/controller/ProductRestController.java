@@ -2,14 +2,15 @@ package at.fhtw.webshop.controller;
 
 import at.fhtw.webshop.model.Category;
 import at.fhtw.webshop.model.Product;
+import at.fhtw.webshop.dto.ProductDto;
 import at.fhtw.webshop.dto.ProductSearchCriteria;
 import at.fhtw.webshop.service.ProductService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 import java.util.List;
 
@@ -24,22 +25,23 @@ public class ProductRestController {
     }
 
     @GetMapping("/{id}")
-    public Product getProductById(int id) {
+    public Product getProductById(@PathVariable int id) {
         return productService.getProductById(id);
     }
 
     @GetMapping("/all")
-    public Page<Product> getAllProducts(Pageable pageable) {
-        return productService.getAllProducts(pageable);
+    public Page<ProductDto> getAllProducts(Pageable pageable) {
+        return productService.getAllProducts(pageable)
+                .map(productService::mapToDto);
     }
 
-    @GetMapping("/search")
+    @GetMapping("/search/advanced")
     public Page<Product> searchProducts(@Valid ProductSearchCriteria criteria, Pageable pageable) {
         return productService.searchProducts(criteria, pageable);
     }
 
-    @GetMapping("/categories")
-    public List<Category> getAllCategories() {
-        return productService.getAllCategories();
+    @GetMapping("/search")
+    public List<ProductDto> searchProductsByName(@RequestParam("q") String query) {
+        return productService.searchByName(query);
     }
 }
