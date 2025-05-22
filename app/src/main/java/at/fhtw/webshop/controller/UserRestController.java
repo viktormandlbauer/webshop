@@ -31,8 +31,8 @@ class UserRestController {
     }
 
     @PostMapping("/users")
-     User newUser(@RequestBody User newEmployee) {
-        return repository.save(newEmployee);
+    User newUser(@RequestBody User user) {
+        return repository.save(user);
     }
 
     @GetMapping("/users/{id}")

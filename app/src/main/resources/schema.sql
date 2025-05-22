@@ -135,4 +135,3 @@ VALUES
     ('MOBA'),
     ('Survival'),
     ('Open World');
-

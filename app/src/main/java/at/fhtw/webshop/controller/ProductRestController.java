@@ -1,5 +1,6 @@
 package at.fhtw.webshop.controller;
 
+import at.fhtw.webshop.model.Category;
 import at.fhtw.webshop.model.Product;
 import at.fhtw.webshop.dto.ProductDto;
 import at.fhtw.webshop.dto.ProductSearchCriteria;
@@ -8,6 +9,8 @@ import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 import java.util.List;
 
