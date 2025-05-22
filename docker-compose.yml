@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 version: '3.8'
 
 services:
@@ -16,3 +17,28 @@ services:
 
 volumes:
     mysql_data:
+=======
+services:
+  db:
+    image: mysql:latest
+    container_name: webshop-db
+    environment:
+      MYSQL_DATABASE: webshop
+      MYSQL_USER: webshop
+      MYSQL_PASSWORD: webshop
+      MYSQL_RANDOM_ROOT_PASSWORD: 'yes'
+      MYSQL_ROOT_HOST: "%"
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - webshop-network
+
+volumes:
+  db_data:
+
+networks:
+  webshop-network:
+    driver: bridge
+>>>>>>> 0869273561c2d342195b7680b63c5a360f1f5308

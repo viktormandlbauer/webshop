@@ -36,6 +36,9 @@ public class SecurityLoggingFilter extends OncePerRequestFilter {
                     request.getRequestURI(),
                     authentication.getName(),
                     roles);
+        }else {
+            logger.info("Request URL: {} User: 'anonymous' Roles: 'anonymous'",
+                    request.getRequestURI());
         }
 
         filterChain.doFilter(request, response);

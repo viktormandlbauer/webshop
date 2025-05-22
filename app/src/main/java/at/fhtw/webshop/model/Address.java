@@ -1,14 +1,15 @@
 package at.fhtw.webshop.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 public class Address {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "AddressID", nullable = false)
     private Integer id;
 
@@ -19,11 +20,6 @@ public class Address {
 
     @Size(max = 100)
     @NotNull
-    @Column(name = "Country", nullable = false, length = 100)
-    private String country;
-
-    @Size(max = 100)
-    @NotNull
     @Column(name = "City", nullable = false, length = 100)
     private String city;
 
@@ -31,6 +27,31 @@ public class Address {
     @NotNull
     @Column(name = "StreetAddress", nullable = false)
     private String streetAddress;
+
+    @ManyToOne(fetch = FetchType.EAGER, optional = true)
+    @JoinColumn(name = "UserID")
+    private User userID;
+
+    @Size(max = 100)
+    @NotNull
+    @Column(name = "Country", nullable = false, length = 100)
+    private String country;
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
+    public User getUserID() {
+        return userID;
+    }
+
+    public void setUserID(User userID) {
+        this.userID = userID;
+    }
 
     public Integer getId() {
         return id;
@@ -46,14 +67,6 @@ public class Address {
 
     public void setPostalCode(String postalCode) {
         this.postalCode = postalCode;
-    }
-
-    public String getCountry() {
-        return country;
-    }
-
-    public void setCountry(String country) {
-        this.country = country;
     }
 
     public String getCity() {

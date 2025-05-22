@@ -61,15 +61,17 @@ public class WebSecurityConfig {
                         exceptionHandling.authenticationEntryPoint(unauthorizedHandler)
                 )
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers("/**","/auth/**", "/api/auth/**","/api/test/all", "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/error**", "/scripts/**", "/css/**")
+                        .requestMatchers("/admin/**", "/api/admin/**").hasRole("Admin")
+                        .requestMatchers("/user/**", "/api/user/**").hasAnyRole("Customer", "Admin")
+                        .requestMatchers("/","/auth/**", "/api/auth/**","/api/**", "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/error**", "/scripts/**", "/css/**")
                         .permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(sessionManagement ->
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 );
 
-        http.addFilterBefore(new BasicAuthenticationFilter(authenticationManager()), UsernamePasswordAuthenticationFilter.class);
         http.addFilterBefore(new SecurityLoggingFilter(), BasicAuthenticationFilter.class);
+        http.addFilterBefore(new BasicAuthenticationFilter(authenticationManager()), UsernamePasswordAuthenticationFilter.class);
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }

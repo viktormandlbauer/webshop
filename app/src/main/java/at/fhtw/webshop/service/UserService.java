@@ -1,10 +1,6 @@
 package at.fhtw.webshop.service;
 
-import at.fhtw.webshop.dto.RegistrationDto;
-import at.fhtw.webshop.exception.UserNotFoundException;
-import at.fhtw.webshop.model.User;
 import at.fhtw.webshop.repository.UserRepository;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import org.slf4j.Logger;
