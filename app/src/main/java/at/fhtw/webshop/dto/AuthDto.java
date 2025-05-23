@@ -13,6 +13,7 @@ public class AuthDto {
         this.roles = roles;
     }
 
+    // Getter und Setter
     public String getToken() {
         return token;
     }
