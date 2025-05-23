@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(title='Webshop')}"></head>
+
+<body>
+<div th:replace="~{fragments/header :: header}"></div>
+<div class="container">
+    <div class="container mt-5">
+        <h1 class="mb-4">Profil bearbeiten</h1>
+
+        <form th:action="@{/profile/userprofileedit}" th:object="${profile}" method="post">
+            <label>Anrede:</label>
+            <input type="text" th:field="*{salutation}" /><br/>
+
+            <label>Vorname:</label>
+            <input type="text" th:field="*{firstName}" /><br/>
+
+            <label>Nachname:</label>
+            <input type="text" th:field="*{lastName}" /><br/>
+
+            <label>Email:</label>
+            <input type="email" th:field="*{email}" /><br/>
+
+            <button type="submit">Speichern</button>
+        </form>
+
+    </div>
+</div>
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>
