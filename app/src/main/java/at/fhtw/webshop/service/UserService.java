@@ -60,6 +60,7 @@ public class UserService {
 
         // dto.setPaymentMethods(paymentMethods);
         dto.setAddresses(addresses);
+        dto.setPaymentMethods(paymentMethods);
 
         return dto;
     }

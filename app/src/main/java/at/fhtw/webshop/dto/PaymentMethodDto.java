@@ -1,11 +1,21 @@
 package at.fhtw.webshop.dto;
 
+import jakarta.validation.constraints.NotNull;
+
 import java.time.LocalDate;
 
 public class PaymentMethodDto {
+
+    @NotNull
     private String cardNumber;
+
+    @NotNull
     private String cardHolderName;
+
+    @NotNull
     private LocalDate expiryDate;
+
+    @NotNull
     private String cvv;
 
     public PaymentMethodDto(String cardNumber, String cardHolderName, LocalDate expiryDate, String cvv) {

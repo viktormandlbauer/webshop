@@ -46,6 +46,8 @@ public class PaymentMethod {
     public PaymentMethod(PaymentMethodDto paymentMethodDto) {
         this.cardNumber = paymentMethodDto.getCardNumber();
         this.cardHolderName = paymentMethodDto.getCardHolderName();
+        this.expiryDate = paymentMethodDto.getExpiryDate();
+        this.cvv = paymentMethodDto.getCvv();
     }
 
     public Integer getId() {
@@ -95,5 +97,4 @@ public class PaymentMethod {
     public void setCvv(String cvv) {
         this.cvv = cvv;
     }
-
 }
