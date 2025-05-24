@@ -33,6 +33,41 @@ function populateDropdown(id, items, labelFn) {
     dropdown.dispatchEvent(new Event("change"));
 }
 
+function openUserEditModal() {
+    document.getElementById("editEmail").value = profile.email;
+    document.getElementById("editFirstName").value = profile.firstName;
+    document.getElementById("editLastName").value = profile.lastName;
+    document.getElementById("editDateOfBirth").value = profile.dateOfBirth;
+
+    new bootstrap.Modal(document.getElementById("editUserModal")).show();
+}
+
+function saveUserData() {
+    const updatedUser = {
+        email: document.getElementById("editEmail").value,
+        firstName: document.getElementById("editFirstName").value,
+        lastName: document.getElementById("editLastName").value,
+        dateOfBirth: document.getElementById("editDateOfBirth").value
+    };
+
+    fetch("/api/profile/update", {
+        method: "PUT",
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedUser)
+    })
+        .then(response => {
+            if (!response.ok) throw new Error("Fehler beim Speichern");
+            return response.json();
+        })
+        .then(() => {
+            alert("Benutzerdaten gespeichert.");
+            bootstrap.Modal.getInstance(document.getElementById("editUserModal")).hide();
+            loadProfile();
+        })
+        .catch(err => alert("Fehler: " + err.message));
+}
+
+
 document.getElementById("paymentMethods").addEventListener("change", e => {
     const m = profile.paymentMethods[e.target.value];
     document.getElementById("cardHolderName").textContent = m.cardHolderName;

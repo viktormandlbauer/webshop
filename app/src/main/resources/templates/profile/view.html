@@ -13,15 +13,26 @@
         <div class="row mb-3">
             <h2>Benutzerdaten</h2>
             <div class="col-md-6">
+                <label for="profile" class="form-label"></label>
+                <p><strong>Anrede:</strong> <span id="salutation"></span></p>
                 <p><strong>Benutzername:</strong> <span id="username"></span></p>
                 <p><strong>E-Mail:</strong> <span id="email"></span></p>
-                <p><strong>Anrede:</strong> <span id="salutation"></span></p>
+
             </div>
             <div class="col-md-6">
                 <p><strong>Vorname:</strong> <span id="firstName"></span></p>
                 <p><strong>Nachname:</strong> <span id="lastName"></span></p>
                 <p><strong>Geburtsdatum:</strong> <span id="dateOfBirth"></span></p>
             </div>
+            <div class="text-end mt-2">
+                <button class="btn btn-warning" onclick="openChangePasswordModal()">Passwort ändern</button>
+            </div>
+
+            <div class="text-end">
+                <button class="btn btn-primary" onclick="openUserEditModal()">Bearbeiten</button>
+            </div>
+
+
         </div>
 
         <!-- Adresse -->
@@ -35,6 +46,7 @@
                 <p><strong>Postleitzahl:</strong> <span id="postalCode"></span></p>
                 <p><strong>Stadt:</strong> <span id="city"></span></p>
             </div>
+
         </div>
 
         <!-- Zahlungsmethoden -->
@@ -75,6 +87,62 @@
 
     </div>
 </div>
+
+<!-- Modal: Benutzerdaten bearbeiten -->
+<div class="modal fade" id="editUserModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Benutzerdaten bearbeiten</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="userForm">
+                    <div class="mb-3"><label class="form-label">E-Mail</label><input type="email" class="form-control" id="editEmail"></div>
+                    <div class="mb-3"><label class="form-label">Vorname</label><input type="text" class="form-control" id="editFirstName"></div>
+                    <div class="mb-3"><label class="form-label">Nachname</label><input type="text" class="form-control" id="editLastName"></div>
+                    <div class="mb-3"><label class="form-label">Geburtsdatum</label><input type="date" class="form-control" id="editDateOfBirth"></div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                <button class="btn btn-success" onclick="saveUserData()">Speichern</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal: Passwort ändern -->
+<div class="modal fade" id="changePasswordModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Passwort ändern</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="passwordForm">
+                    <div class="mb-3">
+                        <label class="form-label">Aktuelles Passwort</label>
+                        <input type="password" class="form-control" id="currentPassword">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Neues Passwort</label>
+                        <input type="password" class="form-control" id="newPassword">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Neues Passwort wiederholen</label>
+                        <input type="password" class="form-control" id="repeatPassword">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                <button class="btn btn-success" onclick="changePassword()">Speichern</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <!-- Modal: Zahlungsmethode -->
 <div class="modal fade" id="editPaymentModal" tabindex="-1" aria-hidden="true">
@@ -319,6 +387,75 @@
         document.getElementById("editPostal").value = "";
         document.getElementById("editCountry").value = "";
     }
+    function openUserEditModal() {
+        document.getElementById("editEmail").value = profile.email;
+        document.getElementById("editFirstName").value = profile.firstName;
+        document.getElementById("editLastName").value = profile.lastName;
+        document.getElementById("editDateOfBirth").value = profile.dateOfBirth;
+
+        new bootstrap.Modal(document.getElementById("editUserModal")).show();
+    }
+
+    function saveUserData() {
+        const updatedUser = {
+            email: document.getElementById("editEmail").value,
+            firstName: document.getElementById("editFirstName").value,
+            lastName: document.getElementById("editLastName").value,
+            dateOfBirth: document.getElementById("editDateOfBirth").value
+        };
+
+        fetch("/api/profile/update", {
+            method: "PUT",
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(updatedUser)
+        })
+            .then(response => {
+                if (!response.ok) throw new Error("Fehler beim Speichern");
+                return response.json();
+            })
+            .then(() => {
+                alert("Benutzerdaten gespeichert.");
+                bootstrap.Modal.getInstance(document.getElementById("editUserModal")).hide();
+                loadProfile();
+            })
+            .catch(err => alert("Fehler: " + err.message));
+    }
+    function openChangePasswordModal() {
+        document.getElementById("currentPassword").value = "";
+        document.getElementById("newPassword").value = "";
+        document.getElementById("repeatPassword").value = "";
+        new bootstrap.Modal(document.getElementById("changePasswordModal")).show();
+    }
+
+    function changePassword() {
+        const currentPassword = document.getElementById("currentPassword").value;
+        const newPassword = document.getElementById("newPassword").value;
+        const repeatPassword = document.getElementById("repeatPassword").value;
+
+        if (!currentPassword || !newPassword || !repeatPassword) {
+            return alert("Bitte alle Felder ausfüllen.");
+        }
+        if (newPassword !== repeatPassword) {
+            return alert("Die neuen Passwörter stimmen nicht überein.");
+        }
+
+        fetch("/api/profile/change-password", {
+            method: "PUT",
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ currentPassword, newPassword })
+        })
+            .then(response => {
+                if (!response.ok) throw new Error("Fehler beim Ändern des Passworts");
+                return response.json();
+            })
+            .then(() => {
+                alert("Passwort erfolgreich geändert.");
+                bootstrap.Modal.getInstance(document.getElementById("changePasswordModal")).hide();
+            })
+            .catch(err => alert("Fehler: " + err.message));
+    }
+
+
 </script>
 </body>
 </html>

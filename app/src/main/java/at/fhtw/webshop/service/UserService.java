@@ -1,9 +1,6 @@
 package at.fhtw.webshop.service;
 
-import at.fhtw.webshop.dto.AddressDto;
-import at.fhtw.webshop.dto.PaymentMethodDto;
-import at.fhtw.webshop.dto.ProfileDto;
-import at.fhtw.webshop.exception.UserNotFoundException;
+import at.fhtw.webshop.dto.*;
 import at.fhtw.webshop.model.Address;
 import at.fhtw.webshop.model.User;
 import at.fhtw.webshop.repository.AddressRepository;
@@ -13,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import org.slf4j.Logger;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -91,19 +89,18 @@ public class UserService {
 
         return dto;
     }
-
-    public void updateUserProfile(String username, ProfileDto dto) {
+    public void updateUserDetails(String username, UserUpdateDto dto) {
         User user = userRepository.findByUsername(username);
-        if (user == null) {
-            throw new UserNotFoundException("Benutzer nicht gefunden: " + username);
-        }
+        if (user == null) throw new IllegalArgumentException("Benutzer nicht gefunden");
 
-        user.setSalutation(dto.getSalutation());
         user.setFirstName(dto.getFirstName());
         user.setLastName(dto.getLastName());
-
+        user.setDateOfBirth(LocalDate.parse(dto.getDateOfBirth()));
         user.setEmail(dto.getEmail());
 
         userRepository.save(user);
     }
+
+
+
 }
