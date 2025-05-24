@@ -1,107 +1,102 @@
 package at.fhtw.webshop.service;
 
-import at.fhtw.webshop.dto.ReceiptDto;
 import at.fhtw.webshop.dto.AddressDto;
-import at.fhtw.webshop.dto.OrderItemDto;
+import at.fhtw.webshop.dto.receipt.ReceiptDto;
+import at.fhtw.webshop.dto.receipt.ReceiptItemDto;
 import com.itextpdf.text.*;
-import com.itextpdf.text.pdf.*;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
+import java.io.FileOutputStream;
 import java.math.RoundingMode;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
 import java.util.stream.Stream;
 
 @Service
 public class ReceiptPdfService {
 
-    @Value("${receipts.output.path:receipts}")
-    private String receiptFolder;
+    @Value("${receipts.output.path}")
+    private String receiptsOutputPath;
 
-    public File generateAndStorePdf(ReceiptDto receiptDto) {
-        ByteArrayOutputStream out = createPdfContent(receiptDto);
-
+    public void generateReceiptPdf(ReceiptDto receiptDto) {
         try {
-            Path dirPath = Path.of(receiptFolder);
-            if (Files.notExists(dirPath)) {
-                Files.createDirectories(dirPath);
-            }
+            // Erstelle den Dateipfad
+            String filePath = receiptsOutputPath + "/receipt_" + receiptDto.getOrderId() + ".pdf";
 
-            String fileName = "receipt_order_" + receiptDto.getOrderId() + ".pdf";
-            Path filePath = dirPath.resolve(fileName);
-
-            Files.write(filePath, out.toByteArray(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
-            return filePath.toFile();
-
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to store receipt PDF", e);
-        }
-    }
-
-    public ByteArrayInputStream generatePdf(ReceiptDto receiptDto) {
-        ByteArrayOutputStream out = createPdfContent(receiptDto);
-        return new ByteArrayInputStream(out.toByteArray());
-    }
-
-    private ByteArrayOutputStream createPdfContent(ReceiptDto receiptDto) {
-        Document document = new Document();
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-
-        try {
-            PdfWriter.getInstance(document, out);
+            Document document = new Document();
+            PdfWriter.getInstance(document, new FileOutputStream(filePath));
             document.open();
 
+            // Titel
             Font titleFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 18);
-            Font sectionFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12);
-            Font textFont = FontFactory.getFont(FontFactory.HELVETICA, 11);
+            Paragraph title = new Paragraph("Quittung", titleFont);
+            title.setAlignment(Element.ALIGN_CENTER);
+            document.add(title);
 
-            document.add(new Paragraph("Order Receipt", titleFont));
-            document.add(new Paragraph("Order ID: " + receiptDto.getOrderId(), textFont));
-            document.add(new Paragraph("Date: " + receiptDto.getDate(), textFont));
-            document.add(new Paragraph("Customer: " + receiptDto.getCustomerName(), textFont));
-            document.add(new Paragraph(" "));
+            document.add(Chunk.NEWLINE);
 
-            AddressDto address = receiptDto.getShippingAddress();
-            document.add(new Paragraph("Shipping Address:", sectionFont));
-            document.add(new Paragraph(address.getStreetAddress(), textFont));
-            document.add(new Paragraph(address.getPostalCode() + " " + address.getCity(), textFont));
-            document.add(new Paragraph(address.getCountry(), textFont));
-            document.add(new Paragraph(" "));
+            // Bestellinformationen
+            document.add(new Paragraph("Bestell-ID: " + receiptDto.getOrderId()));
+            document.add(new Paragraph("Datum: " + receiptDto.getDate()));
+            document.add(new Paragraph("Kunde: " + receiptDto.getCustomerName()));
 
+            document.add(Chunk.NEWLINE);
+
+            // Adressen
+            document.add(new Paragraph("Rechnungsadresse:"));
+            document.add(new Paragraph(formatAddress(receiptDto.getBillingAddress())));
+            document.add(Chunk.NEWLINE);
+
+            document.add(new Paragraph("Lieferadresse:"));
+            document.add(new Paragraph(formatAddress(receiptDto.getShippingAddress())));
+            document.add(Chunk.NEWLINE);
+
+            // Artikel-Tabelle
             PdfPTable table = new PdfPTable(4);
             table.setWidthPercentage(100);
-            table.setWidths(new int[]{5, 1, 2, 2});
-            addTableHeader(table, sectionFont);
+            table.setWidths(new int[]{4, 1, 1, 1});
 
-            for (OrderItemDto item : receiptDto.getItems()) {
-                table.addCell(item.getProductName());
-                table.addCell(String.valueOf(item.getQuantity()));
-                table.addCell("€" + item.getPricePerUnit().setScale(2, RoundingMode.HALF_UP));
-                table.addCell("€" + item.getTotalPrice().setScale(2, RoundingMode.HALF_UP));
+            addTableHeader(table);
+            for (ReceiptItemDto item : receiptDto.getItems()) {
+                addTableRow(table, item);
             }
 
             document.add(table);
-            document.add(new Paragraph("\nTotal: €" + receiptDto.getTotal().setScale(2, RoundingMode.HALF_UP), sectionFont));
+
+            document.add(Chunk.NEWLINE);
+
+            // Gesamtpreis
+            Font totalFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12);
+            Paragraph total = new Paragraph("Gesamtpreis: " + receiptDto.getTotal().setScale(2, RoundingMode.HALF_UP) + " €", totalFont);
+            total.setAlignment(Element.ALIGN_RIGHT);
+            document.add(total);
+
             document.close();
-
         } catch (Exception e) {
-            throw new RuntimeException("Failed to generate receipt PDF", e);
+            throw new RuntimeException("Fehler beim Generieren der Quittung", e);
         }
-
-        return out;
     }
 
-    private void addTableHeader(PdfPTable table, Font font) {
-        Stream.of("Product", "Qty", "Unit Price", "Total")
-                .forEach(title -> {
-                    PdfPCell header = new PdfPCell(new Phrase(title, font));
-                    header.setBackgroundColor(BaseColor.LIGHT_GRAY);
+    private String formatAddress(AddressDto address) {
+        return address.getStreetAddress() + ", " + address.getCity() + " " + address.getPostalCode() + ", " + address.getCountry();
+    }
+
+    private void addTableHeader(PdfPTable table) {
+        Stream.of("Produkt", "Menge", "Einzelpreis (€)", "Gesamt (€)")
+                .forEach(columnTitle -> {
+                    PdfPCell header = new PdfPCell();
+                    header.setPhrase(new Phrase(columnTitle));
+                    header.setHorizontalAlignment(Element.ALIGN_CENTER);
                     table.addCell(header);
                 });
+    }
+
+    private void addTableRow(PdfPTable table, ReceiptItemDto item) {
+        table.addCell(item.getProductName());
+        table.addCell(String.valueOf(item.getQuantity()));
+        table.addCell(String.valueOf(item.getPricePerUnit()));
+        table.addCell(String.valueOf(item.getSum()));
     }
 }

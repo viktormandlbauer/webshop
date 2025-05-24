@@ -1,4 +1,4 @@
-package at.fhtw.webshop.controller;
+package at.fhtw.webshop.controller.view;
 
 import at.fhtw.webshop.dto.LoginDto;
 import at.fhtw.webshop.dto.RegistrationDto;
