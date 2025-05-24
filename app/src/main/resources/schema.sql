@@ -94,11 +94,16 @@ CREATE TABLE IF NOT EXISTS `Order`
     OrderID   INT AUTO_INCREMENT PRIMARY KEY,
     UserID    INT            NOT NULL,
     Status   ENUM ('Pending', 'Delivered', 'Cancelled') NOT NULL DEFAULT 'Pending',
-    AddressID INT            NOT NULL,
-    `Date`    DATE           NOT NULL,
-    SumPrice  DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
+    ShippingAddressID INT NOT NULL,
+    BillingAddressID INT NOT NULL,
+    PaymentMethodID INT NOT NULL,
+    PdfFilePath VARCHAR(255),
+    CreatedDate DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    SumPrice  DECIMAL(10, 2) NOT NULL,
     FOREIGN KEY (UserID) REFERENCES User (UserID) ON DELETE RESTRICT,
-    FOREIGN KEY (AddressID) REFERENCES Address (AddressID) ON DELETE RESTRICT
+    FOREIGN KEY (ShippingAddressID) REFERENCES Address (AddressID) ON DELETE RESTRICT,
+    FOREIGN KEY (BillingAddressID) REFERENCES Address (AddressID) ON DELETE RESTRICT,
+    FOREIGN KEY (PaymentMethodID) REFERENCES PaymentMethod (PaymentMethodID) ON DELETE RESTRICT
 );
 
 -- Create the OrderItem table
@@ -111,17 +116,6 @@ CREATE TABLE IF NOT EXISTS OrderItem
     FOREIGN KEY (ProductID) REFERENCES Product (ProductID) ON DELETE RESTRICT,
     FOREIGN KEY (OrderID) REFERENCES `Order` (OrderID) ON DELETE CASCADE
 );
-
-CREATE TABLE IF NOT EXISTS Receipt
-(
-    ReceiptID        INT AUTO_INCREMENT PRIMARY KEY,
-    OrderID          INT            NOT NULL,
-    PaymentMethodID  INT            NOT NULL,
-    PdfFilePath         VARCHAR(255)   NOT NULL,
-    CreatedDate      DATETIME       NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (OrderID) REFERENCES `Order` (OrderID) ON DELETE CASCADE,
-    FOREIGN KEY (PaymentMethodID) REFERENCES PaymentMethod (PaymentMethodID) ON DELETE RESTRICT
-    );
 
 INSERT IGNORE INTO Category (Name)
 VALUES

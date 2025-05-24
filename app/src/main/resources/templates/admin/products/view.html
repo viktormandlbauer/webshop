@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(title='Administration - Produkte')}"></head>
+<body>
+<div th:replace="~{fragments/header :: header}"></div>
+
+<main class="container my-4">
+    <h2>Products</h2>
+    <div id="product-grid" class="row">
+        <!-- Products will be inserted here by JavaScript -->
+    </div>
+    <div id="pagination-controls" class="d-flex justify-content-center mt-4">
+        <!-- Pagination buttons will be inserted here -->
+    </div>
+    <div class="mb-3">
+        <a href="/admin/products/add" class="btn btn-success">Produkt hinzufügen</a>
+    </div>
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<!-- Custom JavaScript for product grid and pagination -->
+<script src="/scripts/products.js"></script>
+</body>
+</html>

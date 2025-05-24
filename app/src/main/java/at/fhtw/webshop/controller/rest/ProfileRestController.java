@@ -1,4 +1,4 @@
-package at.fhtw.webshop.controller;
+package at.fhtw.webshop.controller.rest;
 
 import at.fhtw.webshop.dto.*;
 import at.fhtw.webshop.security.CustomUserDetails;

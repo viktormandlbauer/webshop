@@ -1,25 +1,18 @@
-package at.fhtw.webshop.controller;
+package at.fhtw.webshop.controller.rest;
 
-import at.fhtw.webshop.dto.OrderDto;
-import at.fhtw.webshop.dto.ReceiptDto;
+import at.fhtw.webshop.dto.CustomerOrderDto;
 import at.fhtw.webshop.security.CustomUserDetails;
 import at.fhtw.webshop.service.OrderService;
 import at.fhtw.webshop.service.ReceiptPdfService;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/orders")
@@ -35,6 +28,7 @@ public class OrderRestController {
         this.orderService = orderService;
     }
 
+    /**
     @GetMapping("/all")
     public List<OrderDto> getAllOrders(@AuthenticationPrincipal(errorOnInvalidType = true) CustomUserDetails userDetails) {
 
@@ -50,15 +44,30 @@ public class OrderRestController {
             return List.of(); // Return an empty list if not authorized
         }
     }
-
     @GetMapping("/user")
     public List<OrderDto> getOrdersForUser(@AuthenticationPrincipal(errorOnInvalidType = true) CustomUserDetails userDetails) {
         return orderService.getOrderForUser(userDetails.getUsername());
     }
+     **/
+
+    @PostMapping("/new")
+    public ResponseEntity<Object> newOrder(@Valid @RequestBody CustomerOrderDto customerOrderDto, @AuthenticationPrincipal(errorOnInvalidType = true) CustomUserDetails userDetails){
+        try {
+            orderService.newCustomerOrder(customerOrderDto, userDetails);
+            return ResponseEntity.ok(Map.of(
+                    "status", "success",
+                    "message", "Order successfully"
+            ));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
+                    "status", "error",
+                    "message", "Failed to order: " + e.getMessage()
+            ));
+        }
+    }
+
 
     /**
-     * Generate a receipt PDF and return it inline for viewing/downloading.
-     */
     @PostMapping(value = "/receipt/pdf", produces = MediaType.APPLICATION_PDF_VALUE)
     public ResponseEntity<byte[]> generateReceiptPdf(@RequestBody ReceiptDto receiptDto) throws IOException {
         ByteArrayInputStream pdfStream = receiptPdfService.generatePdf(receiptDto);
@@ -73,18 +82,12 @@ public class OrderRestController {
                 .body(pdfStream.readAllBytes());
     }
 
-    /**
-     * Generate a receipt PDF and store it on the server.
-     */
     @PostMapping("/receipt/store")
     public ResponseEntity<String> generateAndStoreReceipt(@RequestBody ReceiptDto receiptDto) {
         File storedFile = receiptPdfService.generateAndStorePdf(receiptDto);
         return ResponseEntity.ok("Receipt stored at: " + storedFile.getAbsolutePath());
     }
 
-    /**
-     * Download a previously stored receipt by order ID.
-     */
     @GetMapping(value = "/receipt/download/{orderId}", produces = MediaType.APPLICATION_PDF_VALUE)
     public ResponseEntity<byte[]> downloadStoredReceipt(@PathVariable Long orderId) throws IOException {
         File file = new File("receipts/receipt_order_" + orderId + ".pdf");
@@ -105,4 +108,5 @@ public class OrderRestController {
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(content);
     }
+    **/
 }

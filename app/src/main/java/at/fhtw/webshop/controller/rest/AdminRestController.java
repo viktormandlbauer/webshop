@@ -1,4 +1,4 @@
-package at.fhtw.webshop.controller;
+package at.fhtw.webshop.controller.rest;
 
 import at.fhtw.webshop.dto.ProductAddDto;
 import at.fhtw.webshop.service.ProductService;

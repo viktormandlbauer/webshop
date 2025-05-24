@@ -10,4 +10,5 @@ import java.util.List;
 @Repository
 public interface PaymentMethodRepository extends JpaRepository<PaymentMethod, Integer> {
     List<PaymentMethod> getPaymentMethodsByUserID(User userID);
+    PaymentMethod findPaymentMethodById(Integer paymentMethodId);
 }

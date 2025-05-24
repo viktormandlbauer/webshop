@@ -1,4 +1,4 @@
-package at.fhtw.webshop.controller;
+package at.fhtw.webshop.controller.view;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,7 +15,12 @@ public class AdminViewController {
 
     @GetMapping("/products")
     public String viewProductsAdmin() {
-        return "admin/products";
+        return "admin/products/view";
+    }
+
+    @GetMapping("/products/add")
+    public String addProductAdmin() {
+        return "admin/products/add";
     }
 
     @GetMapping("/users")
@@ -23,7 +28,7 @@ public class AdminViewController {
         return "admin/users";
     }
 
-    @GetMapping("/admin/orders")
+    @GetMapping("/orders")
     public String viewOrdersAdmin() {
         return "admin/orders";
     }
