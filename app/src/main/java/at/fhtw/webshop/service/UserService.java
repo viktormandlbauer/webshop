@@ -1,18 +1,17 @@
 package at.fhtw.webshop.service;
 
-import at.fhtw.webshop.dto.AddressDto;
-import at.fhtw.webshop.dto.PaymentMethodDto;
-import at.fhtw.webshop.dto.ProfileDto;
-import at.fhtw.webshop.exception.UserNotFoundException;
+import at.fhtw.webshop.dto.*;
 import at.fhtw.webshop.model.Address;
 import at.fhtw.webshop.model.User;
 import at.fhtw.webshop.repository.AddressRepository;
 import at.fhtw.webshop.repository.PaymentMethodRepository;
 import at.fhtw.webshop.repository.UserRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import org.slf4j.Logger;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,14 +20,18 @@ public class UserService {
     private final UserRepository userRepository;
     private final AddressRepository addressRepository;
     private final PaymentMethodRepository paymentMethodRepository;
+    private final PasswordEncoder passwordEncoder;
 
     private static final Logger logger = org.slf4j.LoggerFactory.getLogger(UserService.class);
 
-    public UserService(UserRepository userRepository, AddressRepository addressRepository, PaymentMethodRepository paymentMethodRepository) {
+    public UserService(UserRepository userRepository, AddressRepository addressRepository, PaymentMethodRepository paymentMethodRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.addressRepository = addressRepository;
         this.paymentMethodRepository = paymentMethodRepository;
+        this.passwordEncoder = passwordEncoder;
     }
+
+
 
     public boolean emailExists(String email) {
         return userRepository.findByEmail(email) != null;
@@ -91,19 +94,34 @@ public class UserService {
 
         return dto;
     }
-
-    public void updateUserProfile(String username, ProfileDto dto) {
+    public void updateUserDetails(String username, UserUpdateDto dto) {
         User user = userRepository.findByUsername(username);
-        if (user == null) {
-            throw new UserNotFoundException("Benutzer nicht gefunden: " + username);
-        }
+        if (user == null) throw new IllegalArgumentException("Benutzer nicht gefunden");
 
-        user.setSalutation(dto.getSalutation());
         user.setFirstName(dto.getFirstName());
         user.setLastName(dto.getLastName());
-
+        user.setDateOfBirth(LocalDate.parse(dto.getDateOfBirth()));
         user.setEmail(dto.getEmail());
 
         userRepository.save(user);
     }
+    public void changeUserPassword(String username, PasswordChangeDto dto) {
+        User user = userRepository.findByUsername(username);
+        if (user == null) {
+            throw new IllegalArgumentException("Benutzer nicht gefunden");
+        }
+
+        // Vergleiche altes Passwort (Plaintext) mit gespeichertem Hash
+        if (!passwordEncoder.matches(dto.getCurrentPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("Aktuelles Passwort ist falsch.");
+        }
+
+        // Neues Passwort verschlüsseln und speichern
+        user.setPassword(passwordEncoder.encode(dto.getNewPassword()));
+        userRepository.save(user);
+    }
+
+
+
+
 }

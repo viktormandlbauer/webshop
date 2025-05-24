@@ -13,18 +13,29 @@
         <div class="row mb-3">
             <h2>Benutzerdaten</h2>
             <div class="col-md-6">
+                <label for="profile" class="form-label"></label>
+                <p><strong>Anrede:</strong> <span id="salutation"></span></p>
                 <p><strong>Benutzername:</strong> <span id="username"></span></p>
                 <p><strong>E-Mail:</strong> <span id="email"></span></p>
-                <p><strong>Anrede:</strong> <span id="salutation"></span></p>
+
             </div>
             <div class="col-md-6">
                 <p><strong>Vorname:</strong> <span id="firstName"></span></p>
                 <p><strong>Nachname:</strong> <span id="lastName"></span></p>
                 <p><strong>Geburtsdatum:</strong> <span id="dateOfBirth"></span></p>
             </div>
+            <div class="text-end mt-2">
+                <button class="btn btn-warning" onclick="openChangePasswordModal()">Passwort ändern</button>
+            </div>
+
+            <div class="text-end">
+                <button class="btn btn-primary" onclick="openUserEditModal()">Bearbeiten</button>
+            </div>
+
+
         </div>
 
-        <!-- Adresse -->
+        <!-- Rechnungsadresse -->
         <div class="row mb-3">
             <h2>Rechnungsadresse</h2>
             <div class="col-md-6">
@@ -35,6 +46,11 @@
                 <p><strong>Postleitzahl:</strong> <span id="postalCode"></span></p>
                 <p><strong>Stadt:</strong> <span id="city"></span></p>
             </div>
+            <div class="text-end mt-2">
+                <button class="btn btn-primary" onclick="openBillingEditModal()">Bearbeiten</button>
+            </div>
+
+
         </div>
 
         <!-- Zahlungsmethoden -->
@@ -55,7 +71,7 @@
             </div>
         </div>
 
-        <!-- Adressen -->
+        <!-- Lieferadressen -->
         <div class="form-group">
             <h2>Lieferadressen</h2>
             <label for="addresses" class="form-label">Adresse wählen:</label>
@@ -75,6 +91,89 @@
 
     </div>
 </div>
+
+<!-- Modal: Benutzerdaten bearbeiten -->
+<div class="modal fade" id="editUserModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Benutzerdaten bearbeiten</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="userForm">
+                    <div class="mb-3"><label class="form-label">E-Mail</label><input type="email" class="form-control" id="editEmail"></div>
+                    <div class="mb-3"><label class="form-label">Vorname</label><input type="text" class="form-control" id="editFirstName"></div>
+                    <div class="mb-3"><label class="form-label">Nachname</label><input type="text" class="form-control" id="editLastName"></div>
+                    <div class="mb-3"><label class="form-label">Geburtsdatum</label><input type="date" class="form-control" id="editDateOfBirth"></div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                <button class="btn btn-success" onclick="saveUserData()">Speichern</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal: Passwort ändern -->
+<div class="modal fade" id="changePasswordModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Passwort ändern</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="passwordForm">
+                    <div class="mb-3">
+                        <label class="form-label">Aktuelles Passwort</label>
+                        <input type="password" class="form-control" id="currentPassword">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Neues Passwort</label>
+                        <input type="password" class="form-control" id="newPassword">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Neues Passwort wiederholen</label>
+                        <input type="password" class="form-control" id="repeatPassword">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                <button class="btn btn-success" onclick="changePassword()">Speichern</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Rechnungsadresse bearbeiten -->
+
+<div class="modal fade" id="editBillingModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Rechnungsadresse bearbeiten</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="billingForm">
+                    <div class="mb-3"><label class="form-label">Land</label><input type="text" class="form-control" id="billingCountry"></div>
+                    <div class="mb-3"><label class="form-label">Adresse</label><input type="text" class="form-control" id="billingAddress"></div>
+                    <div class="mb-3"><label class="form-label">Postleitzahl</label><input type="text" class="form-control" id="billingPostalCode"></div>
+                    <div class="mb-3"><label class="form-label">Stadt</label><input type="text" class="form-control" id="billingCity"></div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                <button class="btn btn-success" onclick="saveBillingAddress()">Speichern</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
 
 <!-- Modal: Zahlungsmethode -->
 <div class="modal fade" id="editPaymentModal" tabindex="-1" aria-hidden="true">
@@ -128,197 +227,10 @@
     </div>
 </div>
 
-<!-- JS-Logik (wird automatisch durch Canvas geladen) -->
+
 <div th:replace="~{fragments/footer :: footer}"></div>
-<script>
-    let profile = {};
 
-    function loadProfile() {
-        fetch("/api/profile")
-            .then(response => response.json())
-            .then(data => {
-                profile = data.data;
+<script src="/scripts/profile.js"></script>
 
-                document.getElementById("username").textContent = profile.username;
-                document.getElementById("email").textContent = profile.email;
-                document.getElementById("salutation").textContent = profile.salutation;
-                document.getElementById("firstName").textContent = profile.firstName;
-                document.getElementById("lastName").textContent = profile.lastName;
-                document.getElementById("dateOfBirth").textContent = profile.dateOfBirth;
-                document.getElementById("country").textContent = profile.country;
-                document.getElementById("address").textContent = profile.address;
-                document.getElementById("postalCode").textContent = profile.postalCode;
-                document.getElementById("city").textContent = profile.city;
-
-                const paymentSelect = document.getElementById("paymentMethods");
-                paymentSelect.innerHTML = "";
-                profile.paymentMethods.forEach((method, index) => {
-                    const opt = document.createElement("option");
-                    opt.value = index;
-                    opt.textContent = `${method.cardHolderName} - ${method.cardNumber}`;
-                    paymentSelect.appendChild(opt);
-                });
-
-                const addressSelect = document.getElementById("addresses");
-                addressSelect.innerHTML = "";
-                profile.addresses.forEach((address, index) => {
-                    const opt = document.createElement("option");
-                    opt.value = index;
-                    opt.textContent = `${address.streetAddress}, ${address.city}`;
-                    addressSelect.appendChild(opt);
-                });
-
-                paymentSelect.dispatchEvent(new Event("change"));
-                addressSelect.dispatchEvent(new Event("change"));
-            });
-    }
-
-    document.addEventListener("DOMContentLoaded", () => {
-        loadProfile();
-
-        document.getElementById("paymentMethods").addEventListener("change", () => prefillPaymentForm());
-        document.getElementById("addresses").addEventListener("change", () => prefillAddressForm());
-    });
-
-    function prefillPaymentForm() {
-        const index = document.getElementById("paymentMethods").value;
-        const selected = profile.paymentMethods[index];
-        document.getElementById("cardHolderName").textContent = selected.cardHolderName;
-        document.getElementById("cardNumber").textContent = selected.cardNumber;
-        document.getElementById("expiryDate").textContent = selected.expiryDate;
-        document.getElementById("cvv").textContent = selected.cvv;
-        document.getElementById("editCardHolder").value = selected.cardHolderName;
-        document.getElementById("editCardNumber").value = selected.cardNumber;
-        document.getElementById("editExpiry").value = selected.expiryDate;
-        document.getElementById("editCVV").value = selected.cvv;
-    }
-
-    function prefillAddressForm() {
-        const index = document.getElementById("addresses").value;
-        const selected = profile.addresses[index];
-        document.getElementById("streetAddress").textContent = selected.streetAddress;
-        document.getElementById("cityDetails").textContent = selected.city;
-        document.getElementById("postalCodeDetails").textContent = selected.postalCode;
-        document.getElementById("countryDetails").textContent = selected.country;
-        document.getElementById("editStreet").value = selected.streetAddress;
-        document.getElementById("editCity").value = selected.city;
-        document.getElementById("editPostal").value = selected.postalCode;
-        document.getElementById("editCountry").value = selected.country;
-    }
-
-    function validatePaymentForm() {
-        return document.getElementById("editCardHolder").value &&
-            document.getElementById("editCardNumber").value &&
-            document.getElementById("editExpiry").value &&
-            document.getElementById("editCVV").value;
-    }
-
-    function validateAddressForm() {
-        return document.getElementById("editStreet").value &&
-            document.getElementById("editCity").value &&
-            document.getElementById("editPostal").value &&
-            document.getElementById("editCountry").value;
-    }
-
-    function savePaymentMethod() {
-        if (!validatePaymentForm()) return alert("Bitte alle Felder ausfüllen.");
-        const index = document.getElementById("paymentMethods").value;
-        const id = profile.paymentMethods[index].id;
-        const method = {
-            cardHolderName: document.getElementById("editCardHolder").value,
-            cardNumber: document.getElementById("editCardNumber").value,
-            expiryDate: document.getElementById("editExpiry").value,
-            cvv: document.getElementById("editCVV").value
-        };
-        fetch(`/api/profile/payment-method/update?id=${id}`, {
-            method: "PUT",
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(method)
-        }).then(loadProfile);
-        bootstrap.Modal.getInstance(document.getElementById("editPaymentModal")).hide();
-    }
-
-    function addPaymentMethod() {
-        if (!validatePaymentForm()) return alert("Bitte alle Felder ausfüllen.");
-        const method = {
-            cardHolderName: document.getElementById("editCardHolder").value,
-            cardNumber: document.getElementById("editCardNumber").value,
-            expiryDate: document.getElementById("editExpiry").value,
-            cvv: document.getElementById("editCVV").value
-        };
-        fetch(`/api/profile/payment-method/add`, {
-            method: "POST",
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(method)
-        }).then(loadProfile);
-        bootstrap.Modal.getInstance(document.getElementById("editPaymentModal")).hide();
-    }
-
-    function deletePaymentMethod() {
-        if (!confirm("Diese Zahlungsmethode wirklich löschen?")) return;
-        const index = document.getElementById("paymentMethods").value;
-        const id = profile.paymentMethods[index].id;
-        fetch(`/api/profile/payment-method/delete?paymentMethodId=${id}`, {
-            method: "DELETE"
-        }).then(loadProfile);
-    }
-
-    function saveAddress() {
-        if (!validateAddressForm()) return alert("Bitte alle Felder ausfüllen.");
-        const index = document.getElementById("addresses").value;
-        const id = profile.addresses[index].id;
-        const address = {
-            streetAddress: document.getElementById("editStreet").value,
-            city: document.getElementById("editCity").value,
-            postalCode: document.getElementById("editPostal").value,
-            country: document.getElementById("editCountry").value
-        };
-        fetch(`/api/profile/address/update?id=${id}`, {
-            method: "PUT",
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(address)
-        }).then(loadProfile);
-        bootstrap.Modal.getInstance(document.getElementById("editAddressModal")).hide();
-    }
-
-    function addAddress() {
-        if (!validateAddressForm()) return alert("Bitte alle Felder ausfüllen.");
-        const address = {
-            streetAddress: document.getElementById("editStreet").value,
-            city: document.getElementById("editCity").value,
-            postalCode: document.getElementById("editPostal").value,
-            country: document.getElementById("editCountry").value
-        };
-        fetch(`/api/profile/address/add`, {
-            method: "POST",
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(address)
-        }).then(loadProfile);
-        bootstrap.Modal.getInstance(document.getElementById("editAddressModal")).hide();
-    }
-
-    function deleteAddress() {
-        if (!confirm("Diese Adresse wirklich löschen?")) return;
-        const index = document.getElementById("addresses").value;
-        const id = profile.addresses[index].id;
-        fetch(`/api/profile/address/delete?id=${id}`, {
-            method: "DELETE"
-        }).then(loadProfile);
-    }
-
-    function clearPaymentForm() {
-        document.getElementById("editCardHolder").value = "";
-        document.getElementById("editCardNumber").value = "";
-        document.getElementById("editExpiry").value = "";
-        document.getElementById("editCVV").value = "";
-    }
-
-    function clearAddressForm() {
-        document.getElementById("editStreet").value = "";
-        document.getElementById("editCity").value = "";
-        document.getElementById("editPostal").value = "";
-        document.getElementById("editCountry").value = "";
-    }
-</script>
 </body>
 </html>

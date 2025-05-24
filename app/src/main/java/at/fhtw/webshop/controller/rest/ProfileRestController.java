@@ -1,8 +1,6 @@
 package at.fhtw.webshop.controller.rest;
 
-import at.fhtw.webshop.dto.AddressDto;
-import at.fhtw.webshop.dto.PaymentMethodDto;
-import at.fhtw.webshop.dto.ProfileDto;
+import at.fhtw.webshop.dto.*;
 import at.fhtw.webshop.security.CustomUserDetails;
 import at.fhtw.webshop.service.AddressService;
 import at.fhtw.webshop.service.PaymentMethodService;
@@ -12,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+
 
 import java.util.Map;
 
@@ -133,4 +133,41 @@ public class ProfileRestController {
             ));
         }
     }
+
+    @PutMapping("/update")
+    public ResponseEntity<Object> updateUserData(
+            @RequestBody @Valid UserUpdateDto userUpdateDto,
+            @AuthenticationPrincipal(errorOnInvalidType = true) CustomUserDetails userDetails) {
+        try {
+            userService.updateUserDetails(userDetails.getUsername(), userUpdateDto);
+            return ResponseEntity.ok(Map.of(
+                    "status", "success",
+                    "message", "User data updated successfully."
+            ));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
+                    "status", "error",
+                    "message", "Failed to update user data: " + e.getMessage()
+            ));
+        }
+    }
+
+    @PutMapping("/change-password")
+    public ResponseEntity<Object> changePassword(
+            @RequestBody @Valid PasswordChangeDto dto,
+            @AuthenticationPrincipal(errorOnInvalidType = true) CustomUserDetails userDetails) {
+        try {
+            userService.changeUserPassword(userDetails.getUsername(), dto);
+            return ResponseEntity.ok(Map.of(
+                    "status", "success",
+                    "message", "Password updated successfully."
+            ));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
+                    "status", "error",
+                    "message", e.getMessage()
+            ));
+        }
+    }
+
 }
