@@ -1,4 +1,4 @@
-package at.fhtw.webshop.controller;
+package at.fhtw.webshop.controller.rest;
 
 import at.fhtw.webshop.model.Category;
 import at.fhtw.webshop.repository.CategoryRepository;

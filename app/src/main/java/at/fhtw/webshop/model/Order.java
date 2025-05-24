@@ -1,17 +1,18 @@
 package at.fhtw.webshop.model;
 
-import at.fhtw.webshop.enums.OrderStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.Generated;
+import org.hibernate.annotations.GenerationTime;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.Instant;
 
 @Entity
 @Table(name = "`Order`")
 public class Order {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "OrderID", nullable = false)
@@ -20,23 +21,41 @@ public class Order {
     @NotNull
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "UserID", nullable = false)
-    private User user;
+    private User userID;
 
     @NotNull
-    @Column(name = "Date", nullable = false)
-    private LocalDate date;
+    @ColumnDefault("'Pending'")
+    @Lob
+    @Column(name = "Status", nullable = false)
+    private String status;
 
     @NotNull
-    @ColumnDefault("0.00")
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @JoinColumn(name = "PaymentMethodID", nullable = false)
+    private PaymentMethod paymentMethodID;
+
+    @NotNull
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @JoinColumn(name = "ShippingAddressID", nullable = false)
+    private Address shippingAddressID;
+
+    @NotNull
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @JoinColumn(name = "BillingAddressID", nullable = false)
+    private Address billingAddressID;
+
+    @Size(max = 255)
+    @Column(name = "PdfFilePath")
+    private String pdfFilePath;
+
+    @ColumnDefault("CURRENT_TIMESTAMP")
+    @Column(name = "CreatedDate", updatable = false, nullable = false, insertable = false)
+    private Instant createdDate;
+
+    @NotNull
     @Column(name = "SumPrice", nullable = false, precision = 10, scale = 2)
     private BigDecimal sumPrice;
 
-    @NotNull
-    @Enumerated(EnumType.STRING)
-    @Column(name = "Status", nullable = false)
-    private OrderStatus status;
-
-    // Getter und Setter
     public Integer getId() {
         return id;
     }
@@ -45,20 +64,56 @@ public class Order {
         this.id = id;
     }
 
-    public User getUser() {
-        return user;
+    public User getUserID() {
+        return userID;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setUserID(User userID) {
+        this.userID = userID;
     }
 
-    public LocalDate getDate() {
-        return date;
+    public String getStatus() {
+        return status;
     }
 
-    public void setDate(LocalDate date) {
-        this.date = date;
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public PaymentMethod getPaymentMethodID() {
+        return paymentMethodID;
+    }
+
+    public void setPaymentMethodID(PaymentMethod paymentMethodID) {
+        this.paymentMethodID = paymentMethodID;
+    }
+
+    public Address getShippingAddressID() {
+        return shippingAddressID;
+    }
+
+    public void setShippingAddressID(Address shippingAddressID) {
+        this.shippingAddressID = shippingAddressID;
+    }
+
+    public Address getBillingAddressID() {
+        return billingAddressID;
+    }
+
+    public void setBillingAddressID(Address billingAddressID) {
+        this.billingAddressID = billingAddressID;
+    }
+
+    public String getPdfFilePath() {
+        return pdfFilePath;
+    }
+
+    public void setPdfFilePath(String pdfFilePath) {
+        this.pdfFilePath = pdfFilePath;
+    }
+
+    public Instant getCreatedDate() {
+        return createdDate;
     }
 
     public BigDecimal getSumPrice() {
@@ -69,15 +124,4 @@ public class Order {
         this.sumPrice = sumPrice;
     }
 
-    public BigDecimal getTotal() {
-        return sumPrice;
-    }
-
-    public OrderStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(OrderStatus status) {
-        this.status = status;
-    }
 }

@@ -28,6 +28,13 @@ public class AddressDto {
         this.country = country;
     }
 
+    public AddressDto(String streetAddress, String city, String postalCode, String country) {
+        this.streetAddress = streetAddress;
+        this.city = city;
+        this.postalCode = postalCode;
+        this.country = country;
+    }
+
     // Getter and Setter for id
     public Integer getId() {
         return id;
@@ -68,5 +75,16 @@ public class AddressDto {
 
     public void setCountry(String country) {
         this.country = country;
+    }
+
+    @Override
+    public String toString() {
+        return "AddressDto{" +
+                "id=" + id +
+                ", streetAddress='" + streetAddress + '\'' +
+                ", city='" + city + '\'' +
+                ", postalCode='" + postalCode + '\'' +
+                ", country='" + country + '\'' +
+                '}';
     }
 }

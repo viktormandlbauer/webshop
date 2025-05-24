@@ -107,7 +107,6 @@ public class ProductService {
     private String saveImage(MultipartFile imageFile) {
         String uploadDirPath = new File(imageUploadDir).getAbsolutePath();
         File uploadDir = new File(uploadDirPath);
-        if (!uploadDir.exists()) uploadDir.mkdirs();
 
         String fileName = UUID.randomUUID() + "_" + imageFile.getOriginalFilename();
         File destination = new File(uploadDir, fileName);

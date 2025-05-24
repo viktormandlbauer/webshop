@@ -1,30 +1,22 @@
 package at.fhtw.webshop.dto;
 
-import java.math.BigDecimal;
 
 public class OrderItemDto {
 
-    private String productName;
+    private Integer productId;
     private int quantity;
-    private BigDecimal pricePerUnit;
-    private BigDecimal totalPrice;
 
-    public OrderItemDto() {}
-
-    public OrderItemDto(String productName, int quantity, BigDecimal pricePerUnit, BigDecimal totalPrice) {
-        this.productName = productName;
+    public OrderItemDto(Integer productId, int quantity) {
+        this.productId = productId;
         this.quantity = quantity;
-        this.pricePerUnit = pricePerUnit;
-        this.totalPrice = totalPrice;
     }
 
-    // Getters and setters
-    public String getProductName() {
-        return productName;
+    public Integer getProductId() {
+        return productId;
     }
 
-    public void setProductName(String productName) {
-        this.productName = productName;
+    public void setProductId(Integer productId) {
+        this.productId = productId;
     }
 
     public int getQuantity() {
@@ -33,21 +25,5 @@ public class OrderItemDto {
 
     public void setQuantity(int quantity) {
         this.quantity = quantity;
-    }
-
-    public BigDecimal getPricePerUnit() {
-        return pricePerUnit;
-    }
-
-    public void setPricePerUnit(BigDecimal pricePerUnit) {
-        this.pricePerUnit = pricePerUnit;
-    }
-
-    public BigDecimal getTotalPrice() {
-        return totalPrice;
-    }
-
-    public void setTotalPrice(BigDecimal totalPrice) {
-        this.totalPrice = totalPrice;
     }
 }
