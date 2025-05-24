@@ -6,6 +6,8 @@ import java.time.LocalDate;
 
 public class PaymentMethodDto {
 
+    private Integer id;
+
     @NotNull
     private String cardNumber;
 
@@ -18,11 +20,29 @@ public class PaymentMethodDto {
     @NotNull
     private String cvv;
 
+    public PaymentMethodDto() {}
+
+    public PaymentMethodDto(int id, String cardNumber, String cardHolderName, LocalDate expiryDate, String cvv) {
+        this.id = id;
+        this.cardNumber = cardNumber;
+        this.cardHolderName = cardHolderName;
+        this.expiryDate = expiryDate;
+        this.cvv = cvv;
+    }
+
     public PaymentMethodDto(String cardNumber, String cardHolderName, LocalDate expiryDate, String cvv) {
         this.cardNumber = cardNumber;
         this.cardHolderName = cardHolderName;
         this.expiryDate = expiryDate;
         this.cvv = cvv;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     // Getter und Setter

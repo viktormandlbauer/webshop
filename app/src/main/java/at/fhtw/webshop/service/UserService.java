@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -37,13 +38,39 @@ public class UserService {
         return userRepository.findByUsername(username) != null;
     }
 
+
+    private List<AddressDto> getAddressDtosByUser(User user) {
+        return addressRepository.getAddressesByUserID(user)
+                .stream()
+                .map(address -> new AddressDto(
+                        address.getId(),
+                        address.getStreetAddress(),
+                        address.getCity(),
+                        address.getPostalCode(),
+                        address.getCountry()
+                ))
+                .collect(Collectors.toList());
+    }
+
+    private List<PaymentMethodDto> getPaymentMethodDtosByUser(User user) {
+        return paymentMethodRepository.getPaymentMethodsByUserID(user)
+                .stream()
+                .map(paymentMethod -> new PaymentMethodDto(
+                        paymentMethod.getId(),
+                        paymentMethod.getCardHolderName(),
+                        paymentMethod.getCardNumber(),
+                        paymentMethod.getExpiryDate(),
+                        paymentMethod.getCvv()
+                ))
+                .collect(Collectors.toList());
+    }
+
     public ProfileDto getUserProfile(String username) {
         User user = userRepository.findByUsername(username);
         Address address = user.getBillingAddress();
 
-        List<AddressDto> addresses = addressRepository.getAddressesByUserID(user);
-
-        List<PaymentMethodDto> paymentMethods = paymentMethodRepository.getPaymentMethodsByUserID(user);
+        List<AddressDto> addresses = getAddressDtosByUser(user);
+        List<PaymentMethodDto> paymentMethods = getPaymentMethodDtosByUser(user);
 
         ProfileDto dto = new ProfileDto();
 

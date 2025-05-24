@@ -4,6 +4,8 @@ import jakarta.validation.constraints.NotNull;
 
 public class AddressDto {
 
+    private Integer id;
+
     @NotNull
     private String streetAddress;
 
@@ -16,6 +18,8 @@ public class AddressDto {
     @NotNull
     private String country;
 
+    public AddressDto() {}
+
     public AddressDto(String streetAddress, String city, String postalCode, String country) {
         this.streetAddress = streetAddress;
         this.city = city;
@@ -23,7 +27,24 @@ public class AddressDto {
         this.country = country;
     }
 
-    // Getter und Setter
+    public AddressDto(Integer id, String streetAddress, String city, String postalCode, String country) {
+        this.id = id;
+        this.streetAddress = streetAddress;
+        this.city = city;
+        this.postalCode = postalCode;
+        this.country = country;
+    }
+
+    // Getter and Setter for id
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    // Other getters and setters
     public String getStreetAddress() {
         return streetAddress;
     }
