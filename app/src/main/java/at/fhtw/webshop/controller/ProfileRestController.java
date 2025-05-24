@@ -11,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+
+
 import java.util.Map;
 
 @RestController
@@ -131,6 +133,7 @@ public class ProfileRestController {
             ));
         }
     }
+
     @PutMapping("/update")
     public ResponseEntity<Object> updateUserData(
             @RequestBody @Valid UserUpdateDto userUpdateDto,
@@ -148,6 +151,7 @@ public class ProfileRestController {
             ));
         }
     }
+
     @PutMapping("/change-password")
     public ResponseEntity<Object> changePassword(
             @RequestBody @Valid PasswordChangeDto dto,
@@ -165,6 +169,5 @@ public class ProfileRestController {
             ));
         }
     }
-
 
 }

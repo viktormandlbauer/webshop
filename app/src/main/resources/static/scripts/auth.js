@@ -21,7 +21,7 @@ async function handleLogin(event) {
 
         message.textContent = 'Login successful!';
 
-        window.location.href = '/welcome';
+        window.location.href = '/';
 
     } catch (error) {
         message.textContent = error.message || 'Login failed. Please try again.';

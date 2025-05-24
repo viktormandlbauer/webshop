@@ -2,9 +2,10 @@ let profile = {};
 
 function loadProfile() {
     fetch("/api/profile")
-        .then(res => res.json())
+        .then(response => response.json())
         .then(data => {
             profile = data.data;
+
             document.getElementById("username").textContent = profile.username;
             document.getElementById("email").textContent = profile.email;
             document.getElementById("salutation").textContent = profile.salutation;
@@ -16,23 +17,176 @@ function loadProfile() {
             document.getElementById("postalCode").textContent = profile.postalCode;
             document.getElementById("city").textContent = profile.city;
 
-            populateDropdown("paymentMethods", profile.paymentMethods, m => `${m.cardHolderName} - ${m.cardNumber}`);
-            populateDropdown("addresses", profile.addresses, a => `${a.streetAddress}, ${a.city}`);
+
+            const paymentSelect = document.getElementById("paymentMethods");
+            paymentSelect.innerHTML = "";
+            profile.paymentMethods.forEach((method, index) => {
+                const opt = document.createElement("option");
+                opt.value = index;
+                opt.textContent = `${method.cardHolderName} - ${method.cardNumber}`;
+                paymentSelect.appendChild(opt);
+            });
+
+            const addressSelect = document.getElementById("addresses");
+            addressSelect.innerHTML = "";
+            profile.addresses.forEach((address, index) => {
+                const opt = document.createElement("option");
+                opt.value = index;
+                opt.textContent = `${address.streetAddress}, ${address.city}`;
+                addressSelect.appendChild(opt);
+            });
+
+            paymentSelect.dispatchEvent(new Event("change"));
+            addressSelect.dispatchEvent(new Event("change"));
         });
 }
 
-function populateDropdown(id, items, labelFn) {
-    const dropdown = document.getElementById(id);
-    dropdown.innerHTML = '';
-    items.forEach((item, index) => {
-        const option = document.createElement("option");
-        option.value = index;
-        option.textContent = labelFn(item);
-        dropdown.appendChild(option);
-    });
-    dropdown.dispatchEvent(new Event("change"));
+document.addEventListener("DOMContentLoaded", () => {
+    loadProfile();
+
+    document.getElementById("paymentMethods").addEventListener("change", () => prefillPaymentForm());
+    document.getElementById("addresses").addEventListener("change", () => prefillAddressForm());
+});
+
+function prefillPaymentForm() {
+    const index = document.getElementById("paymentMethods").value;
+    const selected = profile.paymentMethods[index];
+    document.getElementById("cardHolderName").textContent = selected.cardHolderName;
+    document.getElementById("cardNumber").textContent = selected.cardNumber;
+    document.getElementById("expiryDate").textContent = selected.expiryDate;
+    document.getElementById("cvv").textContent = selected.cvv;
+    document.getElementById("editCardHolder").value = selected.cardHolderName;
+    document.getElementById("editCardNumber").value = selected.cardNumber;
+    document.getElementById("editExpiry").value = selected.expiryDate;
+    document.getElementById("editCVV").value = selected.cvv;
 }
 
+function prefillAddressForm() {
+    const index = document.getElementById("addresses").value;
+    const selected = profile.addresses[index];
+    document.getElementById("streetAddress").textContent = selected.streetAddress;
+    document.getElementById("cityDetails").textContent = selected.city;
+    document.getElementById("postalCodeDetails").textContent = selected.postalCode;
+    document.getElementById("countryDetails").textContent = selected.country;
+    document.getElementById("editStreet").value = selected.streetAddress;
+    document.getElementById("editCity").value = selected.city;
+    document.getElementById("editPostal").value = selected.postalCode;
+    document.getElementById("editCountry").value = selected.country;
+}
+
+function validatePaymentForm() {
+    return document.getElementById("editCardHolder").value &&
+        document.getElementById("editCardNumber").value &&
+        document.getElementById("editExpiry").value &&
+        document.getElementById("editCVV").value;
+}
+
+function validateAddressForm() {
+    return document.getElementById("editStreet").value &&
+        document.getElementById("editCity").value &&
+        document.getElementById("editPostal").value &&
+        document.getElementById("editCountry").value;
+}
+
+function savePaymentMethod() {
+    if (!validatePaymentForm()) return alert("Bitte alle Felder ausfüllen.");
+    const index = document.getElementById("paymentMethods").value;
+    const id = profile.paymentMethods[index].id;
+    const method = {
+        cardHolderName: document.getElementById("editCardHolder").value,
+        cardNumber: document.getElementById("editCardNumber").value,
+        expiryDate: document.getElementById("editExpiry").value,
+        cvv: document.getElementById("editCVV").value
+    };
+    fetch(`/api/profile/payment-method/update?id=${id}`, {
+        method: "PUT",
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(method)
+    }).then(loadProfile);
+    bootstrap.Modal.getInstance(document.getElementById("editPaymentModal")).hide();
+}
+
+function addPaymentMethod() {
+    if (!validatePaymentForm()) return alert("Bitte alle Felder ausfüllen.");
+    const method = {
+        cardHolderName: document.getElementById("editCardHolder").value,
+        cardNumber: document.getElementById("editCardNumber").value,
+        expiryDate: document.getElementById("editExpiry").value,
+        cvv: document.getElementById("editCVV").value
+    };
+    fetch(`/api/profile/payment-method/add`, {
+        method: "POST",
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(method)
+    }).then(loadProfile);
+    bootstrap.Modal.getInstance(document.getElementById("editPaymentModal")).hide();
+}
+
+function deletePaymentMethod() {
+    if (!confirm("Diese Zahlungsmethode wirklich löschen?")) return;
+    const index = document.getElementById("paymentMethods").value;
+    const id = profile.paymentMethods[index].id;
+    fetch(`/api/profile/payment-method/delete?paymentMethodId=${id}`, {
+        method: "DELETE"
+    }).then(loadProfile);
+}
+
+function saveAddress() {
+    if (!validateAddressForm()) return alert("Bitte alle Felder ausfüllen.");
+    const index = document.getElementById("addresses").value;
+    const id = profile.addresses[index].id;
+    const address = {
+        streetAddress: document.getElementById("editStreet").value,
+        city: document.getElementById("editCity").value,
+        postalCode: document.getElementById("editPostal").value,
+        country: document.getElementById("editCountry").value
+    };
+    fetch(`/api/profile/address/update?id=${id}`, {
+        method: "PUT",
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(address)
+    }).then(loadProfile);
+    bootstrap.Modal.getInstance(document.getElementById("editAddressModal")).hide();
+}
+
+function addAddress() {
+    if (!validateAddressForm()) return alert("Bitte alle Felder ausfüllen.");
+    const address = {
+        streetAddress: document.getElementById("editStreet").value,
+        city: document.getElementById("editCity").value,
+        postalCode: document.getElementById("editPostal").value,
+        country: document.getElementById("editCountry").value
+    };
+    fetch(`/api/profile/address/add`, {
+        method: "POST",
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(address)
+    }).then(loadProfile);
+    bootstrap.Modal.getInstance(document.getElementById("editAddressModal")).hide();
+}
+
+function deleteAddress() {
+    if (!confirm("Diese Adresse wirklich löschen?")) return;
+    const index = document.getElementById("addresses").value;
+    const id = profile.addresses[index].id;
+    fetch(`/api/profile/address/delete?id=${id}`, {
+        method: "DELETE"
+    }).then(loadProfile);
+}
+
+function clearPaymentForm() {
+    document.getElementById("editCardHolder").value = "";
+    document.getElementById("editCardNumber").value = "";
+    document.getElementById("editExpiry").value = "";
+    document.getElementById("editCVV").value = "";
+}
+
+function clearAddressForm() {
+    document.getElementById("editStreet").value = "";
+    document.getElementById("editCity").value = "";
+    document.getElementById("editPostal").value = "";
+    document.getElementById("editCountry").value = "";
+}
 function openUserEditModal() {
     document.getElementById("editEmail").value = profile.email;
     document.getElementById("editFirstName").value = profile.firstName;
@@ -66,108 +220,77 @@ function saveUserData() {
         })
         .catch(err => alert("Fehler: " + err.message));
 }
+function openChangePasswordModal() {
+    document.getElementById("currentPassword").value = "";
+    document.getElementById("newPassword").value = "";
+    document.getElementById("repeatPassword").value = "";
+    new bootstrap.Modal(document.getElementById("changePasswordModal")).show();
+}
 
+function changePassword() {
+    const currentPassword = document.getElementById("currentPassword").value;
+    const newPassword = document.getElementById("newPassword").value;
+    const repeatPassword = document.getElementById("repeatPassword").value;
 
-document.getElementById("paymentMethods").addEventListener("change", e => {
-    const m = profile.paymentMethods[e.target.value];
-    document.getElementById("cardHolderName").textContent = m.cardHolderName;
-    document.getElementById("cardNumber").textContent = m.cardNumber;
-    document.getElementById("expiryDate").textContent = m.expiryDate;
-    document.getElementById("cvv").textContent = m.cvv;
-});
-
-document.getElementById("addresses").addEventListener("change", e => {
-    const a = profile.addresses[e.target.value];
-    document.getElementById("streetAddress").textContent = a.streetAddress;
-    document.getElementById("cityDetails").textContent = a.city;
-    document.getElementById("postalCodeDetails").textContent = a.postalCode;
-    document.getElementById("countryDetails").textContent = a.country;
-});
-
-function openPaymentModal(mode) {
-    document.getElementById("paymentMode").value = mode;
-    if (mode === "edit") {
-        const m = profile.paymentMethods[document.getElementById("paymentMethods").value];
-        document.getElementById("editCardHolder").value = m.cardHolderName;
-        document.getElementById("editCardNumber").value = m.cardNumber;
-        document.getElementById("editExpiry").value = m.expiryDate;
-        document.getElementById("editCVV").value = m.cvv;
-    } else {
-        document.getElementById("editCardHolder").value = '';
-        document.getElementById("editCardNumber").value = '';
-        document.getElementById("editExpiry").value = '';
-        document.getElementById("editCVV").value = '';
+    if (!currentPassword || !newPassword || !repeatPassword) {
+        return alert("Bitte alle Felder ausfüllen.");
     }
-    new bootstrap.Modal(document.getElementById("editPaymentModal")).show();
-}
-
-function savePaymentMethod() {
-    const mode = document.getElementById("paymentMode").value;
-    const newMethod = {
-        cardHolderName: document.getElementById("editCardHolder").value,
-        cardNumber: document.getElementById("editCardNumber").value,
-        expiryDate: document.getElementById("editExpiry").value,
-        cvv: document.getElementById("editCVV").value
-    };
-    const url = mode === "edit"
-        ? `/api/profile/payment-method/update?id=${profile.paymentMethods[document.getElementById("paymentMethods").value].id}`
-        : "/api/profile/payment-method/add";
-    fetch(url, {
-        method: mode === "edit" ? "PUT" : "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newMethod)
-    }).then(() => loadProfile())
-        .finally(() => bootstrap.Modal.getInstance(document.getElementById("editPaymentModal")).hide());
-}
-
-function deletePaymentMethod() {
-    const id = profile.paymentMethods[document.getElementById("paymentMethods").value].id;
-    fetch(`/api/profile/payment-method/delete?paymentMethodId=${id}`, {
-        method: "DELETE"
-    }).then(() => loadProfile());
-}
-
-function openAddressModal(mode) {
-    document.getElementById("addressMode").value = mode;
-    if (mode === "edit") {
-        const a = profile.addresses[document.getElementById("addresses").value];
-        document.getElementById("editStreet").value = a.streetAddress;
-        document.getElementById("editCity").value = a.city;
-        document.getElementById("editPostal").value = a.postalCode;
-        document.getElementById("editCountry").value = a.country;
-    } else {
-        document.getElementById("editStreet").value = '';
-        document.getElementById("editCity").value = '';
-        document.getElementById("editPostal").value = '';
-        document.getElementById("editCountry").value = '';
+    if (newPassword !== repeatPassword) {
+        return alert("Die neuen Passwörter stimmen nicht überein.");
     }
-    new bootstrap.Modal(document.getElementById("editAddressModal")).show();
+
+    fetch("/api/profile/change-password", {
+        method: "PUT",
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ currentPassword, newPassword })
+    })
+        .then(response => {
+            if (!response.ok) throw new Error("Fehler beim Ändern des Passworts");
+            return response.json();
+        })
+        .then(() => {
+            alert("Passwort erfolgreich geändert.");
+            bootstrap.Modal.getInstance(document.getElementById("changePasswordModal")).hide();
+        })
+        .catch(err => alert("Fehler: " + err.message));
 }
 
-function saveAddress() {
-    const mode = document.getElementById("addressMode").value;
-    const newAddress = {
-        streetAddress: document.getElementById("editStreet").value,
-        city: document.getElementById("editCity").value,
-        postalCode: document.getElementById("editPostal").value,
-        country: document.getElementById("editCountry").value
-    };
-    const url = mode === "edit"
-        ? `/api/profile/address/update?id=${profile.addresses[document.getElementById("addresses").value].id}`
-        : "/api/profile/address/add";
-    fetch(url, {
-        method: mode === "edit" ? "PUT" : "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newAddress)
-    }).then(() => loadProfile())
-        .finally(() => bootstrap.Modal.getInstance(document.getElementById("editAddressModal")).hide());
+
+function openBillingEditModal() {
+    document.getElementById("billingCountry").value = profile.country || "";
+    document.getElementById("billingAddress").value = profile.address || "";
+    document.getElementById("billingPostalCode").value = profile.postalCode || "";
+    document.getElementById("billingCity").value = profile.city || "";
+
+    new bootstrap.Modal(document.getElementById("editBillingModal")).show();
 }
 
-function deleteAddress() {
-    const id = profile.addresses[document.getElementById("addresses").value].id;
-    fetch(`/api/profile/address/delete?id=${id}`, {
-        method: "DELETE"
-    }).then(() => loadProfile());
+function saveBillingAddress() {
+
+        const updatedBilling = {
+            billingCountry: document.getElementById("billingCountry").value,
+            billingAddress: document.getElementById("billingAddress").value,
+            billingPostalCode: document.getElementById("billingPostalCode").value,
+            billingCity: document.getElementById("billingCity").value
+        };
+
+
+
+    fetch("/api/profile/update-billing", {
+        method: "PUT",
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedBilling)
+    })
+        .then(response => {
+            if (!response.ok) throw new Error("Fehler beim Speichern der Adresse");
+            return response.json();
+        })
+        .then(() => {
+            alert("Rechnungsadresse aktualisiert.");
+            bootstrap.Modal.getInstance(document.getElementById("editBillingModal")).hide();
+            loadProfile();
+        })
+        .catch(err => alert("Fehler: " + err.message));
 }
 
-document.addEventListener("DOMContentLoaded", loadProfile);
+
