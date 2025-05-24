@@ -1,27 +1,49 @@
 package at.fhtw.webshop.dto;
 
+import jakarta.validation.constraints.NotNull;
+
 public class AddressDto {
-    private String street;
+
+    private Integer id;
+
+    @NotNull
+    private String streetAddress;
+
+    @NotNull
     private String city;
+
+    @NotNull
     private String postalCode;
+
+    @NotNull
     private String country;
 
     public AddressDto() {}
 
-    public AddressDto(String street, String city, String postalCode, String country) {
-        this.street = street;
+    public AddressDto(Integer id, String streetAddress, String city, String postalCode, String country) {
+        this.id = id;
+        this.streetAddress = streetAddress;
         this.city = city;
         this.postalCode = postalCode;
         this.country = country;
     }
 
-    // Getters and setters
-    public String getStreet() {
-        return street;
+    // Getter and Setter for id
+    public Integer getId() {
+        return id;
     }
 
-    public void setStreet(String street) {
-        this.street = street;
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    // Other getters and setters
+    public String getStreetAddress() {
+        return streetAddress;
+    }
+
+    public void setStreetAddress(String streetAddress) {
+        this.streetAddress = streetAddress;
     }
 
     public String getCity() {

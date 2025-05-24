@@ -36,6 +36,7 @@ public class JwtUtil {
                         .map(GrantedAuthority::getAuthority)
                         .toList())
                 .claim("email", ((CustomUserDetails) userDetails).getEmail())
+                .claim("id", ((CustomUserDetails) userDetails).getId())
                 .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
@@ -70,7 +71,12 @@ public class JwtUtil {
 
     public String getEmailFromToken(String token) {
         Claims claims = getClaimsFromToken(token);
-        return claims.get("email", String.class); // Holt den "email"-Claim aus dem Token
+        return claims.get("email", String.class);
+    }
+
+    public int getIdFromToken(String token) {
+        Claims claims = getClaimsFromToken(token);
+        return claims.get("id", Integer.class);
     }
 
     // Validate JWT token
