@@ -44,8 +44,9 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                     // Erstelle CustomUserDetails direkt aus dem JWT
                     CustomUserDetails userDetails = new CustomUserDetails(
                             username,
-                            null, // Passwort wird nicht benötigt
+                            null,
                             jwtUtils.getEmailFromToken(jwt),
+                            jwtUtils.getIdFromToken(jwt),
                             authorities
                     );
 

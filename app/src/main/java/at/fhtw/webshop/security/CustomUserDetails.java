@@ -9,13 +9,20 @@ public class CustomUserDetails implements UserDetails {
     private final String username;
     private final String password;
     private final String email;
+    private final int id;
+
     private final Collection<? extends GrantedAuthority> authorities;
 
-    public CustomUserDetails(String username, String password, String email, Collection<? extends GrantedAuthority> authorities) {
+    public CustomUserDetails(String username, String password, String email, int id, Collection<? extends GrantedAuthority> authorities) {
         this.username = username;
         this.password = password;
         this.email = email;
+        this.id = id;
         this.authorities = authorities;
+    }
+
+    public int getId() {
+        return id;
     }
 
     public String getEmail() {

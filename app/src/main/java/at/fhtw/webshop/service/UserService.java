@@ -1,23 +1,32 @@
 package at.fhtw.webshop.service;
 
-import at.fhtw.webshop.dto.RegistrationDto;
-import at.fhtw.webshop.dto.UserProfileEditDto;
+import at.fhtw.webshop.dto.AddressDto;
+import at.fhtw.webshop.dto.PaymentMethodDto;
+import at.fhtw.webshop.dto.ProfileDto;
 import at.fhtw.webshop.exception.UserNotFoundException;
+import at.fhtw.webshop.model.Address;
 import at.fhtw.webshop.model.User;
+import at.fhtw.webshop.repository.AddressRepository;
+import at.fhtw.webshop.repository.PaymentMethodRepository;
 import at.fhtw.webshop.repository.UserRepository;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import org.slf4j.Logger;
 
+import java.util.List;
+
 @Service
 public class UserService {
     private final UserRepository userRepository;
+    private final AddressRepository addressRepository;
+    private final PaymentMethodRepository paymentMethodRepository;
 
     private static final Logger logger = org.slf4j.LoggerFactory.getLogger(UserService.class);
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, AddressRepository addressRepository, PaymentMethodRepository paymentMethodRepository) {
         this.userRepository = userRepository;
+        this.addressRepository = addressRepository;
+        this.paymentMethodRepository = paymentMethodRepository;
     }
 
     public boolean emailExists(String email) {
@@ -28,21 +37,34 @@ public class UserService {
         return userRepository.findByUsername(username) != null;
     }
 
-    public UserProfileEditDto getUserProfile(String username) {
+    public ProfileDto getUserProfile(String username) {
         User user = userRepository.findByUsername(username);
-        if (user == null) {
-            throw new UserNotFoundException("Benutzer nicht gefunden: " + username);
-        }
+        Address address = user.getBillingAddress();
 
-        UserProfileEditDto dto = new UserProfileEditDto();
+        List<AddressDto> addresses = addressRepository.getAddressesByUserID(user);
+
+        List<PaymentMethodDto> paymentMethods = paymentMethodRepository.getPaymentMethodsByUserID(user);
+
+        ProfileDto dto = new ProfileDto();
+
+        dto.setUsername(user.getUsername());
         dto.setSalutation(user.getSalutation());
         dto.setFirstName(user.getFirstName());
         dto.setLastName(user.getLastName());
-
+        dto.setCountry(address.getCountry());
+        dto.setAddress(address.getStreetAddress());
+        dto.setPostalCode(address.getPostalCode());
+        dto.setCity(address.getCity());
         dto.setEmail(user.getEmail());
+        dto.setDateOfBirth(user.getDateOfBirth());
+
+        // dto.setPaymentMethods(paymentMethods);
+        dto.setAddresses(addresses);
+
         return dto;
     }
-    public void updateUserProfile(String username, UserProfileEditDto dto) {
+
+    public void updateUserProfile(String username, ProfileDto dto) {
         User user = userRepository.findByUsername(username);
         if (user == null) {
             throw new UserNotFoundException("Benutzer nicht gefunden: " + username);

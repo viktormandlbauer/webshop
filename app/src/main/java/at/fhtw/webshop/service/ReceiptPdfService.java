@@ -68,7 +68,7 @@ public class ReceiptPdfService {
 
             AddressDto address = receiptDto.getShippingAddress();
             document.add(new Paragraph("Shipping Address:", sectionFont));
-            document.add(new Paragraph(address.getStreet(), textFont));
+            document.add(new Paragraph(address.getStreetAddress(), textFont));
             document.add(new Paragraph(address.getPostalCode() + " " + address.getCity(), textFont));
             document.add(new Paragraph(address.getCountry(), textFont));
             document.add(new Paragraph(" "));

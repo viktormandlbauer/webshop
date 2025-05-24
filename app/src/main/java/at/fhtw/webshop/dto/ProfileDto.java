@@ -1,18 +1,50 @@
 package at.fhtw.webshop.dto;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
+import at.fhtw.webshop.model.Address;
+import at.fhtw.webshop.model.PaymentMethod;
 
-public class UserProfileEditDto {
+import java.time.LocalDate;
+import java.util.List;
 
+public class ProfileDto {
+
+    private String username;
+    private String email;
     private String salutation;
     private String firstName;
     private String lastName;
+    private String country;
     private String address;
     private String postalCode;
     private String city;
-    private String email;
+    private LocalDate dateOfBirth;
+
+    private List<PaymentMethodDto> paymentMethods;
+    private List<AddressDto> addresses;
+
+    public List<AddressDto> getAddresses() {
+        return addresses;
+    }
+
+    public void setAddresses(List<AddressDto> addresses) {
+        this.addresses = addresses;
+    }
+
+    public List<PaymentMethodDto> getPaymentMethods() {
+        return paymentMethods;
+    }
+
+    public void setPaymentMethods(List<PaymentMethodDto> paymentMethods) {
+        this.paymentMethods = paymentMethods;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
 
     public String getSalutation() {
         return salutation;
@@ -68,6 +100,22 @@ public class UserProfileEditDto {
 
     public void setFirstName(String firstName) {
         this.firstName = firstName;
+    }
+
+    public LocalDate getDateOfBirth() {
+        return dateOfBirth;
+    }
+
+    public void setDateOfBirth(LocalDate dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
     }
 }
 

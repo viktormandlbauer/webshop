@@ -1,10 +1,9 @@
 package at.fhtw.webshop.model;
 
+import at.fhtw.webshop.dto.AddressDto;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 public class Address {
@@ -36,6 +35,16 @@ public class Address {
     @NotNull
     @Column(name = "Country", nullable = false, length = 100)
     private String country;
+
+    public Address() {
+    }
+
+    public Address(AddressDto addressDto) {
+        this.postalCode = addressDto.getPostalCode();
+        this.city = addressDto.getCity();
+        this.streetAddress = addressDto.getStreetAddress();
+        this.country = addressDto.getCountry();
+    }
 
     public String getCountry() {
         return country;

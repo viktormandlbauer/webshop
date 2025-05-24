@@ -47,7 +47,7 @@ public class User {
     private String salutation;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "BillingAddressId", nullable = false)
     private Address billingAddress;
@@ -57,7 +57,7 @@ public class User {
     private LocalDate dateOfBirth;
 
     @NotNull
-    @ColumnDefault("'Customer'")
+    @ColumnDefault("'CUSTOMER'")
     @Lob
     @Column(name = "ROLE", nullable = false)
     private String role;

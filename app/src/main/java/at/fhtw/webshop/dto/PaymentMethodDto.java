@@ -8,6 +8,13 @@ public class PaymentMethodDto {
     private LocalDate expiryDate;
     private String cvv;
 
+    public PaymentMethodDto(String cardNumber, String cardHolderName, LocalDate expiryDate, String cvv) {
+        this.cardNumber = cardNumber;
+        this.cardHolderName = cardHolderName;
+        this.expiryDate = expiryDate;
+        this.cvv = cvv;
+    }
+
     // Getter und Setter
     public String getCardNumber() {
         return cardNumber;
