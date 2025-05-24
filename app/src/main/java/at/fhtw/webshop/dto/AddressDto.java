@@ -20,13 +20,6 @@ public class AddressDto {
 
     public AddressDto() {}
 
-    public AddressDto(String streetAddress, String city, String postalCode, String country) {
-        this.streetAddress = streetAddress;
-        this.city = city;
-        this.postalCode = postalCode;
-        this.country = country;
-    }
-
     public AddressDto(Integer id, String streetAddress, String city, String postalCode, String country) {
         this.id = id;
         this.streetAddress = streetAddress;
