@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 
@@ -36,6 +37,22 @@ public class AddressService {
             logger.warn("Address with ID {} not found", addressid);
             return false;
         }
+    }
+
+    public List<AddressDto> getAddressesForUser(CustomUserDetails userDetails) {
+        User user = userRepository.findById(userDetails.getId())
+                .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + userDetails.getId()));
+        List<Address> addresses = addressRepository.getAddressesByUserID(user);
+
+        return addresses.stream()
+                .map(address -> new AddressDto(
+                        address.getId(),
+                        address.getStreetAddress(),
+                        address.getCity(),
+                        address.getPostalCode(),
+                        address.getCountry()
+                ))
+                .toList();
     }
 
     public void addAddressToUser(AddressDto addressDto, CustomUserDetails userDetails) {

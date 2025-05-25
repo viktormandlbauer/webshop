@@ -1,6 +1,8 @@
 package at.fhtw.webshop.service;
 
+import at.fhtw.webshop.dto.AddressDto;
 import at.fhtw.webshop.dto.PaymentMethodDto;
+import at.fhtw.webshop.model.Address;
 import at.fhtw.webshop.model.PaymentMethod;
 import at.fhtw.webshop.model.User;
 import at.fhtw.webshop.repository.PaymentMethodRepository;
@@ -10,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -24,6 +27,24 @@ public class PaymentMethodService {
     public PaymentMethodService(PaymentMethodRepository paymentMethodRepository, UserRepository userRepository) {
         this.paymentMethodRepository = paymentMethodRepository;
         this.userRepository = userRepository;
+    }
+
+    public List<PaymentMethodDto> getPaymentMethodsForUser(CustomUserDetails userDetails) {
+
+        List<PaymentMethod> paymentMethodsList  = paymentMethodRepository.getPaymentMethodsByUserID(
+                userRepository.findById(userDetails.getId())
+                        .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + userDetails.getId()))
+        );
+
+        return paymentMethodsList.stream()
+                .map(paymentMethod -> new PaymentMethodDto(
+                        paymentMethod.getId(),
+                        paymentMethod.getCardNumber(),
+                        paymentMethod.getCardHolderName(),
+                        paymentMethod.getExpiryDate(),
+                        paymentMethod.getCvv()
+                ))
+                .toList();
     }
 
     public void addPaymentMethodToUser(PaymentMethodDto paymentMethodDto, CustomUserDetails userDetails) {

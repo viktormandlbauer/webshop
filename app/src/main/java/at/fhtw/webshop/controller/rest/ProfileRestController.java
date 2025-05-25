@@ -38,6 +38,22 @@ public class ProfileRestController {
         ));
     }
 
+    @GetMapping
+    @RequestMapping("/addresses")
+    public ResponseEntity<Object> getUserAddresses(@AuthenticationPrincipal(errorOnInvalidType = true) CustomUserDetails userDetails) {
+        try {
+            return ResponseEntity.ok(Map.of(
+                    "status", "success",
+                    "data", addressService.getAddressesForUser(userDetails)
+            ));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
+                    "status", "error",
+                    "message", "Failed to retrieve addresses: " + e.getMessage()
+            ));
+        }
+    }
+
     @PostMapping("/address/add")
     public ResponseEntity<Object> addAddressToProfile(@RequestBody @Valid AddressDto addressDto, @AuthenticationPrincipal(errorOnInvalidType = true) CustomUserDetails userDetails) {
         try {
@@ -82,6 +98,22 @@ public class ProfileRestController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
                     "status", "error",
                     "message", "Failed to delete address: " + e.getMessage()
+            ));
+        }
+    }
+
+    @GetMapping
+    @RequestMapping("/payment-methods")
+    public ResponseEntity<Object> getUserPaymentMethods(@AuthenticationPrincipal(errorOnInvalidType = true) CustomUserDetails userDetails) {
+        try {
+            return ResponseEntity.ok(Map.of(
+                    "status", "success",
+                    "data", paymentMethodService.getPaymentMethodsForUser(userDetails)
+            ));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
+                    "status", "error",
+                    "message", "Failed to retrieve payment methods: " + e.getMessage()
             ));
         }
     }
