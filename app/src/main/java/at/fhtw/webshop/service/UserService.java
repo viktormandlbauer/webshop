@@ -1,11 +1,13 @@
 package at.fhtw.webshop.service;
 
 import at.fhtw.webshop.dto.*;
+import at.fhtw.webshop.dto.admin.UserListItemDto;
 import at.fhtw.webshop.model.Address;
 import at.fhtw.webshop.model.User;
 import at.fhtw.webshop.repository.AddressRepository;
 import at.fhtw.webshop.repository.PaymentMethodRepository;
 import at.fhtw.webshop.repository.UserRepository;
+import org.springframework.data.domain.Page;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +16,8 @@ import org.slf4j.Logger;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import org.springframework.data.domain.Pageable;
 
 @Service
 public class UserService {
@@ -31,8 +35,6 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-
-
     public boolean emailExists(String email) {
         return userRepository.findByEmail(email) != null;
     }
@@ -41,6 +43,17 @@ public class UserService {
         return userRepository.findByUsername(username) != null;
     }
 
+    public Page<UserListItemDto> getAllUsersAsListItem(Pageable pageable) {
+        return userRepository.findAll(pageable)
+                .map(user -> new UserListItemDto(
+                    user.getId(),
+                    user.getUsername(),
+                    user.getEmail(),
+                    user.getFirstName(),
+                    user.getLastName(),
+                    user.getRole()
+                ));
+    }
 
     private List<AddressDto> getAddressDtosByUser(User user) {
         return addressRepository.getAddressesByUserID(user)
@@ -68,8 +81,7 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
-    public ProfileDto getUserProfile(String username) {
-        User user = userRepository.findByUsername(username);
+    private ProfileDto fillProfileDto(User user) {
         Address address = user.getBillingAddress();
 
         List<AddressDto> addresses = getAddressDtosByUser(user);
@@ -88,11 +100,23 @@ public class UserService {
         dto.setEmail(user.getEmail());
         dto.setDateOfBirth(user.getDateOfBirth());
 
-        // dto.setPaymentMethods(paymentMethods);
         dto.setAddresses(addresses);
         dto.setPaymentMethods(paymentMethods);
 
         return dto;
+    }
+
+    public ProfileDto getUserProfile(int userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("Benutzer nicht gefunden"));
+        return fillProfileDto(user);
+    }
+
+    public ProfileDto getUserProfile(String username) {
+        User user = userRepository.findByUsername(username);
+        if (user == null) {
+            throw new IllegalArgumentException("Benutzer nicht gefunden");
+        }
+        return fillProfileDto(user);
     }
     public void updateUserDetails(String username, UserUpdateDto dto) {
         User user = userRepository.findByUsername(username);
@@ -105,6 +129,16 @@ public class UserService {
 
         userRepository.save(user);
     }
+
+    public void deleteUser(int userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("Benutzer nicht gefunden"));
+
+        addressRepository.deleteAll(addressRepository.getAddressesByUserID(user));
+        paymentMethodRepository.deleteAll(paymentMethodRepository.getPaymentMethodsByUserID(user));
+
+        userRepository.delete(user);
+    }
+
     public void changeUserPassword(String username, PasswordChangeDto dto) {
         User user = userRepository.findByUsername(username);
         if (user == null) {
@@ -120,8 +154,4 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(dto.getNewPassword()));
         userRepository.save(user);
     }
-
-
-
-
 }

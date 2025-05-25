@@ -1,0 +1,9 @@
+/* Clickable table rows with hover effect */
+tr.clickable-row {
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+}
+
+tr.clickable-row:hover {
+    background-color: #f1f1f1;
+}

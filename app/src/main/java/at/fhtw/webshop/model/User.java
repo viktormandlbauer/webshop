@@ -47,8 +47,8 @@ public class User {
     private String salutation;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "BillingAddressId", nullable = false)
     private Address billingAddress;
 
@@ -141,6 +141,5 @@ public class User {
     public void setRole(String role) {
         this.role = role;
     }
-
 
 }
