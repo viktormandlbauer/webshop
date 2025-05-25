@@ -21,11 +21,13 @@ public class AuthController {
         this.authService = authService;
     }
 
+    //@TODO: Return appropriate HTTP status codes and messages with ResponseEntity
     @PostMapping("/login")
     public AuthDto loginUser(@Valid @RequestBody LoginDto loginDto) {
         return authService.loginUser(loginDto);
     }
 
+    //@TODO: Return appropriate HTTP status codes and messages with ResponseEntity
     @PostMapping("/register")
     public AuthDto registerUser(@Valid @RequestBody RegistrationDto registrationDto) throws UserAlreadyExistsException {
         return authService.registerUser(registrationDto);

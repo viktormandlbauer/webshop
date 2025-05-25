@@ -4,6 +4,7 @@ import at.fhtw.webshop.dto.AddressDto;
 import at.fhtw.webshop.dto.CustomerOrderDto;
 import at.fhtw.webshop.dto.OrderDto;
 import at.fhtw.webshop.dto.OrderItemDto;
+import at.fhtw.webshop.dto.admin.OrderListItemDto;
 import at.fhtw.webshop.dto.receipt.ReceiptDto;
 import at.fhtw.webshop.dto.receipt.ReceiptItemDto;
 import at.fhtw.webshop.enums.OrderStatus;
@@ -13,6 +14,8 @@ import at.fhtw.webshop.security.CustomUserDetails;
 import at.fhtw.webshop.repository.AddressRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -45,6 +48,18 @@ public class OrderService {
         this.paymentMethodRepository = paymentMethodRepository;
         this.productRepository = productRepository;
         this.receiptPdfService = receiptPdfService;
+    }
+
+
+    public Page<OrderListItemDto> getAllOrdersAsListItem(Pageable pageable) {
+        Page<Order> ordersPage = orderRepository.findAll(pageable);
+        return ordersPage.map(
+                order -> new OrderListItemDto(
+                        order.getId(),
+                        order.getSumPrice(),
+                        order.getCreatedDate().atZone(ZoneId.systemDefault()).toLocalDate(),
+                        order.getStatus()
+        ));
     }
 
     public List<OrderDto> getOrdersForUser(CustomUserDetails userDetails) {

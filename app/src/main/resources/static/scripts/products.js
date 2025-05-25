@@ -123,7 +123,7 @@ async function handleProductUpload(event) {
             throw new Error("Bitte ein Bild hochladen.");
         }
 
-        const response = await fetch('/admin/products/add', {
+        const response = await fetch('/api/admin/products/add', {
             method: 'POST',
             body: formData
         });

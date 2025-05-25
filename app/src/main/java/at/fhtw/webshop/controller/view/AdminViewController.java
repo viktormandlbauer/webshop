@@ -10,11 +10,16 @@ public class AdminViewController {
 
     @GetMapping("/dashboard")
     public String viewAdmin() {
-        return "admin/dashboard.html";
+        return "admin/dashboard";
     }
 
     @GetMapping("/products")
-    public String viewProductsAdmin() {
+    public String listProducts() {
+        return "admin/products/list";
+    }
+
+    @GetMapping("/products/view")
+    public String viewProduct() {
         return "admin/products/view";
     }
 
@@ -24,12 +29,22 @@ public class AdminViewController {
     }
 
     @GetMapping("/users")
-    public String viewUsersAdmin() {
-        return "admin/users";
+    public String listUsers() {
+        return "admin/users/list";
+    }
+
+    @GetMapping("/users/view")
+    public String viewUser() {
+        return "admin/users/view";
     }
 
     @GetMapping("/orders")
-    public String viewOrdersAdmin() {
-        return "admin/orders";
+    public String listOrders() {
+        return "admin/orders/list";
+    }
+
+    @GetMapping("/orders/view")
+    public String viewOrder() {
+        return "admin/orders/view";
     }
 }
