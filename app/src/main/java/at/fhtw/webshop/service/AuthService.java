@@ -36,15 +36,13 @@ public class AuthService {
         this.jwtUtils = jwtUtils;
     }
 
-    private Authentication authenticate(String username, String password) {
+    private void authenticate(String username, String password) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(username, password)
         );
         if (authentication == null) {
             throw new RuntimeException("Invalid username or password");
         }
-
-        return authentication;
     }
 
     public AuthDto loginUser(LoginDto loginDto) {
