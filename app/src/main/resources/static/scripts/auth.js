@@ -21,7 +21,7 @@ async function handleLogin(event) {
 
         message.textContent = 'Login successful!';
 
-        window.location.href = '/welcome';
+        window.location.href = '/';
 
     } catch (error) {
         message.textContent = error.message || 'Login failed. Please try again.';
@@ -35,6 +35,8 @@ async function handleRegister(event) {
     const salutation = document.getElementById('salutation').value;
     const firstName = document.getElementById('firstName').value;
     const lastName = document.getElementById('lastName').value;
+    const dateOfBirth = document.getElementById('dateOfBirth').value;
+    const country = document.getElementById('country').value;
     const address = document.getElementById('address').value;
     const postalCode = document.getElementById('postalCode').value;
     const city = document.getElementById('city').value;
@@ -51,6 +53,8 @@ async function handleRegister(event) {
                 salutation,
                 firstName,
                 lastName,
+                dateOfBirth,
+                country,
                 address,
                 postalCode,
                 city,

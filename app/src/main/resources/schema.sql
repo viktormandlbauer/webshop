@@ -12,8 +12,19 @@ CREATE TABLE IF NOT EXISTS User
     Salutation       VARCHAR(10)                NOT NULL,
     BillingAddressId INT                        NOT NULL,
     DateOfBirth      DATE                       NOT NULL,
-    ROLE             ENUM ('Customer', 'Admin') NOT NULL DEFAULT 'Customer'
+    ROLE             ENUM ('CUSTOMER', 'ADMIN') NOT NULL DEFAULT 'CUSTOMER'
 );
+
+CREATE TABLE IF NOT EXISTS PaymentMethod
+(
+    PaymentMethodID INT AUTO_INCREMENT PRIMARY KEY,
+    UserID          INT            NOT NULL,
+    CardNumber      VARCHAR(20)    NOT NULL,
+    CardHolderName  VARCHAR(100)   NOT NULL,
+    ExpiryDate      DATE           NOT NULL,
+    CVV             VARCHAR(4)     NOT NULL,
+    FOREIGN KEY (UserID) REFERENCES User (UserID) ON DELETE CASCADE
+    );
 
 -- Create the Address table
 CREATE TABLE IF NOT EXISTS Address
@@ -82,11 +93,17 @@ CREATE TABLE IF NOT EXISTS `Order`
 (
     OrderID   INT AUTO_INCREMENT PRIMARY KEY,
     UserID    INT            NOT NULL,
-    AddressID INT            NOT NULL,
-    `Date`    DATE           NOT NULL,
-    SumPrice  DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
+    Status   ENUM ('Pending', 'Delivered', 'Cancelled') NOT NULL DEFAULT 'Pending',
+    ShippingAddressID INT NOT NULL,
+    BillingAddressID INT NOT NULL,
+    PaymentMethodID INT NOT NULL,
+    PdfFilePath VARCHAR(255),
+    CreatedDate DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    SumPrice  DECIMAL(10, 2) NOT NULL,
     FOREIGN KEY (UserID) REFERENCES User (UserID) ON DELETE RESTRICT,
-    FOREIGN KEY (AddressID) REFERENCES Address (AddressID) ON DELETE RESTRICT
+    FOREIGN KEY (ShippingAddressID) REFERENCES Address (AddressID) ON DELETE RESTRICT,
+    FOREIGN KEY (BillingAddressID) REFERENCES Address (AddressID) ON DELETE RESTRICT,
+    FOREIGN KEY (PaymentMethodID) REFERENCES PaymentMethod (PaymentMethodID) ON DELETE RESTRICT
 );
 
 -- Create the OrderItem table
@@ -112,4 +129,3 @@ VALUES
     ('MOBA'),
     ('Survival'),
     ('Open World');
-

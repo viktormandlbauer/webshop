@@ -1,9 +1,11 @@
 package at.fhtw.webshop.service;
 
+import at.fhtw.webshop.model.Category;
 import at.fhtw.webshop.dto.ProductAddDto;
 import at.fhtw.webshop.dto.ProductDto;
 import at.fhtw.webshop.model.Product;
 import at.fhtw.webshop.dto.ProductSearchCriteria;
+import at.fhtw.webshop.repository.CategoryRepository;
 import at.fhtw.webshop.repository.ProductRepository;
 import at.fhtw.webshop.repository.CategoryRepository;
 import at.fhtw.webshop.model.Category;
@@ -17,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -25,11 +28,12 @@ import java.util.UUID;
 @Service
 public class ProductService {
 
+    private final CategoryRepository categoryRepository;
+
     @Value("${image.upload.path}")
     private String imageUploadDir;
 
     ProductRepository productRepository;
-    CategoryRepository categoryRepository;
     private static final Logger logger = LoggerFactory.getLogger(ProductService.class);
 
     public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository) {
@@ -103,7 +107,6 @@ public class ProductService {
     private String saveImage(MultipartFile imageFile) {
         String uploadDirPath = new File(imageUploadDir).getAbsolutePath();
         File uploadDir = new File(uploadDirPath);
-        if (!uploadDir.exists()) uploadDir.mkdirs();
 
         String fileName = UUID.randomUUID() + "_" + imageFile.getOriginalFilename();
         File destination = new File(uploadDir, fileName);

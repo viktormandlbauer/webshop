@@ -1,43 +1,57 @@
 package at.fhtw.webshop.dto;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.time.LocalDate;
 
 public class RegistrationDto {
 
-    @NotBlank(message = "Anrede ist erforderlich")
+    @NotBlank
     private String salutation;
 
-    @NotBlank(message = "Vorname ist erforderlich")
+    @NotBlank
     private String firstName;
 
-    @NotBlank(message = "Nachname ist erforderlich")
+    @NotBlank
     private String lastName;
 
-    @NotBlank(message = "Adresse ist erforderlich")
+    @NotBlank
+    private String country;
+
+    @NotBlank
     private String address;
 
-    @NotBlank(message = "PLZ ist erforderlich")
-    @Pattern(regexp = "\\d{4,5}", message = "PLZ muss 4 oder 5 Ziffern enthalten")
+    @NotBlank
+    @Pattern(regexp = "\\d{4,5}")
     private String postalCode;
 
-    @NotBlank(message = "Ort ist erforderlich")
+    @NotBlank
     private String city;
 
-    @NotBlank(message = "E-Mail ist erforderlich")
-    @Email(message = "Bitte eine gültige E-Mail angeben")
+    @NotBlank
+    @Email
     private String email;
 
-    @NotBlank(message = "Benutzername ist erforderlich")
+    @NotBlank
     private String username;
 
-    @NotBlank(message = "Passwort ist erforderlich")
-    @Size(min = 8, message = "Passwort muss mindestens 8 Zeichen haben")
+    @NotBlank
+    @Size(min = 8)
     private String password;
 
-    // === Getter und Setter ===
+    @NotNull
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDate dateOfBirth;
+
+
+    public LocalDate getDateOfBirth() {
+        return dateOfBirth;
+    }
+
+    public void setDateOfBirth(LocalDate dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
+    }
 
     public String getSalutation() {
         return salutation;
@@ -61,6 +75,14 @@ public class RegistrationDto {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
     }
 
     public String getAddress() {
@@ -110,5 +132,4 @@ public class RegistrationDto {
     public void setPassword(String password) {
         this.password = password;
     }
-
 }

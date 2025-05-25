@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(title='Webshop - Profile')}"></head>
+
+<body>
+<div th:replace="~{fragments/header :: header}"></div>
+
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Mein Konto</h1>
+    <div id="profile" class="card shadow p-4">
+
+        <!-- Benutzerdaten -->
+        <div class="row mb-3">
+            <h2>Benutzerdaten</h2>
+            <div class="col-md-6">
+                <label for="profile" class="form-label"></label>
+                <p><strong>Anrede:</strong> <span id="salutation"></span></p>
+                <p><strong>Benutzername:</strong> <span id="username"></span></p>
+                <p><strong>E-Mail:</strong> <span id="email"></span></p>
+
+            </div>
+            <div class="col-md-6">
+                <p><strong>Vorname:</strong> <span id="firstName"></span></p>
+                <p><strong>Nachname:</strong> <span id="lastName"></span></p>
+                <p><strong>Geburtsdatum:</strong> <span id="dateOfBirth"></span></p>
+            </div>
+            <div class="text-end mt-2">
+                <button class="btn btn-warning" onclick="openChangePasswordModal()">Passwort ändern</button>
+            </div>
+
+            <div class="text-end">
+                <button class="btn btn-primary" onclick="openUserEditModal()">Bearbeiten</button>
+            </div>
+
+
+        </div>
+
+        <!-- Rechnungsadresse -->
+        <div class="row mb-3">
+            <h2>Rechnungsadresse</h2>
+            <div class="col-md-6">
+                <p><strong>Land:</strong> <span id="country"></span></p>
+                <p><strong>Adresse:</strong> <span id="address"></span></p>
+            </div>
+            <div class="col-md-6">
+                <p><strong>Postleitzahl:</strong> <span id="postalCode"></span></p>
+                <p><strong>Stadt:</strong> <span id="city"></span></p>
+            </div>
+            <div class="text-end mt-2">
+                <button class="btn btn-primary" onclick="openBillingEditModal()">Bearbeiten</button>
+            </div>
+
+
+        </div>
+
+        <!-- Zahlungsmethoden -->
+        <div class="form-group mb-3">
+            <h2>Zahlungsmethoden</h2>
+            <label for="paymentMethods" class="form-label">Zahlungsmethode wählen:</label>
+            <select id="paymentMethods" class="form-select"></select>
+            <div id="paymentMethodDetails" class="mt-3">
+                <p><strong>Karteninhaber:</strong> <span id="cardHolderName"></span></p>
+                <p><strong>Kartennummer:</strong> <span id="cardNumber"></span></p>
+                <p><strong>Ablaufdatum:</strong> <span id="expiryDate"></span></p>
+                <p><strong>CVV:</strong> <span id="cvv"></span></p>
+            </div>
+            <div class="mt-2">
+                <button class="btn btn-primary me-2" data-bs-toggle="modal" data-bs-target="#editPaymentModal">Bearbeiten</button>
+                <button class="btn btn-success me-2" data-bs-toggle="modal" data-bs-target="#editPaymentModal" onclick="clearPaymentForm()">Hinzufügen</button>
+                <button class="btn btn-danger" onclick="deletePaymentMethod()">Löschen</button>
+            </div>
+        </div>
+
+        <!-- Lieferadressen -->
+        <div class="form-group">
+            <h2>Lieferadressen</h2>
+            <label for="addresses" class="form-label">Adresse wählen:</label>
+            <select id="addresses" class="form-select"></select>
+            <div id="addressDetails" class="mt-3">
+                <p><strong>Straße:</strong> <span id="streetAddress"></span></p>
+                <p><strong>Stadt:</strong> <span id="cityDetails"></span></p>
+                <p><strong>Postleitzahl:</strong> <span id="postalCodeDetails"></span></p>
+                <p><strong>Land:</strong> <span id="countryDetails"></span></p>
+            </div>
+            <div class="mt-2">
+                <button class="btn btn-primary me-2" data-bs-toggle="modal" data-bs-target="#editAddressModal">Bearbeiten</button>
+                <button class="btn btn-success me-2" data-bs-toggle="modal" data-bs-target="#editAddressModal" onclick="clearAddressForm()">Hinzufügen</button>
+                <button class="btn btn-danger" onclick="deleteAddress()">Löschen</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Modal: Benutzerdaten bearbeiten -->
+<div class="modal fade" id="editUserModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Benutzerdaten bearbeiten</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="userForm">
+                    <div class="mb-3"><label class="form-label">E-Mail</label><input type="email" class="form-control" id="editEmail"></div>
+                    <div class="mb-3"><label class="form-label">Vorname</label><input type="text" class="form-control" id="editFirstName"></div>
+                    <div class="mb-3"><label class="form-label">Nachname</label><input type="text" class="form-control" id="editLastName"></div>
+                    <div class="mb-3"><label class="form-label">Geburtsdatum</label><input type="date" class="form-control" id="editDateOfBirth"></div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                <button class="btn btn-success" onclick="saveUserData()">Speichern</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal: Passwort ändern -->
+<div class="modal fade" id="changePasswordModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Passwort ändern</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="passwordForm">
+                    <div class="mb-3">
+                        <label class="form-label">Aktuelles Passwort</label>
+                        <input type="password" class="form-control" id="currentPassword">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Neues Passwort</label>
+                        <input type="password" class="form-control" id="newPassword">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Neues Passwort wiederholen</label>
+                        <input type="password" class="form-control" id="repeatPassword">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                <button class="btn btn-success" onclick="changePassword()">Speichern</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Rechnungsadresse bearbeiten -->
+
+<div class="modal fade" id="editBillingModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Rechnungsadresse bearbeiten</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="billingForm">
+                    <div class="mb-3"><label class="form-label">Land</label><input type="text" class="form-control" id="billingCountry"></div>
+                    <div class="mb-3"><label class="form-label">Adresse</label><input type="text" class="form-control" id="billingAddress"></div>
+                    <div class="mb-3"><label class="form-label">Postleitzahl</label><input type="text" class="form-control" id="billingPostalCode"></div>
+                    <div class="mb-3"><label class="form-label">Stadt</label><input type="text" class="form-control" id="billingCity"></div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                <button class="btn btn-success" onclick="saveBillingAddress()">Speichern</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<!-- Modal: Zahlungsmethode -->
+<div class="modal fade" id="editPaymentModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Zahlungsmethode</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="paymentForm">
+                    <input type="hidden" id="editPaymentIndex">
+                    <div class="mb-3"><label class="form-label">Karteninhaber</label><input type="text" class="form-control" id="editCardHolder"></div>
+                    <div class="mb-3"><label class="form-label">Kartennummer</label><input type="text" class="form-control" id="editCardNumber"></div>
+                    <div class="mb-3"><label class="form-label">Ablaufdatum</label><input type="text" class="form-control" id="editExpiry"></div>
+                    <div class="mb-3"><label class="form-label">CVV</label><input type="text" class="form-control" id="editCVV"></div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                <button class="btn btn-success" onclick="savePaymentMethod()">Speichern</button>
+                <button class="btn btn-success" onclick="addPaymentMethod()">Neu speichern</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Adresse -->
+<div class="modal fade" id="editAddressModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Adresse</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addressForm">
+                    <input type="hidden" id="editAddressIndex">
+                    <div class="mb-3"><label class="form-label">Straße</label><input type="text" class="form-control" id="editStreet"></div>
+                    <div class="mb-3"><label class="form-label">Stadt</label><input type="text" class="form-control" id="editCity"></div>
+                    <div class="mb-3"><label class="form-label">Postleitzahl</label><input type="text" class="form-control" id="editPostal"></div>
+                    <div class="mb-3"><label class="form-label">Land</label><input type="text" class="form-control" id="editCountry"></div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                <button class="btn btn-success" onclick="saveAddress()">Speichern</button>
+                <button class="btn btn-success" onclick="addAddress()">Neu speichern</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<script src="/scripts/profile.js"></script>
+
+</body>
+</html>

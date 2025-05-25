@@ -1,5 +1,6 @@
 package at.fhtw.webshop.security;
 
+import at.fhtw.webshop.service.CustomUserDetailsService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -7,7 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.authentication.*;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
@@ -22,6 +23,9 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     @Autowired
     private JwtUtil jwtUtils;
 
+    @Autowired
+    private CustomUserDetailsService customUserDetailsService;
+
     @Override
     protected void doFilterInternal(
             @NonNull HttpServletRequest request,
@@ -30,27 +34,40 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     ) throws ServletException, IOException {
 
         try {
+            if (SecurityContextHolder.getContext().getAuthentication() == null) {
                 String jwt = parseJwt(request);
                 if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
+                    // Extrahiere Benutzername und Rollen aus dem JWT
+                    String username = jwtUtils.getUsernameFromToken(jwt);
+                    var authorities = jwtUtils.getRolesFromToken(jwt);
 
+                    // Erstelle CustomUserDetails direkt aus dem JWT
+                    CustomUserDetails userDetails = new CustomUserDetails(
+                            username,
+                            null,
+                            jwtUtils.getEmailFromToken(jwt),
+                            jwtUtils.getIdFromToken(jwt),
+                            authorities
+                    );
+
+                    // Authentifizierung setzen
                     UsernamePasswordAuthenticationToken authentication =
-                            new UsernamePasswordAuthenticationToken(
-                                    jwtUtils.getUsernameFromToken(jwt),
-                                    null,
-                                    jwtUtils.getRolesFromToken(jwt)
-                            );
-
+                            new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
                     authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authentication);
+
+                    logger.info("Benutzer '{}' erfolgreich authentifiziert.", username);
                 }
+            }
         } catch (Exception e) {
-            System.out.println("Cannot set user authentication: " + e);
+            logger.error("Fehler beim Setzen der Benutzer-Authentifizierung: {}", e.getMessage(), e);
         }
+
         filterChain.doFilter(request, response);
     }
 
-    private String parseJwt(HttpServletRequest request) {
 
+    private String parseJwt(HttpServletRequest request) {
         String headerAuth = request.getHeader("Authorization");
         if (headerAuth != null && headerAuth.startsWith("Bearer ")) {
             return headerAuth.substring(7);

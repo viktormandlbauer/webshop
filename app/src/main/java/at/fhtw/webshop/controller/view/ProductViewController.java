@@ -1,4 +1,4 @@
-package at.fhtw.webshop.controller;
+package at.fhtw.webshop.controller.view;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,10 +22,5 @@ public class ProductViewController {
     @GetMapping("/view")
     public String viewProduct(@RequestParam("id") Long id) {
         return "products/view";
-    }
-
-    @GetMapping("/checkout")
-    public String checkout() {
-        return "products/checkout";
     }
 }

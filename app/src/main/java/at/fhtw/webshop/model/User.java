@@ -4,6 +4,10 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
+import java.time.LocalDate;
 
 @Entity
 public class User {
@@ -43,7 +47,17 @@ public class User {
     private String salutation;
 
     @NotNull
-    @ColumnDefault("'Customer'")
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "BillingAddressId", nullable = false)
+    private Address billingAddress;
+
+    @NotNull
+    @Column(name = "DateOfBirth", nullable = false)
+    private LocalDate dateOfBirth;
+
+    @NotNull
+    @ColumnDefault("'CUSTOMER'")
     @Lob
     @Column(name = "ROLE", nullable = false)
     private String role;
@@ -104,6 +118,22 @@ public class User {
         this.salutation = salutation;
     }
 
+    public Address getBillingAddress() {
+        return billingAddress;
+    }
+
+    public void setBillingAddress(Address billingAddress) {
+        this.billingAddress = billingAddress;
+    }
+
+    public LocalDate getDateOfBirth() {
+        return dateOfBirth;
+    }
+
+    public void setDateOfBirth(LocalDate dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
+    }
+
     public String getRole() {
         return role;
     }
@@ -112,12 +142,5 @@ public class User {
         this.role = role;
     }
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", username='" + username + '\'' +
-                ", role='" + role + '\'' +
-                '}';
-    }
+
 }

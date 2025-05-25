@@ -1,11 +1,18 @@
 package at.fhtw.webshop.dto;
 
+import org.hibernate.validator.constraints.Range;
+
 public class ProductSearchCriteria {
     private String name;
     private String categoryName;
     private Double minPrice;
     private Double maxPrice;
+
+
+    @Range(min = 1, max = 5)
     private Double minRating;
+
+    @Range(min = 1, max = 5)
     private Double maxRating;
 
     // Getters and setters
