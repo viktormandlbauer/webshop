@@ -23,9 +23,4 @@ public class ProductViewController {
     public String viewProduct(@RequestParam("id") Long id) {
         return "products/view";
     }
-
-    @GetMapping("/checkout")
-    public String checkout() {
-        return "products/checkout";
-    }
 }

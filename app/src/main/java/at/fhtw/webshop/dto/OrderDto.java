@@ -18,6 +18,10 @@ public class OrderDto {
         this.status = status;
     }
 
+    public OrderDto() {
+
+    }
+
     public Integer getOrderId() {
         return orderId;
     }

@@ -1,31 +1,32 @@
-document.addEventListener("DOMContentLoaded", () => {
-    const ordersTableBody = document.querySelector("tbody");
+document.addEventListener("DOMContentLoaded", async () => {
+    const tbody = document.getElementById("orders-body");
 
-    // Daten von der REST-API abrufen
-    fetch("/api/orders")
-        .then(response => {
-            if (!response.ok) {
-                throw new Error("Fehler beim Laden der Bestellungen");
-            }
-            return response.json();
-        })
-        .then(orders => {
-            // Tabelle mit den Bestellungen füllen
-            orders.forEach(order => {
-                const row = document.createElement("tr");
+    try {
+        const response = await fetch("/api/orders");
+        const orders = await response.json();
 
-                row.innerHTML = `
-                    <td>${order.orderId}</td>
-                    <td>${order.date}</td>
-                    <td>${order.total} €</td>
-                    <td>${order.status}</td>
-                    <td><a href="/orders/${order.orderId}" class="btn btn-primary btn-sm">Ansehen</a></td>
-                `;
+        orders.data.forEach(order => {
+            const tr = document.createElement("tr");
 
-                ordersTableBody.appendChild(row);
-            });
-        })
-        .catch(error => {
-            console.error("Fehler:", error);
+            tr.innerHTML = `
+                <td>${order.orderId}</td>
+                <td>${order.date}</td>
+                <td>€${parseFloat(order.total).toFixed(2)}</td>
+                <td>${order.status}</td>
+                <td>
+                  <a href="/api/orders/receipt?orderId=${order.orderId}" target="_blank" class="btn btn-sm btn-primary">Details</a>
+                </td>
+            `;
+
+            tbody.appendChild(tr);
         });
+
+    } catch (error) {
+        console.error("Fehler beim Laden der Bestellungen:", error);
+        tbody.innerHTML = `
+            <tr>
+              <td colspan="5" class="text-danger">Fehler beim Laden der Bestellungen</td>
+            </tr>
+        `;
+    }
 });

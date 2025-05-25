@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(title='Meine Bestellungen')}"></head>
+<body>
+<div th:replace="~{fragments/header :: header}"></div>
+
+<main class="container my-4">
+  <h2>Meine Bestellungen</h2>
+  <div class="table-responsive">
+    <table class="table table-striped">
+      <thead>
+      <tr>
+        <th>Bestellnummer</th>
+        <th>Datum</th>
+        <th>Gesamtbetrag</th>
+        <th>Status</th>
+        <th>Details</th>
+      </tr>
+      </thead>
+      <tbody id="orders-body">
+      <!-- Orders will be inserted here via JS -->
+      </tbody>
+    </table>
+  </div>
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<script src="/scripts/orders.js"></script>
+</body>
+</html>

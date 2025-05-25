@@ -16,8 +16,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
+
+import java.time.Instant;
+import java.time.LocalTime;
 
 @Service
 public class OrderService {
@@ -43,30 +47,33 @@ public class OrderService {
         this.receiptPdfService = receiptPdfService;
     }
 
+    public List<OrderDto> getOrdersForUser(CustomUserDetails userDetails) {
+        // Benutzer anhand des Benutzernamens abrufen
+        User user = userRepository.findByUsername(userDetails.getUsername());
+        if (user == null) {
+            throw new IllegalArgumentException("Benutzer nicht gefunden");
+        }
 
-    /**
-     * public List<OrderDto> getOrderForUser(String username) {
-     * List<Order> orders = orderRepository.findByUsername(username);
-     * return orders.stream().map(order -> new OrderDto(
-     * order.getId(),
-     * order.getCreatedDate(),
-     * order.getSumPrice(),
-     * order.getStatus()
-     * )).collect(Collectors.toList());
-     * }
-     * <p>
-     * public List<OrderDto> getAllOrders() {
-     * List<Order> orders = orderRepository.findAll();
-     * return orders.stream().map(order -> new OrderDto(
-     * order.getId(),
-     * order.getDate(),
-     * order.getTotal(),
-     * order.getStatus()
-     * )).collect(Collectors.toList());
-     * }
-     **/
+        // Bestellungen des Benutzers abrufen
+        List<Order> orders = orderRepository.findByUserID(user);
 
-    public void newCustomerOrder(CustomerOrderDto customerOrderDto, CustomUserDetails userDetails) {
+        // Bestellungen in DTOs umwandeln
+        List<OrderDto> orderDtos = new ArrayList<>();
+        for (Order order : orders) {
+            OrderDto orderDto = new OrderDto();
+            orderDto.setOrderId(order.getId());
+            orderDto.setTotal(order.getSumPrice());
+            orderDto.setDate(order.getCreatedDate().atZone(ZoneId.systemDefault()).toLocalDate());
+            // @TODO: Fix OrderDTO with enum
+            orderDto.setStatus(OrderStatus.PENDING);
+            orderDtos.add(orderDto);
+        }
+
+        return orderDtos;
+    }
+
+
+    public int newCustomerOrder(CustomerOrderDto customerOrderDto, CustomUserDetails userDetails) {
         Order order = new Order();
         order.setStatus(String.valueOf(OrderStatus.PENDING));
         BigDecimal totalPrice = BigDecimal.ZERO;
@@ -156,5 +163,7 @@ public class OrderService {
         receiptDto.setOrderId(order.getId());
 
         receiptPdfService.generateReceiptPdf(receiptDto);
+
+        return order.getId();
     }
 }
