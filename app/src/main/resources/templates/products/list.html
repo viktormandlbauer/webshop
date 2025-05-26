@@ -5,14 +5,53 @@
 <div th:replace="~{fragments/header :: header}"></div>
 
 <main class="container my-4">
-  <h2>Products</h2>
-  <div id="product-grid" class="row">
-    <!-- Products will be inserted here by JavaScript -->
-  </div>
-  <div id="pagination-controls" class="d-flex justify-content-center mt-4">
-    <!-- Pagination buttons will be inserted here -->
-  </div>
-  <div th:replace="~{fragments/cart :: cart}"></div>
+    <div class="row">
+        <!-- FILTER -->
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Filter</h5>
+
+                    <div class="mb-3">
+                        <label class="form-label">Kategorien:</label>
+                        <div id="categoryCheckboxes"></div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label" for="minPrice">Min Preis:</label>
+                        <input type="number" class="form-control" id="minPrice" placeholder="z.B. 10">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label" for="maxPrice">Max Preis:</label>
+                        <input type="number" class="form-control" id="maxPrice" placeholder="z.B. 100">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Mindestbewertung:</label>
+                        <div id="ratingStars">
+                            <!-- Die Sterne werden per JavaScript eingefügt -->
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary w-100" id="applyFilters">Filtern</button>
+                    <button class="btn btn-secondary w-100 mt-2" id="resetFilters">Zurücksetzen</button>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- PRODUKTGRID -->
+        <section class="col-md-9">
+            <div id="product-grid" class="row">
+                <!-- Products will be inserted here by JavaScript -->
+            </div>
+            <div id="pagination-controls" class="d-flex justify-content-center mt-4">
+                <!-- Pagination buttons will be inserted here -->
+            </div>
+        </section>
+    </div>
+    <div th:replace="~{fragments/cart :: cart}"></div>
 </main>
 
 <div th:replace="~{fragments/footer :: footer}"></div>

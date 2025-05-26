@@ -33,8 +33,9 @@ public class ProductRestController {
     }
 
     @GetMapping("/search/advanced")
-    public Page<Product> searchProducts(@Valid ProductSearchCriteria criteria, Pageable pageable) {
-        return productService.searchProducts(criteria, pageable);
+    public Page<ProductDto> searchProducts(@ModelAttribute ProductSearchCriteria criteria, Pageable pageable) {
+        return productService.searchProducts(criteria, pageable)
+                .map(productService::mapToDto);
     }
 
     @GetMapping("/search")

@@ -22,7 +22,7 @@ public class ProductSpecifications {
 
             if (criteria.getCategoryName() != null && !criteria.getCategoryName().isEmpty()) {
                 predicates.add(criteriaBuilder.like(
-                        criteriaBuilder.lower(root.get("category").get("name")),
+                        criteriaBuilder.lower(root.get("categoryID").get("name")),
                         "%" + criteria.getCategoryName().toLowerCase() + "%"));
             }
 
