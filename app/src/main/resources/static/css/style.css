@@ -10,3 +10,22 @@ body {
 main {
     flex: 1;
 }
+
+.star {
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: gray;
+}
+
+.star.selected {
+    color: gold;
+}
+
+.rating-stars i {
+    margin-right: 2px;
+    font-size: 1.1rem;
+}
+
+#ratingStars i {
+    transition: color 0.15s;
+}

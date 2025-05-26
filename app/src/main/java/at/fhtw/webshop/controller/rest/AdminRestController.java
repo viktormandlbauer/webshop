@@ -119,7 +119,7 @@ public class AdminRestController {
         } catch (MultipartException e) {
             return ResponseEntity.badRequest().body("Fehler beim Dateiupload: " + e.getMessage());
         } catch (Exception e) {
-            e.printStackTrace(); // <-- Zeigt im Terminal, was genau falsch läuft!
+            e.printStackTrace(); // <-- zeigt im Terminal, was genau falsch läuft!
             return ResponseEntity.internalServerError().body("Fehler beim Speichern des Produkts: " + e.getMessage());
         }
     }
