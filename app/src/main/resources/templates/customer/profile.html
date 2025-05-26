@@ -5,12 +5,12 @@
 <body>
 <div th:replace="~{fragments/header :: header}"></div>
 
-<div class="container mt-5">
+<div class="container mt-5 ">
     <h1 class="text-center mb-4">Mein Konto</h1>
     <div id="profile" class="card shadow p-4">
 
         <!-- Benutzerdaten -->
-        <div class="row mb-3">
+        <div class="row mb-3 ">
             <h2>Benutzerdaten</h2>
             <div class="col-md-6">
                 <label for="profile" class="form-label"></label>
@@ -25,11 +25,11 @@
                 <p><strong>Geburtsdatum:</strong> <span id="dateOfBirth"></span></p>
             </div>
             <div class="text-end mt-2">
-                <button class="btn btn-warning" onclick="openChangePasswordModal()">Passwort ändern</button>
+                <button class="btn btn-secondary" onclick="openChangePasswordModal()">Passwort ändern</button>
             </div>
 
             <div class="text-end">
-                <button class="btn btn-primary" onclick="openUserEditModal()">Bearbeiten</button>
+                <button class="btn btn-dark" onclick="openUserEditModal()">Bearbeiten</button>
             </div>
 
 
@@ -47,7 +47,7 @@
                 <p><strong>Stadt:</strong> <span id="city"></span></p>
             </div>
             <div class="text-end mt-2">
-                <button class="btn btn-primary" onclick="openBillingEditModal()">Bearbeiten</button>
+                <button class="btn btn-dark" onclick="openBillingEditModal()">Bearbeiten</button>
             </div>
 
 
@@ -65,8 +65,8 @@
                 <p><strong>CVV:</strong> <span id="cvv"></span></p>
             </div>
             <div class="mt-2">
-                <button class="btn btn-primary me-2" data-bs-toggle="modal" data-bs-target="#editPaymentModal">Bearbeiten</button>
-                <button class="btn btn-success me-2" data-bs-toggle="modal" data-bs-target="#editPaymentModal" onclick="clearPaymentForm()">Hinzufügen</button>
+                <button class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#editPaymentModal">Bearbeiten</button>
+                <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#editPaymentModal" onclick="clearPaymentForm()">Hinzufügen</button>
                 <button class="btn btn-danger" onclick="deletePaymentMethod()">Löschen</button>
             </div>
         </div>
@@ -83,8 +83,8 @@
                 <p><strong>Land:</strong> <span id="countryDetails"></span></p>
             </div>
             <div class="mt-2">
-                <button class="btn btn-primary me-2" data-bs-toggle="modal" data-bs-target="#editAddressModal">Bearbeiten</button>
-                <button class="btn btn-success me-2" data-bs-toggle="modal" data-bs-target="#editAddressModal" onclick="clearAddressForm()">Hinzufügen</button>
+                <button class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#editAddressModal">Bearbeiten</button>
+                <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#editAddressModal" onclick="clearAddressForm()">Hinzufügen</button>
                 <button class="btn btn-danger" onclick="deleteAddress()">Löschen</button>
             </div>
         </div>
