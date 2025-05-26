@@ -36,15 +36,13 @@ public class AuthService {
         this.jwtUtils = jwtUtils;
     }
 
-    private Authentication authenticate(String username, String password) {
+    private void authenticate(String username, String password) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(username, password)
         );
         if (authentication == null) {
             throw new RuntimeException("Invalid username or password");
         }
-
-        return authentication;
     }
 
     public AuthDto loginUser(LoginDto loginDto) {
@@ -85,7 +83,6 @@ public class AuthService {
             throw new UserAlreadyExistsException("Username already exists");
         }
 
-        // Create user object and set properties
         User user = new User();
         user.setSalutation(registrationDto.getSalutation());
         user.setFirstName(registrationDto.getFirstName());
@@ -94,23 +91,16 @@ public class AuthService {
         user.setUsername(registrationDto.getUsername());
         user.setDateOfBirth(registrationDto.getDateOfBirth());
 
-        // Hash the password using PasswordEncoder
         String hashedPassword = passwordEncoder.encode(registrationDto.getPassword());
         user.setPassword(hashedPassword);
 
-        // Set default role for the user
         user.setRole("Customer");
 
-        // Create address object and set properties for billing address
         Address address = new Address();
         address.setCountry(registrationDto.getCountry());
         address.setStreetAddress(registrationDto.getAddress());
         address.setPostalCode(registrationDto.getPostalCode());
         address.setCity(registrationDto.getCity());
-
-        addressRepository.save(address);
-
-        // Save the user to the database
         user.setBillingAddress(address);
 
         userRepository.save(user);

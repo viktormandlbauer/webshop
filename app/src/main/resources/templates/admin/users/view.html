@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(title='Benutzerdetails')}">
+  <link rel="stylesheet" th:href="@{/css/tablestyle.css}">
+</head>
+<body>
+<div th:replace="~{fragments/header :: header}"></div>
+
+<main class="container my-4">
+  <h2>Benutzerdetails</h2>
+
+  <div class="card mb-4">
+    <div class="card-body">
+      <dl class="row" id="user-details">
+        <!-- User details will be inserted here -->
+      </dl>
+    </div>
+  </div>
+
+  <h4>Adressen</h4>
+  <div id="user-addresses" class="mb-4">
+    <!-- Addresses will be rendered here -->
+  </div>
+
+  <h4>Zahlungsmethoden</h4>
+  <div id="user-payments">
+    <!-- Payment methods will be rendered here -->
+  </div>
+
+  <div class="mt-4">
+    <a href="/admin/users" class="btn btn-secondary">Zurück zur Benutzerliste</a>
+  </div>
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", async () => {
+    const params = new URLSearchParams(window.location.search);
+    const userId = params.get("id");
+
+    if (!userId) {
+      alert("Keine Benutzer-ID angegeben.");
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/admin/users/${userId}`);
+      const result = await response.json();
+      const user = result.data;
+
+      renderUserDetails(user);
+      renderAddresses(user.addresses);
+      renderPayments(user.paymentMethods);
+    } catch (error) {
+      console.error("Fehler beim Laden der Benutzerdaten:", error);
+      document.getElementById("user-details").innerHTML = `
+                <p class="text-danger">Fehler beim Laden der Daten.</p>
+            `;
+    }
+  });
+
+  function renderUserDetails(user) {
+    const container = document.getElementById("user-details");
+    container.innerHTML = `
+            <dt class="col-sm-3">Benutzername</dt>
+            <dd class="col-sm-9">${user.username}</dd>
+
+            <dt class="col-sm-3">E-Mail</dt>
+            <dd class="col-sm-9">${user.email}</dd>
+
+            <dt class="col-sm-3">Anrede</dt>
+            <dd class="col-sm-9">${user.salutation || '-'}</dd>
+
+            <dt class="col-sm-3">Vorname</dt>
+            <dd class="col-sm-9">${user.firstName}</dd>
+
+            <dt class="col-sm-3">Nachname</dt>
+            <dd class="col-sm-9">${user.lastName}</dd>
+
+            <dt class="col-sm-3">Geburtsdatum</dt>
+            <dd class="col-sm-9">${user.dateOfBirth}</dd>
+
+            <dt class="col-sm-3">Land</dt>
+            <dd class="col-sm-9">${user.country}</dd>
+
+            <dt class="col-sm-3">Adresse</dt>
+            <dd class="col-sm-9">${user.address} ${user.postalCode}, ${user.city}</dd>
+        `;
+  }
+
+  function renderAddresses(addresses = []) {
+    const container = document.getElementById("user-addresses");
+    if (addresses.length === 0) {
+      container.innerHTML = "<p>Keine gespeicherten Adressen.</p>";
+      return;
+    }
+
+    container.innerHTML = addresses.map(addr => `
+            <div class="border rounded p-3 mb-2">
+                <strong>${addr.streetAddress}</strong><br>
+                ${addr.postalCode} ${addr.city}<br>
+                ${addr.country}
+            </div>
+        `).join("");
+  }
+
+  function renderPayments(payments = []) {
+    const container = document.getElementById("user-payments");
+    if (payments.length === 0) {
+      container.innerHTML = "<p>Keine gespeicherten Zahlungsmethoden.</p>";
+      return;
+    }
+
+    container.innerHTML = payments.map(pm => `
+            <div class="border rounded p-3 mb-2">
+                <strong>Karteninhaber:</strong> ${pm.cardHolderName}<br>
+                <strong>Kartennummer:</strong> ${pm.cardNumber}<br>
+                <strong>Ablaufdatum:</strong> ${pm.expiryDate}<br>
+                <strong>CVV:</strong> ${pm.cvv}
+            </div>
+        `).join("");
+  }
+</script>
+</body>
+</html>

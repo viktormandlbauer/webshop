@@ -1,3 +1,18 @@
+function saveToken(token) {
+    document.cookie = `jwtToken=${token}; path=/;`;
+}
+
+function deleteToken() {
+    document.cookie = 'jwtToken=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;';
+}
+
+function handleLogout() {
+    deleteToken();
+    setTimeout(() => {
+        window.location.href = "/";
+    }, 3000);
+}
+
 async function handleLogin(event) {
     event.preventDefault();
     const username = document.getElementById('username').value;
@@ -17,7 +32,7 @@ async function handleLogin(event) {
 
         const data = await response.json();
 
-        document.cookie = `jwtToken=${data.token}; path=/;`;
+        saveToken(data.token);
 
         message.textContent = 'Login successful!';
 
@@ -66,15 +81,18 @@ async function handleRegister(event) {
 
         if (!response.ok) {
             const errorData = await response.json();
-            throw new Error(errorData.message || 'Registrierung fehlgeschlagen.');
+            throw new Error(errorData.message);
         }
 
         const data = await response.json();
-        message.textContent = data.message || 'Registrierung erfolgreich! Bitte loggen Sie sich ein.';
-        message.className = 'message success';
+
+        saveToken(data.token);
+
+        window.location.href = '/';
+
         document.getElementById('register-form').reset();
     } catch (error) {
-        message.textContent = error.message || 'Registrierung fehlgeschlagen. Bitte versuchen Sie es erneut.';
+        message.textContent = error.message;
         message.className = 'message error';
     }
 }

@@ -1,5 +1,6 @@
 package at.fhtw.webshop.service;
 
+import at.fhtw.webshop.dto.admin.ProductListItemDto;
 import at.fhtw.webshop.model.Category;
 import at.fhtw.webshop.dto.ProductAddDto;
 import at.fhtw.webshop.dto.ProductDto;
@@ -57,6 +58,17 @@ public class ProductService {
     public Page<Product> getAllProducts(Pageable pageable) {
         logger.info("Get all products");
         return productRepository.findAll(pageable);
+    }
+
+    public Page<ProductListItemDto> getAllProductsAsListItem(Pageable pageable) {
+        return productRepository.findAll(pageable)
+                .map(product -> new ProductListItemDto(
+                        product.getId(),
+                        product.getName(),
+                        product.getCategoryID().getName(),
+                        product.getPrice(),
+                        product.getStock()
+                ));
     }
 
     // Holt ein Produkt anhand der ID (oder halt leeres Produkt, falls nichts gefunden wird)

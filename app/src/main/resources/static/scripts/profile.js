@@ -265,32 +265,3 @@ function openBillingEditModal() {
     new bootstrap.Modal(document.getElementById("editBillingModal")).show();
 }
 
-function saveBillingAddress() {
-
-        const updatedBilling = {
-            billingCountry: document.getElementById("billingCountry").value,
-            billingAddress: document.getElementById("billingAddress").value,
-            billingPostalCode: document.getElementById("billingPostalCode").value,
-            billingCity: document.getElementById("billingCity").value
-        };
-
-
-
-    fetch("/api/profile/update-billing", {
-        method: "PUT",
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updatedBilling)
-    })
-        .then(response => {
-            if (!response.ok) throw new Error("Fehler beim Speichern der Adresse");
-            return response.json();
-        })
-        .then(() => {
-            alert("Rechnungsadresse aktualisiert.");
-            bootstrap.Modal.getInstance(document.getElementById("editBillingModal")).hide();
-            loadProfile();
-        })
-        .catch(err => alert("Fehler: " + err.message));
-}
-
-
