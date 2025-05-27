@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments/head :: head(title='Benutzerdetails')}">
-  <link rel="stylesheet" th:href="@{/css/tablestyle.css}">
 </head>
 <body>
 <div th:replace="~{fragments/header :: header}"></div>
@@ -18,13 +17,31 @@
   </div>
 
   <h4>Adressen</h4>
-  <div id="user-addresses" class="mb-4">
-    <!-- Addresses will be rendered here -->
-  </div>
+  <div id="user-addresses" class="mb-4"></div>
 
   <h4>Zahlungsmethoden</h4>
-  <div id="user-payments">
-    <!-- Payment methods will be rendered here -->
+  <div id="user-payments" class="mb-4"></div>
+
+  <h4>Bestellungen</h4>
+  <div id="user-orders" class="mb-4">
+    <div class="table-responsive">
+      <table class="table table-bordered table-striped">
+        <thead>
+        <tr>
+          <th>Bestellnummer</th>
+          <th>Datum</th>
+          <th>Status</th>
+          <th>Gesamtbetrag</th>
+        </tr>
+        </thead>
+        <tbody id="orders-list">
+        <!-- Orders will be rendered here -->
+        </tbody>
+      </table>
+    </div>
+    <nav>
+      <ul class="pagination justify-content-center mt-3" id="pagination-controls"></ul>
+    </nav>
   </div>
 
   <div class="mt-4">
@@ -35,9 +52,13 @@
 <div th:replace="~{fragments/footer :: footer}"></div>
 
 <script>
+  let currentPage = 0;
+  const pageSize = 5;
+  let userId;
+
   document.addEventListener("DOMContentLoaded", async () => {
     const params = new URLSearchParams(window.location.search);
-    const userId = params.get("id");
+    userId = params.get("id");
 
     if (!userId) {
       alert("Keine Benutzer-ID angegeben.");
@@ -45,48 +66,60 @@
     }
 
     try {
-      const response = await fetch(`/api/admin/users/${userId}`);
-      const result = await response.json();
-      const user = result.data;
+      const userResponse = await fetch(`/api/admin/users/${userId}`);
+      const userResult = await userResponse.json();
+      const user = userResult.data;
 
       renderUserDetails(user);
       renderAddresses(user.addresses);
       renderPayments(user.paymentMethods);
+
+      await loadOrdersPage(0);
     } catch (error) {
       console.error("Fehler beim Laden der Benutzerdaten:", error);
-      document.getElementById("user-details").innerHTML = `
-                <p class="text-danger">Fehler beim Laden der Daten.</p>
-            `;
+      document.getElementById("user-details").innerHTML =
+              "<p class='text-danger'>Fehler beim Laden der Daten.</p>";
     }
   });
+
+  async function loadOrdersPage(page) {
+    try {
+      const response = await fetch(`/api/admin/users/${userId}/orders?page=${page}&size=${pageSize}`);
+      const result = await response.json();
+      const orders = result.data.content;
+      const pageInfo = result.data.page;
+
+      currentPage = page;
+
+      renderOrders(orders);
+      renderPagination(pageInfo);
+    } catch (error) {
+      console.error("Fehler beim Laden der Bestellungen:", error);
+      document.getElementById("orders-list").innerHTML =
+              "<tr><td colspan='4' class='text-danger'>Fehler beim Laden der Bestellungen.</td></tr>";
+    }
+  }
 
   function renderUserDetails(user) {
     const container = document.getElementById("user-details");
     container.innerHTML = `
-            <dt class="col-sm-3">Benutzername</dt>
-            <dd class="col-sm-9">${user.username}</dd>
-
-            <dt class="col-sm-3">E-Mail</dt>
-            <dd class="col-sm-9">${user.email}</dd>
-
-            <dt class="col-sm-3">Anrede</dt>
-            <dd class="col-sm-9">${user.salutation || '-'}</dd>
-
-            <dt class="col-sm-3">Vorname</dt>
-            <dd class="col-sm-9">${user.firstName}</dd>
-
-            <dt class="col-sm-3">Nachname</dt>
-            <dd class="col-sm-9">${user.lastName}</dd>
-
-            <dt class="col-sm-3">Geburtsdatum</dt>
-            <dd class="col-sm-9">${user.dateOfBirth}</dd>
-
-            <dt class="col-sm-3">Land</dt>
-            <dd class="col-sm-9">${user.country}</dd>
-
-            <dt class="col-sm-3">Adresse</dt>
-            <dd class="col-sm-9">${user.address} ${user.postalCode}, ${user.city}</dd>
-        `;
+      <dt class="col-sm-3">Benutzername</dt>
+      <dd class="col-sm-9">${user.username}</dd>
+      <dt class="col-sm-3">E-Mail</dt>
+      <dd class="col-sm-9">${user.email}</dd>
+      <dt class="col-sm-3">Anrede</dt>
+      <dd class="col-sm-9">${user.salutation || '-'}</dd>
+      <dt class="col-sm-3">Vorname</dt>
+      <dd class="col-sm-9">${user.firstName}</dd>
+      <dt class="col-sm-3">Nachname</dt>
+      <dd class="col-sm-9">${user.lastName}</dd>
+      <dt class="col-sm-3">Geburtsdatum</dt>
+      <dd class="col-sm-9">${user.dateOfBirth}</dd>
+      <dt class="col-sm-3">Land</dt>
+      <dd class="col-sm-9">${user.country}</dd>
+      <dt class="col-sm-3">Adresse</dt>
+      <dd class="col-sm-9">${user.address} ${user.postalCode}, ${user.city}</dd>
+    `;
   }
 
   function renderAddresses(addresses = []) {
@@ -97,12 +130,12 @@
     }
 
     container.innerHTML = addresses.map(addr => `
-            <div class="border rounded p-3 mb-2">
-                <strong>${addr.streetAddress}</strong><br>
-                ${addr.postalCode} ${addr.city}<br>
-                ${addr.country}
-            </div>
-        `).join("");
+      <div class="border rounded p-3 mb-2">
+        <strong>${addr.streetAddress}</strong><br>
+        ${addr.postalCode} ${addr.city}<br>
+        ${addr.country}
+      </div>
+    `).join("");
   }
 
   function renderPayments(payments = []) {
@@ -113,13 +146,65 @@
     }
 
     container.innerHTML = payments.map(pm => `
-            <div class="border rounded p-3 mb-2">
-                <strong>Karteninhaber:</strong> ${pm.cardHolderName}<br>
-                <strong>Kartennummer:</strong> ${pm.cardNumber}<br>
-                <strong>Ablaufdatum:</strong> ${pm.expiryDate}<br>
-                <strong>CVV:</strong> ${pm.cvv}
-            </div>
-        `).join("");
+      <div class="border rounded p-3 mb-2">
+        <strong>Karteninhaber:</strong> ${pm.cardHolderName}<br>
+        <strong>Kartennummer:</strong> ${pm.cardNumber}<br>
+        <strong>Ablaufdatum:</strong> ${pm.expiryDate}<br>
+        <strong>CVV:</strong> ${pm.cvv}
+      </div>
+    `).join("");
+  }
+
+  function renderOrders(orders = []) {
+    const container = document.getElementById("orders-list");
+    if (orders.length === 0) {
+      container.innerHTML = "<tr><td colspan='4'>Keine Bestellungen vorhanden.</td></tr>";
+      return;
+    }
+
+    container.innerHTML = orders.map(order => `
+      <tr>
+        <td>${order.orderId}</td>
+        <td>${order.date}</td>
+        <td>${order.status}</td>
+        <td>${order.total.toFixed(2)} €</td>
+      </tr>
+    `).join("");
+  }
+
+  function renderPagination(pageInfo) {
+    const container = document.getElementById("pagination-controls");
+    const totalPages = pageInfo.totalPages;
+    const current = pageInfo.number;
+
+    if (totalPages <= 1) {
+      container.innerHTML = "";
+      return;
+    }
+
+    let html = "";
+
+    html += `
+      <li class="page-item ${current === 0 ? 'disabled' : ''}">
+        <button class="page-link" onclick="loadOrdersPage(${current - 1})">←</button>
+      </li>
+    `;
+
+    for (let i = 0; i < totalPages; i++) {
+      html += `
+        <li class="page-item ${i === current ? 'active' : ''}">
+          <button class="page-link" onclick="loadOrdersPage(${i})">${i + 1}</button>
+        </li>
+      `;
+    }
+
+    html += `
+      <li class="page-item ${current === totalPages - 1 ? 'disabled' : ''}">
+        <button class="page-link" onclick="loadOrdersPage(${current + 1})">→</button>
+      </li>
+    `;
+
+    container.innerHTML = html;
   }
 </script>
 </body>

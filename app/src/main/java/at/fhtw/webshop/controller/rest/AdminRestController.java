@@ -1,6 +1,8 @@
 package at.fhtw.webshop.controller.rest;
 
 import at.fhtw.webshop.dto.ProductAddDto;
+import at.fhtw.webshop.dto.product.ProductDto;
+import at.fhtw.webshop.dto.product.ProductUpdateDto;
 import at.fhtw.webshop.service.OrderService;
 import at.fhtw.webshop.service.ProductService;
 import at.fhtw.webshop.service.UserService;
@@ -59,6 +61,21 @@ public class AdminRestController {
         }
     }
 
+    @GetMapping("/users/{id}/orders")
+    public ResponseEntity<Object> getUserOrdersAsAdmin(@PathVariable int id, Pageable pageable) {
+        try {
+            return ResponseEntity.ok(Map.of(
+                    "status", "success",
+                    "data", orderService.getOrdersForUserAsListItem(id, pageable)
+            ));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
+                    "status", "error",
+                    "message", "Failed to retrieve user orders: " + e.getMessage()
+            ));
+        }
+    }
+
     @DeleteMapping("/users/{id}")
     public ResponseEntity<Object> deleteUserAsAdmin(@PathVariable int id) {
         try {
@@ -90,6 +107,21 @@ public class AdminRestController {
         }
     }
 
+    @GetMapping("/orders/{id}")
+    public ResponseEntity<Object> getOrderByIdAsAdmin(@PathVariable int id) {
+        try {
+            return ResponseEntity.ok(Map.of(
+                    "status", "success",
+                    "data", orderService.getOrderDetailsById(id)
+            ));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
+                    "status", "error",
+                    "message", "Failed to retrieve order: " + e.getMessage()
+            ));
+        }
+    }
+
     @GetMapping("/products")
     public ResponseEntity<Object> getProductsAsAdmin(Pageable pageable) {
         try {
@@ -101,6 +133,55 @@ public class AdminRestController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
                     "status", "error",
                     "message", "Failed to retrieve products: " + e.getMessage()
+            ));
+        }
+    }
+
+    @GetMapping("/products/{id}")
+    public ResponseEntity<Object> getProductByIdAsAdmin(@PathVariable int id) {
+        try {
+            return ResponseEntity.ok(Map.of(
+                    "status", "success",
+                    "data", productService.getProductById(id)
+            ));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
+                    "status", "error",
+                    "message", "Failed to retrieve product: " + e.getMessage()
+            ));
+        }
+    }
+
+    @DeleteMapping("/products/{id}")
+    public ResponseEntity<Object> deleteProductAsAdmin(@PathVariable int id) {
+        try {
+            productService.deleteProduct(id);
+            return ResponseEntity.ok(Map.of(
+                    "status", "success",
+                    "message", "Produkt erfolgreich gelöscht"
+            ));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
+                    "status", "error",
+                    "message", "Fehler beim Löschen des Produkts: " + e.getMessage()
+            ));
+        }
+    }
+
+    @PutMapping("/products/{id}")
+    public ResponseEntity<Object> updateProductAsAdmin(@PathVariable("id") int productId, @Valid @RequestBody ProductUpdateDto productUpdateDto) {
+        try {
+            productService.updateProduct(productId, productUpdateDto);
+
+            return ResponseEntity.ok(Map.of(
+                    "status", "success",
+                    "message", "Successfully updated product with ID: " + productId
+            ));
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
+                    "status", "error",
+                    "message", "Failed to update product " + e.getMessage()
             ));
         }
     }

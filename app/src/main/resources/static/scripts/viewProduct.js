@@ -15,7 +15,7 @@ if (productId) {
             document.getElementById("productImage").src = product.imageURL;
             document.getElementById("productDescription").textContent = product.description;
             document.getElementById("productCategory").textContent = product.category;
-            document.getElementById("productPrice").textContent = product.price.toFixed(2) + " €";
+            document.getElementById("productPrice").textContent = product.price.toFixed(2);
             document.getElementById("productStock").textContent = product.stock;
         })
         .catch(error => {

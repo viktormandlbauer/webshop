@@ -1,7 +1,7 @@
 package at.fhtw.webshop.controller.rest;
 
 import at.fhtw.webshop.model.Product;
-import at.fhtw.webshop.dto.ProductDto;
+import at.fhtw.webshop.dto.product.ProductDto;
 import at.fhtw.webshop.dto.ProductSearchCriteria;
 import at.fhtw.webshop.service.ProductService;
 import jakarta.validation.Valid;

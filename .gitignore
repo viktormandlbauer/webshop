@@ -1,6 +1,7 @@
 .DS_Store
 .$erd.svg.bkp
 data
+out
 
 ### IntelliJ IDEA ###
 .idea

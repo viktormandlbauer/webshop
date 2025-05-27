@@ -1,15 +1,14 @@
 package at.fhtw.webshop.service;
 
 import at.fhtw.webshop.dto.admin.ProductListItemDto;
+import at.fhtw.webshop.dto.product.ProductUpdateDto;
 import at.fhtw.webshop.model.Category;
 import at.fhtw.webshop.dto.ProductAddDto;
-import at.fhtw.webshop.dto.ProductDto;
+import at.fhtw.webshop.dto.product.ProductDto;
 import at.fhtw.webshop.model.Product;
 import at.fhtw.webshop.dto.ProductSearchCriteria;
 import at.fhtw.webshop.repository.CategoryRepository;
 import at.fhtw.webshop.repository.ProductRepository;
-import at.fhtw.webshop.repository.CategoryRepository;
-import at.fhtw.webshop.model.Category;
 import at.fhtw.webshop.specifications.ProductSpecifications;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -23,7 +22,6 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -31,7 +29,7 @@ public class ProductService {
 
     private final CategoryRepository categoryRepository;
 
-    @Value("${image.upload.path}")
+    @Value("${output.path.product.images}")
     private String imageUploadDir;
 
     ProductRepository productRepository;
@@ -49,9 +47,20 @@ public class ProductService {
     }
 
     // Aktualisiert ein bestehendes Produkt
-    public Product updateProduct(Product product) {
-        logger.info("Updating product: {}", product);
-        return productRepository.save(product);
+    public void updateProduct(int productId, ProductUpdateDto productUpdateDto) {
+
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new RuntimeException("Product not found with ID: " + productId));
+
+        product.setName(productUpdateDto.getName());
+        product.setDescription(productUpdateDto.getDescription());
+        product.setPrice(productUpdateDto.getPrice());
+        product.setStock(productUpdateDto.getStock());
+        Category category = categoryRepository.findById(productUpdateDto.getCategoryId())
+                .orElseThrow(() -> new RuntimeException("Category not found with ID: " + productUpdateDto.getCategoryId()));
+        product.setCategoryID(category);
+
+        productRepository.save(product);
     }
 
     // Gibt alle Produkte paginiert zurück

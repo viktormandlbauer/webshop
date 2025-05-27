@@ -92,6 +92,15 @@
             `;
             tbody.appendChild(tr);
         });
+
+        // Letzte Zeile: "Produkt hinzufügen"-Button über alle Spalten
+        const addRow = document.createElement("tr");
+        addRow.innerHTML = `
+            <td colspan="5" class="text-center">
+                <a href="/admin/products/add" class="btn btn-primary">+ Produkt hinzufügen</a>
+            </td>
+        `;
+        tbody.appendChild(addRow);
     }
 
     function renderPagination(pageInfo) {

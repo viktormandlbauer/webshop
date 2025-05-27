@@ -1,15 +1,31 @@
-package at.fhtw.webshop.dto;
+package at.fhtw.webshop.dto.product;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
 
 public class ProductDto {
+
     private Integer id;
+
+    @NotBlank
     private String name;
+
+    @NotNull
     private String description;
+
     private String imageURL;
+
+    @NotBlank
     private String categoryName;
+
+    @NotNull
     private Integer stock;
+
+    @NotNull
     private BigDecimal price;
+
     private BigDecimal avgRating;
 
     // Konstruktor

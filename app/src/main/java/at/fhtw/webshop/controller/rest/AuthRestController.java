@@ -15,12 +15,12 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
-public class AuthController {
+public class AuthRestController {
     private final AuthService authService;
 
-    private static final Logger logger = org.slf4j.LoggerFactory.getLogger(AuthController.class);
+    private static final Logger logger = org.slf4j.LoggerFactory.getLogger(AuthRestController.class);
 
-    public AuthController(AuthService authService) {
+    public AuthRestController(AuthService authService) {
         this.authService = authService;
     }
 

@@ -10,16 +10,16 @@ import java.io.File;
 @Component
 public class DirectoryInitializer {
 
-    @Value("${image.upload.path}")
-    private String imageUploadPath;
+    @Value("${output.path.product.images}")
+    private String pathProducteImages;
 
-    @Value("${receipts.output.path}")
-    private String receiptsOutputPath;
+    @Value("${output.path.receipts}")
+    private String pathReceipts;
 
     @EventListener(ContextRefreshedEvent.class)
     public void ensureDirectoriesExist() {
-        createDirectoryIfNotExists(imageUploadPath);
-        createDirectoryIfNotExists(receiptsOutputPath);
+        createDirectoryIfNotExists(pathProducteImages);
+        createDirectoryIfNotExists(pathReceipts);
     }
 
     private void createDirectoryIfNotExists(String path) {
@@ -27,7 +27,7 @@ public class DirectoryInitializer {
         if (!directory.exists()) {
             boolean created = directory.mkdirs();
             if (!created) {
-                throw new RuntimeException("Konnte Verzeichnis nicht erstellen: " + path);
+                throw new RuntimeException("Unable to create directory: " + path);
             }
         }
     }

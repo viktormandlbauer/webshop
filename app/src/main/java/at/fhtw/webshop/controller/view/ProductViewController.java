@@ -9,14 +9,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequestMapping("/products")
 public class ProductViewController {
 
-    @GetMapping()
+    @GetMapping
     public String searchProduct() {
         return "products/list";
-    }
-
-    @GetMapping("/add")
-    public String addProduct() {
-        return "products/add";
     }
 
     @GetMapping("/view")
