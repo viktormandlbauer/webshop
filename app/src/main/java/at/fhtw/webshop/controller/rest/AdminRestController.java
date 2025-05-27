@@ -60,6 +60,21 @@ public class AdminRestController {
         }
     }
 
+    @GetMapping("/users/{id}/orders")
+    public ResponseEntity<Object> getUserOrdersAsAdmin(@PathVariable int id, Pageable pageable) {
+        try {
+            return ResponseEntity.ok(Map.of(
+                    "status", "success",
+                    "data", orderService.getOrdersForUserAsListItem(id, pageable)
+            ));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
+                    "status", "error",
+                    "message", "Failed to retrieve user orders: " + e.getMessage()
+            ));
+        }
+    }
+
     @DeleteMapping("/users/{id}")
     public ResponseEntity<Object> deleteUserAsAdmin(@PathVariable int id) {
         try {

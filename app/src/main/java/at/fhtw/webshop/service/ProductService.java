@@ -55,7 +55,7 @@ public class ProductService {
         product.setDescription(productDto.getDescription());
         product.setPrice(productDto.getPrice());
         product.setStock(productDto.getStock());
-        Category category = categoryRepository.findByName();
+        Category category = categoryRepository.findByName(productDto.getCategoryName());
         product.setCategoryID(category);
         product.setAvgRating(productDto.getAvgRating());
 

@@ -51,8 +51,27 @@ public class OrderService {
     }
 
 
+
     public Page<OrderListItemDto> getAllOrdersAsListItem(Pageable pageable) {
         Page<Order> ordersPage = orderRepository.findAll(pageable);
+        return ordersPage.map(
+                order -> new OrderListItemDto(
+                        order.getId(),
+                        order.getSumPrice(),
+                        order.getCreatedDate().atZone(ZoneId.systemDefault()).toLocalDate(),
+                        order.getStatus()
+        ));
+    }
+
+    public Page<OrderListItemDto> getOrdersForUserAsListItem(int userId, Pageable pageable) {
+
+        // Benutzer anhand des Benutzernamens abrufen
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("Benutzer nicht gefunden"));
+
+        // Bestellungen des Benutzers abrufen
+        Page<Order> ordersPage = orderRepository.findByUserID(user, pageable);
+
         return ordersPage.map(
                 order -> new OrderListItemDto(
                         order.getId(),
