@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head th:replace="~{fragments/head :: head(title='Produktdetails')}">
     <!-- Font Awesome CDN for star icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -22,11 +24,15 @@
             <p id="productDescription">Produktbeschreibung</p>
             <p><strong>Kategorie:</strong> <span id="productCategory">Kategorie</span></p>
             <p><strong>Preis:</strong> <span id="productPrice">0.00</span></p>
-            <p><strong>Durchschnittliche Bewertung:</strong> <span id="productAvgRating">0.00</span> / 5</p>
+            <p>
+                <strong>Durchschnittliche Bewertung:</strong><br>
+                <span id="productAvgRating">0.00</span> / 5
+                <span id="productAvgStars" style="margin-left:8px;"></span>
+            </p>
             <p><strong>Bestand:</strong> <span id="productStock">0</span></p>
             <div class="mt-4">
                 <a href="/products" class="btn btn-secondary">Zurück zur Liste</a>
-                <button class="btn btn-dark" onclick="addToCart()">In den Warenkorb</button>
+                <button class="btn btn-primary" onclick="addToCart()">In den Warenkorb</button>
             </div>
         </div>
     </div>
@@ -70,7 +76,7 @@
 <script src="/scripts/viewProduct.js"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        // STAR RATING LOGIC
+        // --- STAR RATING LOGIC FOR FORM ---
         const stars = document.querySelectorAll("#starRating .star");
         const ratingInput = document.getElementById("reviewRating");
 
@@ -108,7 +114,7 @@
             });
         }
 
-        // REVIEW FORM SUBMIT LOGIC (AJAX)
+        // --- REVIEW FORM SUBMIT LOGIC (AJAX) ---
         const reviewForm = document.getElementById("reviewForm");
         if (reviewForm) {
             reviewForm.addEventListener("submit", function(e) {
@@ -147,7 +153,22 @@
             });
         }
 
-        // FETCH AND DISPLAY REVIEWS
+        // --- RENDER STARS FOR A GIVEN AVG (NUMERIC) ---
+        function renderAvgStars(avg) {
+            let html = "";
+            for (let i = 1; i <= 5; i++) {
+                if (avg >= i) {
+                    html += '<i class="fa-solid fa-star text-warning"></i>';
+                } else if (avg >= i - 0.5) {
+                    html += '<i class="fa-solid fa-star-half-stroke text-warning"></i>';
+                } else {
+                    html += '<i class="fa-regular fa-star"></i>';
+                }
+            }
+            return html;
+        }
+
+        // --- RENDER STARS FOR SINGLE REVIEW (INTEGER) ---
         function renderStars(rating) {
             let html = "";
             for (let i = 1; i <= 5; i++) {
@@ -156,13 +177,20 @@
             return html;
         }
 
+        // --- FETCH AND DISPLAY REVIEWS + UPDATE AVG ---
         function fetchAndRenderReviews(productId) {
             fetch(`/api/products/${productId}/reviews`)
                 .then(response => response.json())
                 .then(data => {
                     const reviewList = document.getElementById("reviewList");
                     reviewList.innerHTML = "";
+                    let avg = 0;
                     if (data && data.data && data.data.length > 0) {
+                        let sum = 0;
+                        data.data.forEach(r => sum += r.rating);
+                        avg = sum / data.data.length;
+
+                        // Show each review
                         data.data.forEach(review => {
                             const div = document.createElement("div");
                             div.className = "card mb-2";
@@ -177,9 +205,13 @@
                     } else {
                         reviewList.innerHTML = '<div class="text-muted">Noch keine Bewertungen vorhanden.</div>';
                     }
+                    // Show avg (numeric and stars)
+                    document.getElementById("productAvgRating").textContent = avg.toFixed(2);
+                    document.getElementById("productAvgStars").innerHTML = renderAvgStars(avg);
                 });
         }
 
+        // --- INITIALIZE REVIEWS & AVG ---
         const productId = document.getElementById("productDetails").getAttribute("data-product-id");
         fetchAndRenderReviews(productId);
     });

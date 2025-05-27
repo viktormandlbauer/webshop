@@ -57,7 +57,7 @@ public class OrderRestController {
                     "message", "Order successfully",
                     "orderId", orderId
             ));
-        } catch (IllegalArgumentException e) {
+        } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
                     "status", "error",
                     "message", "Failed to order: " + e.getMessage()

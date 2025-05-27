@@ -8,13 +8,15 @@ public class ProductListItemDto {
     private String category;
     private BigDecimal price;
     private int stock;
+    private BigDecimal averageRating;
 
-    public ProductListItemDto(int productId, String name, String category, BigDecimal price, int stock) {
+    public ProductListItemDto(int productId, String name, String category, BigDecimal price, int stock, BigDecimal averageRating) {
         this.productId = productId;
         this.name = name;
         this.category = category;
         this.price = price;
         this.stock = stock;
+        this.averageRating = averageRating;
     }
 
     // Getter und Setter
@@ -56,5 +58,13 @@ public class ProductListItemDto {
 
     public void setStock(int stock) {
         this.stock = stock;
+    }
+
+    public BigDecimal getAverageRating() {
+        return averageRating;
+    }
+
+    public void setAverageRating(BigDecimal averageRating) {
+        this.averageRating = averageRating;
     }
 }

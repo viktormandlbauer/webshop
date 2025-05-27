@@ -91,7 +91,8 @@ public class ProductService {
                         product.getName(),
                         product.getCategoryID().getName(),
                         product.getPrice(),
-                        product.getStock()
+                        product.getStock(),
+                        product.getAvgRating()
                 ));
     }
 

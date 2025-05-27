@@ -8,6 +8,7 @@ import at.fhtw.webshop.dto.admin.OrderListItemDto;
 import at.fhtw.webshop.dto.receipt.ReceiptDto;
 import at.fhtw.webshop.dto.receipt.ReceiptItemDto;
 import at.fhtw.webshop.enums.OrderStatus;
+import at.fhtw.webshop.exception.ProductOutOfStockException;
 import at.fhtw.webshop.model.*;
 import at.fhtw.webshop.repository.*;
 import at.fhtw.webshop.security.CustomUserDetails;
@@ -141,18 +142,24 @@ public class OrderService {
             OrderItem orderItem = new OrderItem();
             orderItem.setQuantity(orderItemDto.getQuantity());
 
-            // @TODO: Reduce the number of queries by using a batch fetch or similar approach
-            // @TODO: Reduce the quantity of products in stock
             Product product = this.productRepository.findProductById(orderItemDto.getProductId());
             orderItem.setOrderID(order);
             orderItem.setProductID(product);
 
-            // Berechne den Preis für das aktuelle Produkt
             BigDecimal itemTotal = product.getPrice().multiply(BigDecimal.valueOf(orderItemDto.getQuantity()));
-
             totalPrice = totalPrice.add(itemTotal);
 
             this.orderItemRepository.save(orderItem);
+
+            int currentStock = product.getStock();
+
+            if (currentStock < orderItemDto.getQuantity()) {
+                throw new ProductOutOfStockException(currentStock, orderItemDto.getQuantity());
+            }
+
+            product.setStock(product.getStock() - orderItemDto.getQuantity());
+
+            this.productRepository.save(product);
 
             ReceiptItemDto receiptItemDto = new ReceiptItemDto();
 
@@ -201,13 +208,6 @@ public class OrderService {
         return order.getId();
     }
 
-    private OrderDto mapToOrderDto(Order order) {
-        OrderDto orderDto = new OrderDto();
-        orderDto.setOrderId(order.getId());
-        orderDto.setTotal(order.getSumPrice());
-        orderDto.setDate(order.getCreatedDate().atZone(ZoneId.systemDefault()).toLocalDate());
-        return orderDto;
-    }
 
     public ReceiptDto getOrderDetailsById(int orderId) {
         Order order = orderRepository.findById(orderId)
