@@ -170,7 +170,11 @@ function fetchProducts(page) {
             });
 
             // Blätterfunktion anzeigen (z.B.: „Seite 1 von 3“)
-            renderPagination(currentPage, totalPages, data.page.first, data.page.last);
+
+            const isFirst = currentPage === 0;
+            const isLast = currentPage === totalPages - 1;
+
+            renderPagination(currentPage, totalPages, isFirst, isLast);
         })
         .catch(error => {
             // Fehler behandeln, z.B.: wenn die API nicht erreichbar ist
