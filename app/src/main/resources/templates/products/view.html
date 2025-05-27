@@ -124,7 +124,9 @@
                     return;
                 }
 
-                const productId = document.getElementById("productDetails").getAttribute("data-product-id");
+
+                const params = new URLSearchParams(window.location.search);
+                const productId = params.get("id");
                 const reviewText = document.getElementById("reviewText").value;
 
                 fetch(`/api/products/review/add?productId=${productId}`, {
@@ -212,7 +214,8 @@
         }
 
         // --- INITIALIZE REVIEWS & AVG ---
-        const productId = document.getElementById("productDetails").getAttribute("data-product-id");
+        const params = new URLSearchParams(window.location.search);
+        const productId = params.get("id");
         fetchAndRenderReviews(productId);
     });
 </script>
