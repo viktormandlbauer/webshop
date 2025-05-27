@@ -38,7 +38,6 @@ public class ProfileRestController {
         ));
     }
 
-    @GetMapping
     @RequestMapping("/addresses")
     public ResponseEntity<Object> getUserAddresses(@AuthenticationPrincipal(errorOnInvalidType = true) CustomUserDetails userDetails) {
         try {
@@ -102,8 +101,7 @@ public class ProfileRestController {
         }
     }
 
-    @GetMapping
-    @RequestMapping("/payment-methods")
+    @GetMapping("/payment-methods")
     public ResponseEntity<Object> getUserPaymentMethods(@AuthenticationPrincipal(errorOnInvalidType = true) CustomUserDetails userDetails) {
         try {
             return ResponseEntity.ok(Map.of(

@@ -24,7 +24,7 @@ public class ReceiptPdfService {
 
     private static final Logger logger = LoggerFactory.getLogger(ReceiptPdfService.class);
 
-    @Value("${receipts.output.path}")
+    @Value("${output.path.receipts}")
     private String receiptsOutputPath;
 
     public void generateReceiptPdf(ReceiptDto receiptDto) {

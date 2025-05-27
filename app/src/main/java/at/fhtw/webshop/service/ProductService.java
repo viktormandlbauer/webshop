@@ -31,7 +31,7 @@ public class ProductService {
 
     private final CategoryRepository categoryRepository;
 
-    @Value("${image.upload.path}")
+    @Value("${output.path.product.images}")
     private String imageUploadDir;
 
     ProductRepository productRepository;
