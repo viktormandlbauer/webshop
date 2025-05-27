@@ -1,11 +1,14 @@
+// Globale Variable für das eingeloggte Benutzerprofil
 let profile = {};
 
+// Lädt die Profildaten des Benutzers vom Server und befüllt die HTML-Elemente
 function loadProfile() {
     fetch("/api/profile")
         .then(response => response.json())
         .then(data => {
             profile = data.data;
 
+            // Anzeige der persönlichen Benutzerdaten
             document.getElementById("username").textContent = profile.username;
             document.getElementById("email").textContent = profile.email;
             document.getElementById("salutation").textContent = profile.salutation;
@@ -17,7 +20,7 @@ function loadProfile() {
             document.getElementById("postalCode").textContent = profile.postalCode;
             document.getElementById("city").textContent = profile.city;
 
-
+            // Zahlungsmethoden als <select> Optionen anzeigen (mit maskierter Kartennummer)
             const paymentSelect = document.getElementById("paymentMethods");
             paymentSelect.innerHTML = "";
             profile.paymentMethods.forEach((method, index) => {
@@ -28,6 +31,7 @@ function loadProfile() {
                 paymentSelect.appendChild(opt);
             });
 
+            // Lieferadressen als <select> Optionen anzeigen
             const addressSelect = document.getElementById("addresses");
             addressSelect.innerHTML = "";
             profile.addresses.forEach((address, index) => {
@@ -37,11 +41,12 @@ function loadProfile() {
                 addressSelect.appendChild(opt);
             });
 
+            // Standardmäßig Details der ersten Zahlungsmethode und Adresse anzeigen
             paymentSelect.dispatchEvent(new Event("change"));
             addressSelect.dispatchEvent(new Event("change"));
         });
 }
-
+// Wird aufgerufen, wenn die Seite geladen ist → initialisiert EventListener
 document.addEventListener("DOMContentLoaded", () => {
     loadProfile();
 
@@ -59,6 +64,7 @@ function convertToLocalDateFromExpiryDate(expiry) {
     return `20${year}-${month}-01`;
 }
 
+// Füllt die Zahlungsdetails in den Detailbereich und das Bearbeitungsformular
 function prefillPaymentForm() {
     const index = document.getElementById("paymentMethods").value;
     const selected = profile.paymentMethods[index];
@@ -73,6 +79,7 @@ function prefillPaymentForm() {
     document.getElementById("editCVV").value = selected.cvv;
 }
 
+// Füllt die Adressdetails in den Detailbereich und das Bearbeitungsformular
 function prefillAddressForm() {
     const index = document.getElementById("addresses").value;
     const selected = profile.addresses[index];
@@ -86,6 +93,7 @@ function prefillAddressForm() {
     document.getElementById("editCountry").value = selected.country;
 }
 
+// Prüft die Eingaben für eine neue oder bearbeitete Zahlungsmethode
 function validatePaymentForm() {
     const cardHolder = document.getElementById("editCardHolder").value.trim();
     const cardNumber = document.getElementById("editCardNumber").value.trim();
@@ -128,6 +136,7 @@ function validatePaymentForm() {
     return true;
 }
 
+// Prüft, ob alle Felder für Adressen ausgefüllt sind
 function validateAddressForm() {
     return document.getElementById("editStreet").value &&
         document.getElementById("editCity").value &&
@@ -135,6 +144,7 @@ function validateAddressForm() {
         document.getElementById("editCountry").value;
 }
 
+// Aktualisiert eine bestehende Zahlungsmethode
 function savePaymentMethod() {
     if (!validatePaymentForm()) return alert("Bitte alle Felder ausfüllen.");
     const index = document.getElementById("paymentMethods").value;
@@ -152,7 +162,7 @@ function savePaymentMethod() {
     }).then(loadProfile);
     bootstrap.Modal.getInstance(document.getElementById("editPaymentModal")).hide();
 }
-
+// Fügt eine neue Zahlungsmethode hinzu
 function addPaymentMethod() {
     if (!validatePaymentForm()) return alert("Bitte alle Felder ausfüllen.");
     const method = {
@@ -169,6 +179,7 @@ function addPaymentMethod() {
     bootstrap.Modal.getInstance(document.getElementById("editPaymentModal")).hide();
 }
 
+// Löscht eine Zahlungsmethode nach Bestätigung
 function deletePaymentMethod() {
     if (!confirm("Diese Zahlungsmethode wirklich löschen?")) return;
     const index = document.getElementById("paymentMethods").value;
@@ -178,6 +189,7 @@ function deletePaymentMethod() {
     }).then(loadProfile);
 }
 
+// Speichert Änderungen an einer bestehenden Lieferadresse
 function saveAddress() {
     if (!validateAddressForm()) return alert("Bitte alle Felder ausfüllen.");
     const index = document.getElementById("addresses").value;
@@ -196,6 +208,7 @@ function saveAddress() {
     bootstrap.Modal.getInstance(document.getElementById("editAddressModal")).hide();
 }
 
+// Fügt eine neue Lieferadresse hinzu
 function addAddress() {
     if (!validateAddressForm()) return alert("Bitte alle Felder ausfüllen.");
     const address = {
@@ -212,6 +225,7 @@ function addAddress() {
     bootstrap.Modal.getInstance(document.getElementById("editAddressModal")).hide();
 }
 
+// Löscht eine Lieferadresse nach Bestätigung
 function deleteAddress() {
     if (!confirm("Diese Adresse wirklich löschen?")) return;
     const index = document.getElementById("addresses").value;
@@ -221,6 +235,7 @@ function deleteAddress() {
     }).then(loadProfile);
 }
 
+// Leert die Eingabefelder im Zahlungsformular
 function clearPaymentForm() {
     document.getElementById("editCardHolder").value = "";
     document.getElementById("editCardNumber").value = "";
@@ -228,12 +243,15 @@ function clearPaymentForm() {
     document.getElementById("editCVV").value = "";
 }
 
+// Leert die Eingabefelder im Adressformular
 function clearAddressForm() {
     document.getElementById("editStreet").value = "";
     document.getElementById("editCity").value = "";
     document.getElementById("editPostal").value = "";
     document.getElementById("editCountry").value = "";
 }
+
+// Öffnet das Modal zur Bearbeitung der Benutzerdaten und füllt die Felder vor
 function openUserEditModal() {
     document.getElementById("editEmail").value = profile.email;
     document.getElementById("editFirstName").value = profile.firstName;
@@ -242,6 +260,8 @@ function openUserEditModal() {
 
     new bootstrap.Modal(document.getElementById("editUserModal")).show();
 }
+
+// Sendet geänderte Benutzerdaten an den Server
 
 function saveUserData() {
     const updatedUser = {
@@ -267,6 +287,9 @@ function saveUserData() {
         })
         .catch(err => alert("Fehler: " + err.message));
 }
+
+// Öffnet das Passwort-Ändern-Modal und leert die Felder
+
 function openChangePasswordModal() {
     document.getElementById("currentPassword").value = "";
     document.getElementById("newPassword").value = "";
@@ -274,6 +297,7 @@ function openChangePasswordModal() {
     new bootstrap.Modal(document.getElementById("changePasswordModal")).show();
 }
 
+// Sendet neues Passwort an den Server
 function changePassword() {
     const currentPassword = document.getElementById("currentPassword").value;
     const newPassword = document.getElementById("newPassword").value;
@@ -302,7 +326,7 @@ function changePassword() {
         .catch(err => alert("Fehler: " + err.message));
 }
 
-
+// Öffnet das Modal zur Bearbeitung der Rechnungsadresse und füllt es mit aktuellen Werten
 function openBillingEditModal() {
     document.getElementById("billingCountry").value = profile.country || "";
     document.getElementById("billingAddress").value = profile.address || "";
