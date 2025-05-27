@@ -23,7 +23,8 @@ function loadProfile() {
             profile.paymentMethods.forEach((method, index) => {
                 const opt = document.createElement("option");
                 opt.value = index;
-                opt.textContent = `${method.cardHolderName} - ${method.cardNumber}`;
+                const maskedNumber = "*".repeat(method.cardNumber.length - 4) + method.cardNumber.slice(-4);
+                opt.textContent = `${method.cardHolderName} - ${maskedNumber}`;
                 paymentSelect.appendChild(opt);
             });
 
@@ -52,7 +53,8 @@ function prefillPaymentForm() {
     const index = document.getElementById("paymentMethods").value;
     const selected = profile.paymentMethods[index];
     document.getElementById("cardHolderName").textContent = selected.cardHolderName;
-    document.getElementById("cardNumber").textContent = selected.cardNumber;
+    document.getElementById("cardNumber").textContent =
+        "*".repeat(selected.cardNumber.length - 4) + selected.cardNumber.slice(-4);
     document.getElementById("expiryDate").textContent = selected.expiryDate;
     document.getElementById("cvv").textContent = selected.cvv;
     document.getElementById("editCardHolder").value = selected.cardHolderName;
@@ -75,10 +77,45 @@ function prefillAddressForm() {
 }
 
 function validatePaymentForm() {
-    return document.getElementById("editCardHolder").value &&
-        document.getElementById("editCardNumber").value &&
-        document.getElementById("editExpiry").value &&
-        document.getElementById("editCVV").value;
+    const cardHolder = document.getElementById("editCardHolder").value.trim();
+    const cardNumber = document.getElementById("editCardNumber").value.trim();
+    const expiry = document.getElementById("editExpiry").value.trim();
+    const cvv = document.getElementById("editCVV").value.trim();
+
+    // Karteninhaber: nur Buchstaben und Leerzeichen
+    if (!/^[A-Za-zÄÖÜäöüß\s]+$/.test(cardHolder)) {
+        alert("Der Karteninhaber darf nur Buchstaben und Leerzeichen enthalten.");
+        return false;
+    }
+
+    // Kartennummer: nur Zahlen, 13-19 Stellen
+    if (!/^\d{13,19}$/.test(cardNumber)) {
+        alert("Die Kartennummer muss 13 bis 19 Ziffern enthalten.");
+        return false;
+    }
+
+    // CVV: genau 3 Ziffern
+    if (!/^\d{3}$/.test(cvv)) {
+        alert("CVV muss genau 3 Ziffern enthalten.");
+        return false;
+    }
+
+    // Ablaufdatum im Format MM/YY
+    if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(expiry)) {
+        alert("Das Ablaufdatum muss im Format MM/YY sein.");
+        return false;
+    }
+
+    // Ablaufdatum darf nicht in der Vergangenheit liegen
+    const [month, year] = expiry.split("/").map(Number);
+    const now = new Date();
+    const expiryDate = new Date(2000 + year, month);
+    if (expiryDate <= now) {
+        alert("Die Karte ist abgelaufen.");
+        return false;
+    }
+
+    return true;
 }
 
 function validateAddressForm() {
