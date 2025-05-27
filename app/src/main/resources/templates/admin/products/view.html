@@ -4,22 +4,228 @@
 <body>
 <div th:replace="~{fragments/header :: header}"></div>
 
-<main class="container my-4">
-    <h2>Products</h2>
-    <div id="product-grid" class="row">
-        <!-- Products will be inserted here by JavaScript -->
-    </div>
-    <div id="pagination-controls" class="d-flex justify-content-center mt-4">
-        <!-- Pagination buttons will be inserted here -->
-    </div>
-    <div class="mb-3">
-        <a href="/admin/products/add" class="btn btn-success">Produkt hinzufügen</a>
+<main class="container my-4" id="product-container">
+    <h2 class="mb-4">Produktdetails</h2>
+    <div class="row">
+        <!-- Produktbild -->
+        <div class="col-md-6">
+            <img id="productImage" class="img-fluid border rounded" alt="Produktbild">
+        </div>
+        <!-- Produktinformationen -->
+        <div class="col-md-6">
+            <h3 id="productName"></h3>
+            <p id="productDescription"></p>
+            <p><strong>Kategorie:</strong> <span id="productCategory"></span></p>
+            <p><strong>Preis:</strong> <span id="productPrice"></span>€</p>
+            <p><strong>Durchschnittliche Bewertung:</strong> <span id="productAvgRating"></span> / 5</p>
+            <p><strong>Bestand:</strong> <span id="productStock"></span></p>
+            <div class="mt-4">
+                <a th:href="@{/admin/products}" class="btn btn-secondary">Zurück zur Liste</a>
+                <button type="button" class="btn btn-warning" onclick="openEditModal()">Bearbeiten</button>
+                <button class="btn btn-danger" onclick="deleteProduct()">Löschen</button>
+            </div>
+        </div>
     </div>
 </main>
 
+<!-- Edit Product Modal -->
+<div class="modal fade" id="editProductModal" tabindex="-1" aria-labelledby="editProductModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="editProductForm">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editProductModalLabel">Produkt bearbeiten</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="editProductName" class="form-label">Name</label>
+                        <input type="text" class="form-control" id="editProductName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editProductDescription" class="form-label">Beschreibung</label>
+                        <textarea class="form-control" id="editProductDescription" rows="2" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editProductCategory" class="form-label">Kategorie</label>
+                        <select class="form-select" id="editProductCategory" required></select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editProductPrice" class="form-label">Preis (€)</label>
+                        <input type="number" class="form-control" id="editProductPrice" step="0.01" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editProductStock" class="form-label">Bestand</label>
+                        <input type="number" class="form-control" id="editProductStock" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                    <button type="submit" class="btn btn-primary">Speichern</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <div th:replace="~{fragments/footer :: footer}"></div>
 
-<!-- Custom JavaScript for product grid and pagination -->
-<script src="/scripts/products.js"></script>
+<!-- Bootstrap Bundle JS (for modal) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    // Get productId from URL (?id=1)
+    const params = new URLSearchParams(window.location.search);
+    const productId = params.get("id");
+
+    let currentProductRawData = null; // Latest product data
+    let categories = []; // Category list from API
+
+    function renderProductDetails(data) {
+        document.getElementById('productName').textContent = data.name || '';
+        document.getElementById('productDescription').textContent = data.description || '';
+        document.getElementById('productCategory').textContent = (data.categoryID && data.categoryID.name) ? data.categoryID.name : '';
+        document.getElementById('productPrice').textContent = data.price != null ? data.price.toFixed(2).replace('.', ',') : '';
+        document.getElementById('productAvgRating').textContent = data.avgRating != null ? Number(data.avgRating).toFixed(2) : '—';
+        document.getElementById('productStock').textContent = data.stock != null ? data.stock : '';
+        document.getElementById('productImage').src = data.imageURL || '';
+    }
+
+    function fetchAndRenderProduct() {
+        fetch('/api/admin/products/' + productId)
+            .then(response => {
+                if (!response.ok) throw new Error('Netzwerk-Antwort war nicht ok.');
+                return response.json();
+            })
+            .then(responseJson => {
+                if (responseJson && responseJson.data) {
+                    currentProductRawData = responseJson.data;
+                    renderProductDetails(responseJson.data);
+                } else {
+                    throw new Error('Antwort enthält keine Produktdaten.');
+                }
+            })
+            .catch(error => {
+                alert('Fehler beim Laden der Produktdaten.');
+                console.error('Fetch-Fehler:', error);
+            });
+    }
+
+    function fetchCategories() {
+        return fetch('/api/categories')
+            .then(response => {
+                if (!response.ok) throw new Error('Kategorien konnten nicht geladen werden.');
+                return response.json();
+            })
+            .then(data => {
+                categories = data;
+                return categories;
+            })
+            .catch(error => {
+                alert('Fehler beim Laden der Kategorien.');
+                console.error(error);
+                return [];
+            });
+    }
+
+    function populateCategorySelect(selectedCategoryId) {
+        const select = document.getElementById('editProductCategory');
+        select.innerHTML = '';
+        categories.forEach(cat => {
+            const option = document.createElement('option');
+            option.value = cat.id;
+            option.textContent = cat.name;
+            if (cat.id === selectedCategoryId) {
+                option.selected = true;
+            }
+            select.appendChild(option);
+        });
+    }
+
+    async function openEditModal() {
+        try {
+            // Fetch categories and product in parallel
+            const [catList, productRes] = await Promise.all([
+                categories.length ? Promise.resolve(categories) : fetchCategories(),
+                fetch('/api/admin/products/' + productId).then(r => r.ok ? r.json() : Promise.reject('Fehler beim Produktladen'))
+            ]);
+            const product = productRes.data;
+            currentProductRawData = product;
+
+            populateCategorySelect(product.categoryID ? product.categoryID.id : null);
+
+            document.getElementById('editProductName').value = product.name || '';
+            document.getElementById('editProductDescription').value = product.description || '';
+            document.getElementById('editProductPrice').value = product.price != null ? product.price : '';
+            document.getElementById('editProductStock').value = product.stock != null ? product.stock : '';
+
+            // Show modal
+            var editModal = new bootstrap.Modal(document.getElementById('editProductModal'));
+            editModal.show();
+        } catch (error) {
+            alert('Fehler beim Öffnen des Bearbeitungsdialogs.');
+            console.error(error);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', async function() {
+        // Fetch and render product, categories
+        fetchAndRenderProduct();
+        await fetchCategories(); // Preload for edit
+
+        document.getElementById('editProductForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const updatedProduct = {
+                name: document.getElementById('editProductName').value,
+                description: document.getElementById('editProductDescription').value,
+                categoryName: document.getElementById('editProductCategory').value,
+                price: parseFloat(document.getElementById('editProductPrice').value),
+                stock: parseInt(document.getElementById('editProductStock').value)
+            };
+
+            fetch('/api/admin/products/' + productId, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updatedProduct)
+            })
+                .then(response => {
+                    if (response.ok) {
+                        var editModalEl = document.getElementById('editProductModal');
+                        var modal = bootstrap.Modal.getInstance(editModalEl);
+                        modal.hide();
+                        fetchAndRenderProduct();
+                        alert('Produkt erfolgreich aktualisiert!');
+                    } else {
+                        alert('Fehler beim Aktualisieren des Produkts.');
+                    }
+                })
+                .catch(error => {
+                    console.error("Fehler:", error);
+                    alert('Ein unerwarteter Fehler ist aufgetreten.');
+                });
+        });
+    });
+
+    function deleteProduct() {
+        if (confirm("Möchten Sie dieses Produkt wirklich löschen?")) {
+            fetch('/api/admin/products/' + productId, {
+                method: 'DELETE'
+            })
+                .then(response => {
+                    if (response.ok) {
+                        alert("Produkt erfolgreich gelöscht.");
+                        window.location.href = '/admin/products';
+                    } else {
+                        alert("Fehler beim Löschen des Produkts.");
+                    }
+                })
+                .catch(error => {
+                    console.error("Fehler:", error);
+                    alert("Ein unerwarteter Fehler ist aufgetreten.");
+                });
+        }
+    }
+</script>
 </body>
 </html>
