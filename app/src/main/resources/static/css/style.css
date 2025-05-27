@@ -3,7 +3,7 @@ html, body {
 }
 
 body {
-    background-color: mediumpurple;
+    background-color: rgb(192, 192, 255);
     display: flex;
     flex-direction: column;
 }
