@@ -2,14 +2,24 @@ package at.fhtw.webshop.service;
 
 import at.fhtw.webshop.dto.admin.ProductListItemDto;
 import at.fhtw.webshop.dto.product.ProductUpdateDto;
+import at.fhtw.webshop.dto.product.ReviewDto;
+import at.fhtw.webshop.exception.ProductNotFoundException;
+import at.fhtw.webshop.exception.UserAlreadyReviewedException;
+import at.fhtw.webshop.exception.UserNotFoundException;
 import at.fhtw.webshop.model.Category;
 import at.fhtw.webshop.dto.ProductAddDto;
 import at.fhtw.webshop.dto.product.ProductDto;
 import at.fhtw.webshop.model.Product;
 import at.fhtw.webshop.dto.ProductSearchCriteria;
+import at.fhtw.webshop.model.Review;
+import at.fhtw.webshop.model.User;
 import at.fhtw.webshop.repository.CategoryRepository;
 import at.fhtw.webshop.repository.ProductRepository;
+import at.fhtw.webshop.repository.ReviewRepository;
+import at.fhtw.webshop.repository.UserRepository;
+import at.fhtw.webshop.security.CustomUserDetails;
 import at.fhtw.webshop.specifications.ProductSpecifications;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
@@ -19,6 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.io.File;
 import java.io.IOException;
@@ -28,6 +39,8 @@ import java.util.UUID;
 public class ProductService {
 
     private final CategoryRepository categoryRepository;
+    private final UserRepository userRepository;
+    private final ReviewRepository reviewRepository;
 
     @Value("${output.path.product.images}")
     private String imageUploadDir;
@@ -35,9 +48,11 @@ public class ProductService {
     ProductRepository productRepository;
     private static final Logger logger = LoggerFactory.getLogger(ProductService.class);
 
-    public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository) {
+    public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository, UserRepository userRepository, ReviewRepository reviewRepository) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
+        this.userRepository = userRepository;
+        this.reviewRepository = reviewRepository;
     }
 
     // Löscht ein Produkt anhand der ID
@@ -162,6 +177,44 @@ public class ProductService {
 
         return productRepository.findAll(ProductSpecifications.withCriteria(criteria)).stream()
                 .map(this::mapToDto)
+                .toList();
+    }
+
+    public void newProductReview(CustomUserDetails userDetails, Integer productId, @Valid ReviewDto reviewDto) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new ProductNotFoundException(productId));
+
+        User user = userRepository.findById(userDetails.getId())
+                .orElseThrow(() -> new UserNotFoundException(userDetails.getId()));
+
+        if (reviewRepository.existsByProductIDAndUserID(product, user)) {
+            throw new UserAlreadyReviewedException(productId, userDetails.getId());
+        }
+
+        Review review = new Review();
+        review.setReview(reviewDto.getReview());
+        review.setProductID(product);
+        review.setUserID(user);
+        review.setRating(reviewDto.getRating());
+        reviewRepository.save(review);
+
+        List<Review> productReview =  reviewRepository.findByProductID(product);
+        double avgRating = productReview.stream()
+                .mapToInt(Review::getRating)
+                .average()
+                .orElse(0.0);
+
+        product.setAvgRating(BigDecimal.valueOf(avgRating));
+        productRepository.save(product);
+    }
+
+    public List<ReviewDto> getReviewsForProduct(Integer productId) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new ProductNotFoundException(productId));
+        List<Review> reviews = reviewRepository.findByProductID(product);
+
+        return reviews.stream()
+                .map(review -> new ReviewDto(review.getReview(), review.getRating()))
                 .toList();
     }
 }

@@ -73,8 +73,8 @@ public class UserService {
                 .stream()
                 .map(paymentMethod -> new PaymentMethodDto(
                         paymentMethod.getId(),
-                        paymentMethod.getCardHolderName(),
                         paymentMethod.getCardNumber(),
+                        paymentMethod.getCardHolderName(),
                         paymentMethod.getExpiryDate(),
                         paymentMethod.getCvv()
                 ))
@@ -118,6 +118,7 @@ public class UserService {
         }
         return fillProfileDto(user);
     }
+
     public void updateUserDetails(String username, UserUpdateDto dto) {
         User user = userRepository.findByUsername(username);
         if (user == null) throw new IllegalArgumentException("Benutzer nicht gefunden");
