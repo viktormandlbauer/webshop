@@ -2,6 +2,7 @@ package at.fhtw.webshop.controller.rest;
 
 import at.fhtw.webshop.dto.ProductAddDto;
 import at.fhtw.webshop.dto.product.ProductDto;
+import at.fhtw.webshop.dto.product.ProductUpdateDto;
 import at.fhtw.webshop.service.OrderService;
 import at.fhtw.webshop.service.ProductService;
 import at.fhtw.webshop.service.UserService;
@@ -106,6 +107,21 @@ public class AdminRestController {
         }
     }
 
+    @GetMapping("/orders/{id}")
+    public ResponseEntity<Object> getOrderByIdAsAdmin(@PathVariable int id) {
+        try {
+            return ResponseEntity.ok(Map.of(
+                    "status", "success",
+                    "data", orderService.getOrderDetailsById(id)
+            ));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
+                    "status", "error",
+                    "message", "Failed to retrieve order: " + e.getMessage()
+            ));
+        }
+    }
+
     @GetMapping("/products")
     public ResponseEntity<Object> getProductsAsAdmin(Pageable pageable) {
         try {
@@ -153,9 +169,9 @@ public class AdminRestController {
     }
 
     @PutMapping("/products/{id}")
-    public ResponseEntity<Object> updateProductAsAdmin(@PathVariable("id") int productId, @Valid @RequestBody ProductDto productDto) {
+    public ResponseEntity<Object> updateProductAsAdmin(@PathVariable("id") int productId, @Valid @RequestBody ProductUpdateDto productUpdateDto) {
         try {
-            productService.updateProduct(productId, productDto);
+            productService.updateProduct(productId, productUpdateDto);
 
             return ResponseEntity.ok(Map.of(
                     "status", "success",

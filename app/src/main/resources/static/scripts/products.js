@@ -317,47 +317,6 @@ function searchProducts(query) {
         });
 }
 
-// Sendet das Produktformular (Add Product)
-// Sendet das Produktformular (Add Product) mit Dropzone-Integration
-async function handleProductUpload(event) {
-    event.preventDefault();
-
-    const form = document.getElementById('product-form');
-    const formData = new FormData(form);
-    const message = document.getElementById('product-message');
-    const dropzone = Dropzone.forElement("div.my-dropzone");
-
-    try {
-        // Überprüfen, ob eine Datei in der Dropzone vorhanden ist
-        if (dropzone.getQueuedFiles().length > 0) {
-            // Füge die Datei aus der Dropzone zum FormData hinzu
-            dropzone.getQueuedFiles().forEach(file => {
-                formData.append("imageFile", file);
-            });
-        } else {
-            throw new Error("Bitte ein Bild hochladen.");
-        }
-
-        const response = await fetch('/api/admin/products/add', {
-            method: 'POST',
-            body: formData
-        });
-
-        if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(errorText || 'Fehler beim Speichern');
-        }
-
-        message.textContent = 'Produkt erfolgreich hinzugefügt!';
-        message.className = 'message success';
-        form.reset();
-        dropzone.removeAllFiles(); // Entfernt die Dateien aus der Dropzone
-    } catch (error) {
-        message.textContent = error.message || 'Fehler beim Hochladen';
-        message.className = 'message error';
-    }
-}
-
 // Lädt alle verfügbaren Kategorien beim Seitenstart
 async function loadCategories() {
     const categorySelect = document.getElementById('productCategory');

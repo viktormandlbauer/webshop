@@ -1,6 +1,7 @@
 package at.fhtw.webshop.service;
 
 import at.fhtw.webshop.dto.admin.ProductListItemDto;
+import at.fhtw.webshop.dto.product.ProductUpdateDto;
 import at.fhtw.webshop.model.Category;
 import at.fhtw.webshop.dto.ProductAddDto;
 import at.fhtw.webshop.dto.product.ProductDto;
@@ -46,18 +47,18 @@ public class ProductService {
     }
 
     // Aktualisiert ein bestehendes Produkt
-    public void updateProduct(int productId, ProductDto productDto) {
+    public void updateProduct(int productId, ProductUpdateDto productUpdateDto) {
 
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new RuntimeException("Product not found with ID: " + productId));
 
-        product.setName(productDto.getName());
-        product.setDescription(productDto.getDescription());
-        product.setPrice(productDto.getPrice());
-        product.setStock(productDto.getStock());
-        Category category = categoryRepository.findByName(productDto.getCategoryName());
+        product.setName(productUpdateDto.getName());
+        product.setDescription(productUpdateDto.getDescription());
+        product.setPrice(productUpdateDto.getPrice());
+        product.setStock(productUpdateDto.getStock());
+        Category category = categoryRepository.findById(productUpdateDto.getCategoryId())
+                .orElseThrow(() -> new RuntimeException("Category not found with ID: " + productUpdateDto.getCategoryId()));
         product.setCategoryID(category);
-        product.setAvgRating(productDto.getAvgRating());
 
         productRepository.save(product);
     }

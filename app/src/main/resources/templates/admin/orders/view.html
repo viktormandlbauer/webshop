@@ -1,10 +1,137 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(title='Bestelldetails')}"></head>
 <body>
+<div th:replace="~{fragments/header :: header}"></div>
 
+<main class="container my-4">
+    <h2>Bestelldetails</h2>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <dl class="row" id="order-details">
+                <!-- Order details will be rendered here -->
+            </dl>
+        </div>
+    </div>
+
+    <h4>Rechnungsadresse</h4>
+    <div id="billing-address" class="mb-4"></div>
+
+    <h4>Lieferadresse</h4>
+    <div id="shipping-address" class="mb-4"></div>
+
+    <h4>Artikel</h4>
+    <div class="table-responsive mb-3">
+        <table class="table table-bordered table-striped">
+            <thead>
+            <tr>
+                <th>Produkt-ID</th>
+                <th>Produktname</th>
+                <th>Menge</th>
+                <th>Stückpreis (€)</th>
+                <th>Summe (€)</th>
+            </tr>
+            </thead>
+            <tbody id="order-items">
+            <!-- Items will be rendered here -->
+            </tbody>
+        </table>
+    </div>
+
+    <div class="text-end">
+        <h5>Gesamtsumme: <span id="order-total">0,00</span> €</h5>
+    </div>
+
+    <div class="mt-4 d-flex gap-2">
+        <a href="/admin/orders" class="btn btn-secondary">Zurück zur Bestellübersicht</a>
+        <a id="receipt-link" href="#" class="btn btn-outline-primary" target="_blank">Rechnung anzeigen</a>
+    </div>
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", async () => {
+        const params = new URLSearchParams(window.location.search);
+        const orderId = params.get("id");
+
+        if (!orderId) {
+            alert("Keine Bestell-ID angegeben.");
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/admin/orders/${orderId}`);
+            const result = await response.json();
+            const order = result.data;
+
+            renderOrderDetails(order);
+            renderAddress(order.billingAddress, "billing-address");
+            renderAddress(order.shippingAddress, "shipping-address");
+            renderItems(order.items);
+            document.getElementById("order-total").textContent = order.total.toFixed(2);
+
+            // Set receipt URL
+            const receiptUrl = `/api/orders/receipt?orderId=${order.orderId}`;
+            document.getElementById("receipt-link").href = receiptUrl;
+
+        } catch (error) {
+            console.error("Fehler beim Laden der Bestellung:", error);
+            document.getElementById("order-details").innerHTML =
+                "<p class='text-danger'>Fehler beim Laden der Bestelldaten.</p>";
+        }
+    });
+
+    function renderOrderDetails(order) {
+        const container = document.getElementById("order-details");
+        const dateFormatted = new Date(order.date).toLocaleString("de-AT");
+
+        container.innerHTML = `
+      <dt class="col-sm-3">Bestellnummer</dt>
+      <dd class="col-sm-9">${order.orderId}</dd>
+
+      <dt class="col-sm-3">Datum</dt>
+      <dd class="col-sm-9">${dateFormatted}</dd>
+
+      <dt class="col-sm-3">Kunde</dt>
+      <dd class="col-sm-9">${order.customerName}</dd>
+    `;
+    }
+
+    function renderAddress(address, containerId) {
+        const container = document.getElementById(containerId);
+        if (!address) {
+            container.innerHTML = "<p>Keine Adresse verfügbar.</p>";
+            return;
+        }
+
+        container.innerHTML = `
+      <div class="border rounded p-3 mb-2">
+        <strong>${address.streetAddress}</strong><br>
+        ${address.postalCode} ${address.city}<br>
+        ${address.country}
+      </div>
+    `;
+    }
+
+    function renderItems(items = []) {
+        const container = document.getElementById("order-items");
+        if (items.length === 0) {
+            container.innerHTML = "<tr><td colspan='5'>Keine Artikel vorhanden.</td></tr>";
+            return;
+        }
+
+        container.innerHTML = items.map(item => `
+      <tr>
+        <td>${item.productId}</td>
+        <td>${item.productName}</td>
+        <td>${item.quantity}</td>
+        <td>${item.pricePerUnit.toFixed(2)}</td>
+        <td>${item.sum.toFixed(2)}</td>
+      </tr>
+    `).join("");
+    }
+</script>
 </body>
 </html>

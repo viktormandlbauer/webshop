@@ -200,4 +200,52 @@ public class OrderService {
 
         return order.getId();
     }
+
+    private OrderDto mapToOrderDto(Order order) {
+        OrderDto orderDto = new OrderDto();
+        orderDto.setOrderId(order.getId());
+        orderDto.setTotal(order.getSumPrice());
+        orderDto.setDate(order.getCreatedDate().atZone(ZoneId.systemDefault()).toLocalDate());
+        return orderDto;
+    }
+
+    public ReceiptDto getOrderDetailsById(int orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new IllegalArgumentException("Bestellung nicht gefunden"));
+
+        ReceiptDto receiptDto = new ReceiptDto();
+        receiptDto.setOrderId(order.getId());
+        receiptDto.setCustomerName(order.getUserID().getFirstName() + " " + order.getUserID().getLastName());
+        receiptDto.setBillingAddress(
+                new AddressDto(
+                        order.getBillingAddressID().getStreetAddress(),
+                        order.getBillingAddressID().getCity(),
+                        order.getBillingAddressID().getPostalCode(),
+                        order.getBillingAddressID().getCountry()
+                )
+        );
+        receiptDto.setShippingAddress(
+                new AddressDto(
+                        order.getShippingAddressID().getStreetAddress(),
+                        order.getShippingAddressID().getCity(),
+                        order.getShippingAddressID().getPostalCode(),
+                        order.getShippingAddressID().getCountry()
+                )
+        );
+        receiptDto.setTotal(order.getSumPrice());
+        receiptDto.setDate(order.getCreatedDate().atZone(ZoneId.systemDefault()).toLocalDateTime());
+        receiptDto.setItems(new ArrayList<>());
+        for (OrderItem orderItem : orderItemRepository.findByOrderID(order)) {
+            Product product = orderItem.getProductID();
+            ReceiptItemDto receiptItemDto = new ReceiptItemDto();
+            receiptItemDto.setProductId(product.getId());
+            receiptItemDto.setProductName(product.getName());
+            receiptItemDto.setQuantity(orderItem.getQuantity());
+            receiptItemDto.setPricePerUnit(product.getPrice());
+            receiptItemDto.setSum(product.getPrice().multiply(BigDecimal.valueOf(orderItem.getQuantity())));
+            receiptDto.getItems().add(receiptItemDto);
+        }
+
+        return receiptDto;
+    }
 }

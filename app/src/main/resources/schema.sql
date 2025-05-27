@@ -93,13 +93,13 @@ CREATE TABLE IF NOT EXISTS `Order`
 (
     OrderID   INT AUTO_INCREMENT PRIMARY KEY,
     UserID    INT            NOT NULL,
-    Status   ENUM ('Pending', 'Delivered', 'Cancelled') NOT NULL DEFAULT 'Pending',
+    Status    ENUM ('Pending', 'Delivered', 'Cancelled') NOT NULL DEFAULT 'Pending',
     ShippingAddressID INT NOT NULL,
-    BillingAddressID INT NOT NULL,
-    PaymentMethodID INT NOT NULL,
-    PdfFilePath VARCHAR(255),
-    CreatedDate DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    SumPrice  DECIMAL(10, 2) NOT NULL,
+    BillingAddressID  INT NOT NULL,
+    PaymentMethodID   INT NOT NULL,
+    PdfFilePath       VARCHAR(255),
+    CreatedDate       DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    SumPrice          DECIMAL(10, 2) NOT NULL,
     FOREIGN KEY (UserID) REFERENCES User (UserID) ON DELETE CASCADE,
     FOREIGN KEY (ShippingAddressID) REFERENCES Address (AddressID) ON DELETE CASCADE,
     FOREIGN KEY (BillingAddressID) REFERENCES Address (AddressID) ON DELETE CASCADE,
@@ -113,10 +113,11 @@ CREATE TABLE IF NOT EXISTS OrderItem
     ProductID   INT NOT NULL,
     OrderID     INT NOT NULL,
     Quantity    INT NOT NULL CHECK (Quantity > 0),
-    FOREIGN KEY (ProductID) REFERENCES Product (ProductID) ON DELETE RESTRICT,
+    FOREIGN KEY (ProductID) REFERENCES Product (ProductID) ON DELETE CASCADE,
     FOREIGN KEY (OrderID) REFERENCES `Order` (OrderID) ON DELETE CASCADE
     );
 
+-- Insert default categories
 INSERT IGNORE INTO Category (Name)
 VALUES
     ('Action'),
@@ -129,3 +130,17 @@ VALUES
     ('MOBA'),
     ('Survival'),
     ('Open World');
+
+
+-- Insert default administrator user
+START TRANSACTION;
+
+INSERT IGNORE INTO Address (UserID, PostalCode, Country, City, StreetAddress)
+VALUES (NULL, '1020', 'Austria', 'Wien', 'Höchstädtpl. 6');
+
+SET @AddressID = LAST_INSERT_ID();
+
+INSERT IGNORE INTO `User` (UserID, Email, Username, Password, FirstName, LastName, Salutation, BillingAddressId, DateOfBirth, `ROLE`)
+VALUES (1, 'site.administrator@gg.at', 'administrator', '$2a$10$cJIGQaSAgDgfGMknPTyy/.8Ka3UcX.YiFMZ55bGv.qBetiAe3wmDm', 'Site', 'Administrator', 'divers', @AddressID, '1970-01-01', 'ADMIN');
+
+COMMIT;
