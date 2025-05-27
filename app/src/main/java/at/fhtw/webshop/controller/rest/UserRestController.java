@@ -39,7 +39,7 @@ class UserRestController {
     User getUser(@PathVariable Integer id) {
 
         return repository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException("User with id " + id + " not found"));
+                .orElseThrow(() -> new UserNotFoundException(id));
     }
 
     @PutMapping("/users/{id}")

@@ -49,17 +49,27 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("addresses").addEventListener("change", () => prefillAddressForm());
 });
 
+function convertToExpiryDateFromLocalDate(expiry) {
+    const [year, month] = expiry.split("-");
+    return `${month}/${year.slice(-2)}`;
+}
+
+function convertToLocalDateFromExpiryDate(expiry) {
+    const [month, year] = expiry.split("/");
+    return `20${year}-${month}-01`;
+}
+
 function prefillPaymentForm() {
     const index = document.getElementById("paymentMethods").value;
     const selected = profile.paymentMethods[index];
     document.getElementById("cardHolderName").textContent = selected.cardHolderName;
     document.getElementById("cardNumber").textContent =
         "*".repeat(selected.cardNumber.length - 4) + selected.cardNumber.slice(-4);
-    document.getElementById("expiryDate").textContent = selected.expiryDate;
+    document.getElementById("expiryDate").textContent = convertToExpiryDateFromLocalDate(selected.expiryDate);
     document.getElementById("cvv").textContent = selected.cvv;
     document.getElementById("editCardHolder").value = selected.cardHolderName;
     document.getElementById("editCardNumber").value = selected.cardNumber;
-    document.getElementById("editExpiry").value = selected.expiryDate;
+    document.getElementById("editExpiry").value = convertToExpiryDateFromLocalDate(selected.expiryDate);
     document.getElementById("editCVV").value = selected.cvv;
 }
 
@@ -148,7 +158,7 @@ function addPaymentMethod() {
     const method = {
         cardHolderName: document.getElementById("editCardHolder").value,
         cardNumber: document.getElementById("editCardNumber").value,
-        expiryDate: document.getElementById("editExpiry").value,
+        expiryDate: convertToLocalDateFromExpiryDate(document.getElementById("editExpiry").value),
         cvv: document.getElementById("editCVV").value
     };
     fetch(`/api/profile/payment-method/add`, {
