@@ -1,6 +1,21 @@
 let currentPage = 0;
 let pageSize = 10;
 
+// Render stars for average rating (can show half stars)
+function renderAvgStars(avg) {
+    let html = "";
+    for (let i = 1; i <= 5; i++) {
+        if (avg >= i) {
+            html += '<i class="fa-solid fa-star text-warning"></i>';
+        } else if (avg >= i - 0.5) {
+            html += '<i class="fa-solid fa-star-half-stroke text-warning"></i>';
+        } else {
+            html += '<i class="fa-regular fa-star"></i>';
+        }
+    }
+    return html;
+}
+
 document.addEventListener("DOMContentLoaded", () => {
     const pageSizeSelect = document.getElementById("pageSizeSelect");
     pageSizeSelect.addEventListener("change", () => {
@@ -24,8 +39,8 @@ async function loadProducts(page) {
     } catch (error) {
         console.error("Fehler beim Laden der Produkte:", error);
         document.getElementById("product-table-body").innerHTML = `
-                <tr><td colspan="5" class="text-danger">Fehler beim Laden der Produktdaten.</td></tr>
-            `;
+            <tr><td colspan="6" class="text-danger">Fehler beim Laden der Produktdaten.</td></tr>
+        `;
     }
 }
 
@@ -39,23 +54,28 @@ function renderProductTable(products) {
         tr.onclick = () => {
             window.location.href = `/admin/products/view?id=${product.productId}`;
         };
+        const avg = product.averageRating || 0;
         tr.innerHTML = `
-                <td>${product.productId}</td>
-                <td>${product.name}</td>
-                <td>${product.category}</td>
-                <td>€${product.price.toFixed(2)}</td>
-                <td>${product.stock}</td>
-            `;
+            <td>${product.productId}</td>
+            <td>${product.name}</td>
+            <td>${product.category}</td>
+            <td>€${product.price.toFixed(2)}</td>
+            <td>${product.stock}</td>
+            <td>
+                ${renderAvgStars(avg)}
+                <span class="ms-2">${avg.toFixed(2)}</span>
+            </td>
+        `;
         tbody.appendChild(tr);
     });
 
     // Letzte Zeile: "Produkt hinzufügen"-Button über alle Spalten
     const addRow = document.createElement("tr");
     addRow.innerHTML = `
-            <td colspan="5" class="text-center">
-                <a href="/admin/products/add" class="btn btn-primary">+ Produkt hinzufügen</a>
-            </td>
-        `;
+        <td colspan="6" class="text-center">
+            <a href="/admin/products/add" class="btn btn-primary">+ Produkt hinzufügen</a>
+        </td>
+    `;
     tbody.appendChild(addRow);
 }
 
