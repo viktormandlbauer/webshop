@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TokenService } from '../auth/token.service';  // adjust path as needed
 
 @Component({
   selector: 'app-login',
@@ -15,7 +16,11 @@ export class LoginComponent {
   password = '';
   error = '';
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+    private tokenService: TokenService
+  ) {}
 
   login() {
     this.http.post<{ token: string }>('/api/auth/login', {
@@ -23,7 +28,7 @@ export class LoginComponent {
       password: this.password
     }).subscribe({
       next: (res) => {
-        localStorage.setItem('jwt', res.token);
+        this.tokenService.saveToken(res.token);  // ✅ use the service
         this.router.navigate(['/products']);
       },
       error: () => {
