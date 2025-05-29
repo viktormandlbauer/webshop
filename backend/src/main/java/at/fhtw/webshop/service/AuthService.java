@@ -114,4 +114,11 @@ public class AuthService {
 
         return loginUser(loginDto);
     }
+
+    public AuthDto refreshToken(CustomUserDetails userDetails) {
+        String newToken = jwtUtils.generateToken(userDetails);
+        return new AuthDto(newToken, userDetails.getUsername(), userDetails.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .toList());
+    }
 }

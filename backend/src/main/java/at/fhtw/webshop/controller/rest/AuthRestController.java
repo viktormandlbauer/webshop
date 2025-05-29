@@ -4,12 +4,16 @@ import at.fhtw.webshop.dto.AuthDto;
 import at.fhtw.webshop.dto.LoginDto;
 import at.fhtw.webshop.dto.RegistrationDto;
 import at.fhtw.webshop.exception.UserAlreadyExistsException;
+import at.fhtw.webshop.security.CustomUserDetails;
 import at.fhtw.webshop.service.AuthService;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import org.slf4j.Logger;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Map;
 
@@ -46,6 +50,17 @@ public class AuthRestController {
         } catch (RuntimeException e) {
             logger.error("Registration failed: {}", e.getMessage());
             return ResponseEntity.status(400).body(Map.of("status", "error", "message", "Registration failed"));
+        }
+    }
+
+    @GetMapping("/refresh")
+    public ResponseEntity<Object> refresh(@AuthenticationPrincipal(errorOnInvalidType = true) CustomUserDetails userDetails) {
+        try {
+            AuthDto authDto = authService.refreshToken(userDetails);
+            return ResponseEntity.ok(authDto);
+        } catch (RuntimeException e) {
+            logger.error("Token refresh failed: {}", e.getMessage());
+            return ResponseEntity.status(401).body(Map.of("status", "error", "message", "Token refresh failed"));
         }
     }
 }

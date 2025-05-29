@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { TokenService } from '../auth/token.service';  // adjust path as needed
+import { TokenService } from '../auth/token.service';
 
 @Component({
   selector: 'app-login',
@@ -28,7 +28,7 @@ export class LoginComponent {
       password: this.password
     }).subscribe({
       next: (res) => {
-        this.tokenService.saveToken(res.token);  // ✅ use the service
+        this.tokenService.setToken(res.token);
         this.router.navigate(['/products']);
       },
       error: () => {
