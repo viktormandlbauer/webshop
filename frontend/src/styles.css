@@ -1,1 +1,14 @@
 /* You can add global styles to this file, and also import other style files */
+html, body {
+    height: 100%;
+}
+
+body {
+    background-color: rgb(192, 192, 255);
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+}

@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { TokenService } from '../auth/token.service';
+import { TokenService } from '../token.service';
 
 @Component({
   selector: 'app-login',

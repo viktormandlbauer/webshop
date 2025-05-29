@@ -1,0 +1,89 @@
+<div class="container mt-5">
+  <h1 class="mb-4">Registrierungsformular</h1>
+  <form [formGroup]="registerForm" (ngSubmit)="register()">
+    <fieldset class="border p-4 mb-4">
+      <legend class="w-auto px-2">Persönliche Daten</legend>
+
+      <div class="mb-3">
+        <label for="salutation" class="form-label">Anrede</label>
+        <select id="salutation" class="form-select" formControlName="salutation" required>
+          <option value="">Bitte wählen</option>
+          <option value="herr">Herr</option>
+          <option value="frau">Frau</option>
+          <option value="divers">Divers</option>
+        </select>
+        <div *ngIf="registerForm.get('salutation')?.invalid && registerForm.get('salutation')?.touched" class="text-danger">Bitte wählen Sie eine Anrede.</div>
+      </div>
+
+      <div class="mb-3">
+        <label for="firstName" class="form-label">Vorname</label>
+        <input type="text" id="firstName" class="form-control" formControlName="firstName" required>
+        <div *ngIf="registerForm.get('firstName')?.invalid && registerForm.get('firstName')?.touched" class="text-danger">Vorname ist erforderlich.</div>
+      </div>
+
+      <div class="mb-3">
+        <label for="lastName" class="form-label">Nachname</label>
+        <input type="text" id="lastName" class="form-control" formControlName="lastName" required>
+        <div *ngIf="registerForm.get('lastName')?.invalid && registerForm.get('lastName')?.touched" class="text-danger">Nachname ist erforderlich.</div>
+      </div>
+
+      <div class="mb-3">
+        <label for="dateOfBirth" class="form-label">Geburtsdatum</label>
+        <input type="date" id="dateOfBirth" class="form-control" formControlName="dateOfBirth" required>
+        <div *ngIf="registerForm.get('dateOfBirth')?.invalid && registerForm.get('dateOfBirth')?.touched" class="text-danger">Geburtsdatum ist erforderlich.</div>
+      </div>
+
+      <div class="mb-3">
+        <label for="country" class="form-label">Land</label>
+        <input type="text" id="country" class="form-control" formControlName="country" required>
+        <div *ngIf="registerForm.get('country')?.invalid && registerForm.get('country')?.touched" class="text-danger">Land ist erforderlich.</div>
+      </div>
+
+      <div class="mb-3">
+        <label for="address" class="form-label">Adresse</label>
+        <input type="text" id="address" class="form-control" formControlName="address" required>
+        <div *ngIf="registerForm.get('address')?.invalid && registerForm.get('address')?.touched" class="text-danger">Adresse ist erforderlich.</div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-4 mb-3">
+          <label for="postalCode" class="form-label">PLZ</label>
+          <input type="text" id="postalCode" class="form-control" formControlName="postalCode" required>
+          <div *ngIf="registerForm.get('postalCode')?.invalid && registerForm.get('postalCode')?.touched" class="text-danger">PLZ ist erforderlich.</div>
+        </div>
+        <div class="col-md-8 mb-3">
+          <label for="city" class="form-label">Ort</label>
+          <input type="text" id="city" class="form-control" formControlName="city" required>
+          <div *ngIf="registerForm.get('city')?.invalid && registerForm.get('city')?.touched" class="text-danger">Ort ist erforderlich.</div>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label for="email" class="form-label">E-Mail-Adresse</label>
+        <input type="email" id="email" class="form-control" formControlName="email" required>
+        <div *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched" class="text-danger">
+          Bitte geben Sie eine gültige E-Mail-Adresse ein.
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label for="username" class="form-label">Benutzername</label>
+        <input type="text" id="username" class="form-control" formControlName="username" required>
+        <div *ngIf="registerForm.get('username')?.invalid && registerForm.get('username')?.touched" class="text-danger">Benutzername ist erforderlich.</div>
+      </div>
+
+      <div class="mb-3">
+        <label for="password" class="form-label">Passwort</label>
+        <input type="password" id="password" class="form-control" formControlName="password" required minlength="8">
+        <div *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched" class="text-danger">
+          Passwort ist erforderlich (mind. 8 Zeichen).
+        </div>
+      </div>
+    </fieldset>
+
+    <button type="submit" class="btn btn-dark" [disabled]="registerForm.invalid">Registrieren</button>
+
+    <p class="message text-danger mt-2" *ngIf="errorMessage">{{ errorMessage }}</p>
+    <p class="message text-success mt-2" *ngIf="successMessage">{{ successMessage }}</p>
+  </form>
+</div>

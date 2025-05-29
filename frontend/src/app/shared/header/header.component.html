@@ -1,0 +1,79 @@
+<header>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+
+            <!-- Logo-Platzhalter -->
+            <a class="navbar-brand" href="/">
+                <img src="/logo.png" alt="Logo" style="height: 80px; width: auto">
+            </a>
+            <!-- Toggler für mobiles Menü -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar"
+                    aria-controls="mainNavbar" aria-expanded="false" aria-label="Navigation umschalten">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- Navbar-Inhalt -->
+            <div class="collapse navbar-collapse" id="mainNavbar">
+
+                <!-- Linke Navigation -->
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" th:href="@{/}">Home</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="/login">Login</a>
+                    </li>
+                    <li class="nav-item" >
+                        <a class="nav-link" href="/register">Register</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/products">Produkte</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="/customer/checkout">Warenkorb</a>
+                    </li>
+
+                    <!-- Profil Dropdown -->
+                    <li class="nav-item dropdown" >
+                        <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button"
+                           data-bs-toggle="dropdown" aria-expanded="false">
+                            Mein Konto
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="profileDropdown">
+                            <li><a class="dropdown-item" href="/customer/profile">Mein Konto</a></li>
+                            <li><a class="dropdown-item" href="/customer/orders">Meine Bestellungen</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item" href="/auth/logout">Logout</a></li>
+                        </ul>
+                    </li>
+
+
+                    <!-- Admin Dropdown -->
+                    <li class="nav-item dropdown" >
+                        <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button"
+                           data-bs-toggle="dropdown" aria-expanded="false">
+                            Admin
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="adminDropdown">
+                            <li><a class="dropdown-item" href="/admin/users">Benutzerverwaltung</a></li>
+                            <li><a class="dropdown-item" href="/admin/products">Produktverwaltung</a></li>
+                            <li><a class="dropdown-item" href="/admin/orders">Bestellverwaltung</a></li>
+                        </ul>
+                </ul>
+
+                <!-- Suchzeile -->
+                <form class="d-flex" role="search" onsubmit="return false;">
+                    <input id="productSearchInput" class="form-control me-2" type="search" placeholder="Suche"
+                           aria-label="Suche" autocomplete="off">
+                    <button class="btn btn-outline-success" type="submit">Suchen</button>
+                </form>
+
+            </div>
+        </div>
+    </nav>
+</header>

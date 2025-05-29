@@ -1,0 +1,19 @@
+<body>
+  <div class="container mt-5">
+    <form class="w-50 mx-auto" (ngSubmit)="login()" #loginForm="ngForm">
+      <div class="mb-3">
+        <label for="username" class="form-label">Username</label>
+        <input type="text" id="username" class="form-control" [(ngModel)]="username" name="username" required />
+      </div>
+
+      <div class="mb-3">
+        <label for="password" class="form-label">Password</label>
+        <input type="password" id="password" class="form-control" [(ngModel)]="password" name="password" required />
+      </div>
+
+      <div *ngIf="error" class="text-danger mb-2">{{ error }}</div>
+
+      <button class="btn btn-primary" type="submit">Login</button>
+    </form>
+  </div>
+</body>
