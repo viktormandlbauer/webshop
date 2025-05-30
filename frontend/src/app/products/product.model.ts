@@ -6,22 +6,10 @@ export interface Product {
   categoryName: string;
   stock: number;
   price: number;
-  avgRating: number | null;
+  avgRating: number;
 }
 
 export interface Category {
   id: number;
   name: string;
-}
-
-export interface PageInfo {
-  size: number;
-  number: number;
-  totalElements: number;
-  totalPages: number;
-}
-
-export interface ProductPageResponse {
-  content: Product[];
-  page: PageInfo;
 }

@@ -2,7 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ProductService } from '../product.service';
 import { CategoryService } from '../category.service';
-import { Product, Category, ProductPageResponse } from '../product.model';
+import { Product } from '../product.model';
+import { Category } from '../product.model';
+import { ApiResponse } from '../../api-response.model';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
@@ -24,7 +26,6 @@ export class ProductListComponent implements OnInit {
 
   // Filters
   filterForm: FormGroup;
-  selectedMinRating = 0;
   isFilterActive = false;
 
   constructor(
@@ -35,8 +36,41 @@ export class ProductListComponent implements OnInit {
     this.filterForm = this.fb.group({
       categoryName: [''],
       minPrice: [''],
-      maxPrice: ['']
+      maxPrice: [''],
+      minRating: [0]
     });
+  }
+
+  get minRating(): number {
+    return this.filterForm.get('minRating')?.value ?? 0;
+  }
+
+  setRating(rating: number) {
+    this.filterForm.patchValue({ minRating: rating });
+  }
+
+  get categoryName(): string {
+    return this.filterForm.get('categoryName')?.value ?? '';
+  }
+  
+  setCategory(category: Category) {
+    this.filterForm.patchValue({ categoryName: category.name });
+  }
+
+  get minPrice(): number {
+    return this.filterForm.get('minPrice')?.value ?? 0;
+  }
+
+  setMinPrice(price: number) {
+    this.filterForm.patchValue({ minPrice: price });
+  }
+
+  get maxPrice(): number {
+    return this.filterForm.get('maxPrice')?.value ?? 0;
+  }
+
+  setMaxPrice(price: number) {
+    this.filterForm.patchValue({ maxPrice: price });
   }
 
   ngOnInit() {
@@ -46,7 +80,7 @@ export class ProductListComponent implements OnInit {
 
   loadCategories() {
     this.categoryService.getCategories().subscribe({
-      next: cats => (this.categories = cats),
+      next: (cats: Category[]) => (this.categories = cats),
       error: () => (this.categories = [])
     });
   }
@@ -54,8 +88,10 @@ export class ProductListComponent implements OnInit {
   fetchProducts(page: number = 0) {
     this.isLoading = true;
     this.productService.getProducts(page, this.pageSize).subscribe({
-      next: (data: ProductPageResponse) => {
-        this.products = data.content;
+      next: (response: ApiResponse) => {
+        const data = response.data;
+        // Type assertion as Product[] because your ApiResponse.Data.content is []
+        this.products = data.content as Product[];
         this.page = data.page.number;
         this.totalPages = data.page.totalPages;
         this.totalElements = data.page.totalElements;
@@ -74,14 +110,30 @@ export class ProductListComponent implements OnInit {
     this.isFilterActive = true;
     const params: any = {
       ...this.filterForm.value,
-      minRating: this.selectedMinRating > 0 ? this.selectedMinRating : undefined,
       page,
       size: this.pageSize
     };
 
+    if (!params.categoryName) {
+      delete params.categoryName;
+    }
+
+    if (!params.minPrice) {
+      delete params.minPrice;
+    }
+
+    if (!params.maxPrice) {
+      delete params.maxPrice;
+    }
+
+    if (!params.minRating) {
+      delete params.minRating;
+    }
+
     this.productService.searchProducts(params).subscribe({
-      next: (data: ProductPageResponse) => {
-        this.products = data.content;
+      next: (response: ApiResponse) => {
+        const data = response.data;
+        this.products = data.content as Product[];
         this.page = data.page.number;
         this.totalPages = data.page.totalPages;
         this.totalElements = data.page.totalElements;
@@ -96,13 +148,7 @@ export class ProductListComponent implements OnInit {
 
   resetFilters() {
     this.filterForm.reset();
-    this.selectedMinRating = 0;
     this.fetchProducts(0);
-  }
-
-  setRating(rating: number) {
-    this.selectedMinRating = rating;
-    // Optionally, call applyFilters(0) to auto-filter on rating change
   }
 
   goToPage(page: number) {
