@@ -8,6 +8,7 @@ import { ApiResponse } from '../../api-response.model';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-product-list',
@@ -18,6 +19,7 @@ import { RouterModule } from '@angular/router';
 export class ProductListComponent implements OnInit {
   products: Product[] = [];
   categories: Category[] = [];
+  environment = environment;
   page = 0;
   pageSize = 6;
   totalPages = 1;
