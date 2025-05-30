@@ -9,6 +9,11 @@ export interface Product {
   avgRating: number | null;
 }
 
+export interface Category {
+  id: number;
+  name: string;
+}
+
 export interface PageInfo {
   size: number;
   number: number;
@@ -16,7 +21,7 @@ export interface PageInfo {
   totalPages: number;
 }
 
-export interface ProductResponse {
+export interface ProductPageResponse {
   content: Product[];
   page: PageInfo;
 }

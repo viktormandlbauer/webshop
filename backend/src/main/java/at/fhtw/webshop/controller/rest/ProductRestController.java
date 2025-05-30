@@ -28,6 +28,40 @@ public class ProductRestController {
         this.productService = productService;
     }
 
+    @GetMapping
+    public ResponseEntity<Object> getProducts(Pageable pageable) {
+        try {
+            Page<ProductDto> products = productService.getAllProducts(pageable)
+                    .map(productService::mapToDto);
+            return ResponseEntity.ok(Map.of(
+                    "status", "success",
+                    "data", products
+            ));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
+                    "status", "error",
+                    "message", "Failed to retrieve products: " + e.getMessage()
+            ));
+        }
+    }
+
+    @GetMapping("/filter")
+    public ResponseEntity<Object> filterProducts(@ModelAttribute ProductSearchCriteria criteria, Pageable pageable) {
+        try {
+            Page<ProductDto> products = productService.searchProducts(criteria, pageable)
+                    .map(productService::mapToDto);
+            return ResponseEntity.ok(Map.of(
+                    "status", "success",
+                    "data", products
+            ));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
+                    "status", "error",
+                    "message", "Failed to filter products: " + e.getMessage()
+            ));
+        }
+    }
+
     @GetMapping("/{id}")
     public Product getProductById(@PathVariable int id) {
         return productService.getProductById(id);

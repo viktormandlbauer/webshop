@@ -1,21 +1,113 @@
-<h2>Product List</h2>
-<table>
-  <thead>
-    <tr>
-      <th>Image</th>
-      <th>Name</th>
-      <th>Category</th>
-      <th>Stock</th>
-      <th>Price</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let product of products">
-      <td><img [src]="product.imageURL" width="80" /></td>
-      <td>{{ product.name }}</td>
-      <td>{{ product.categoryName }}</td>
-      <td>{{ product.stock }}</td>
-      <td>{{ product.price | currency }}</td>
-    </tr>
-  </tbody>
-</table>
+<main class="container my-4">
+  <div class="row">
+    <!-- FILTER -->
+    <div class="col-md-3">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Filter</h5>
+          <form [formGroup]="filterForm" (ngSubmit)="applyFilters()">
+
+            <div class="mb-3">
+              <label class="form-label">Kategorien:</label>
+              <div>
+                <div *ngFor="let category of categories" class="form-check">
+                  <input class="form-check-input"
+                         type="radio"
+                         [value]="category.name"
+                         formControlName="categoryName"
+                         [id]="'cat-' + category.id">
+                  <label class="form-check-label" [for]="'cat-' + category.id">
+                    {{ category.name }}
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label" for="minPrice">Min Preis:</label>
+              <input type="number" class="form-control" id="minPrice"
+                     formControlName="minPrice" placeholder="z.B. 10">
+            </div>
+            <div class="mb-3">
+              <label class="form-label" for="maxPrice">Max Preis:</label>
+              <input type="number" class="form-control" id="maxPrice"
+                     formControlName="maxPrice" placeholder="z.B. 100">
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Mindestbewertung:</label>
+              <div>
+                <ng-container *ngFor="let star of [1,2,3,4,5]">
+                  <i class="fa-star fa-xl me-1"
+                     [ngClass]="{
+                       'fas text-warning': star <= selectedMinRating,
+                       'far text-muted': star > selectedMinRating
+                     }"
+                     style="cursor:pointer"
+                     (click)="setRating(star)">
+                  </i>
+                </ng-container>
+                <span class="ms-2 text-secondary" *ngIf="selectedMinRating > 0">
+                  ab {{ selectedMinRating }} Stern{{ selectedMinRating === 1 ? '' : 'en' }}
+                </span>
+              </div>
+            </div>
+
+            <button class="btn btn-dark w-100" type="submit">Filtern</button>
+            <button type="button" class="btn btn-secondary w-100 mt-2" (click)="resetFilters()">Zurücksetzen</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- PRODUKTGRID -->
+    <section class="col-md-9">
+      <div *ngIf="isLoading" class="my-4 text-center">
+        <div class="spinner-border text-primary"></div>
+        <span class="ms-2">Produkte werden geladen...</span>
+      </div>
+      <div class="row" *ngIf="!isLoading">
+        <div *ngIf="products.length === 0" class="col-12">
+          <p>Keine Produkte gefunden.</p>
+        </div>
+        <div *ngFor="let product of products" class="col-md-4 mb-4">
+          <div class="card h-100">
+            <img [src]="product.imageURL" class="card-img-top" [alt]="product.name" style="height:200px;object-fit:cover;">
+            <div class="card-body">
+              <h5 class="card-title">{{ product.name }}</h5>
+              <p class="card-text">{{ product.description }}</p>
+              <p class="card-text"><strong>Category:</strong> {{ product.categoryName }}</p>
+              <p class="card-text"><strong>Price:</strong> {{ product.price | number:'1.2-2' }} €</p>
+              <p class="card-text"><strong>Stock:</strong> {{ product.stock }}</p>
+              <p class="card-text">
+                <ng-container *ngFor="let starType of getStars(product.avgRating)">
+                  <i *ngIf="starType === 'full'" class="fas fa-star text-warning"></i>
+                  <i *ngIf="starType === 'half'" class="fas fa-star-half-alt text-warning"></i>
+                  <i *ngIf="starType === 'empty'" class="far fa-star text-muted"></i>
+                </ng-container>
+                <span class="text-secondary small">({{ product.avgRating ?? 0 | number:'1.2-2' }})</span>
+              </p>
+              <a [routerLink]="['/products', product.id]" class="btn btn-primary">View Details</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Pagination controls -->
+      <div class="d-flex justify-content-center mt-4" *ngIf="totalPages > 1">
+        <nav aria-label="Product pagination">
+          <ul class="pagination">
+            <li class="page-item" [class.disabled]="page === 0">
+              <button class="page-link" (click)="goToPage(page - 1)" [disabled]="page === 0">Previous</button>
+            </li>
+            <li class="page-item disabled">
+              <span class="page-link">Page {{ page + 1 }} of {{ totalPages }}</span>
+            </li>
+            <li class="page-item" [class.disabled]="page + 1 === totalPages">
+              <button class="page-link" (click)="goToPage(page + 1)" [disabled]="page + 1 === totalPages">Next</button>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </section>
+  </div>
+</main>
