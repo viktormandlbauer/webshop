@@ -51,4 +51,10 @@ public class ProductViewController {
 
         return "products/list";
     }
+
+    @GetMapping("/add")
+    public String addProductForm(Model model) {
+        model.addAttribute("categories", categoryRepository.findAll());
+        return "products/add";
+    }
 }

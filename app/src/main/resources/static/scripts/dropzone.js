@@ -23,6 +23,6 @@ dropzone.addEventListener('drop', (event) => {
     event.preventDefault();
     dropzone.classList.remove('drag-over');
     const files = event.dataTransfer.files;
-    document.getElementById('fileElem').files = files;
+    document.getElementById('imageFile').files = files;
     handleFiles(files);
 });

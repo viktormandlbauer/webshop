@@ -37,7 +37,11 @@ public class RegistrationDto {
     @Size(min = 8, message = "Passwort muss mindestens 8 Zeichen haben")
     private String password;
 
-    // === Getter und Setter ===
+    @NotBlank(message = "Passwort-Wiederholung ist erforderlich")
+    private String confirmPassword;
+
+    @NotBlank(message = "Zahlungsinformation ist erforderlich")
+    private String paymentInfo;
 
     public String getSalutation() {
         return salutation;
@@ -111,4 +115,19 @@ public class RegistrationDto {
         this.password = password;
     }
 
+    public String getConfirmPassword() {
+        return confirmPassword;
+    }
+
+    public void setConfirmPassword(String confirmPassword) {
+        this.confirmPassword = confirmPassword;
+    }
+
+    public String getPaymentInfo() {
+        return paymentInfo;
+    }
+
+    public void setPaymentInfo(String paymentInfo) {
+        this.paymentInfo = paymentInfo;
+    }
 }

@@ -38,8 +38,10 @@ public class UserService {
         user.setLastName(registrationDto.getLastName());
         user.setEmail(registrationDto.getEmail());
         user.setUsername(registrationDto.getUsername());
-
-        //@TODO: Adresse Objekt erstellen und setzen
+        user.setAddress(registrationDto.getAddress());
+        user.setZip(registrationDto.getPostalCode());
+        user.setCity(registrationDto.getCity());
+        user.setPaymentInfo(registrationDto.getPaymentInfo());
 
         String hashedPassword = passwordEncoder.encode(registrationDto.getPassword());
         user.setPassword(hashedPassword);
@@ -49,5 +51,15 @@ public class UserService {
         userRepository.save(user);
 
         logger.info("Registered user: {}", user);
+    }
+
+    public User findByUsernameOrEmail(String identifier) {
+        User user = identifier != null && identifier.contains("@")
+                ? userRepository.findByEmail(identifier)
+                : userRepository.findByUsername(identifier);
+        if (user == null) {
+            throw new UserNotFoundException("User not found: " + identifier);
+        }
+        return user;
     }
 }

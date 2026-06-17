@@ -21,11 +21,6 @@ public class ProductService {
         this.productRepository = productRepository;
     }
 
-    public Product saveProduct(Product product) {
-        logger.info("Saving product: {}", product);
-        return productRepository.save(product);
-    }
-
     public void deleteProduct(int id) {
         logger.info("Deleting product with id: {}", id);
         productRepository.deleteById(id);
@@ -53,5 +48,11 @@ public class ProductService {
 
     public Page<Product> findByCategoryName(String categoryName, Pageable pageable) {
         logger.info("Finding products by category: {}", categoryName);
-        return productRepository.findByCategory_NameIgnoreCase(categoryName, pageable);    }
+        return productRepository.findByCategory_NameIgnoreCase(categoryName, pageable);
+    }
+    public Product saveProduct(Product product) {
+        logger.info("Saving product: {}", product);
+        return productRepository.save(product);
+    }
+
 }

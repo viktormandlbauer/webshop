@@ -1,9 +1,9 @@
 package at.fhtw.webshop.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 public class User {
@@ -43,6 +43,25 @@ public class User {
     @Column(name = "Salutation", nullable = false, length = 10)
     private String salutation;
 
+    @Size(max = 120)
+    @Column(name = "Address", length = 120)
+    private String address;
+
+    @Size(max = 12)
+    @Column(name = "Zip", length = 12)
+    private String zip;
+
+    @Size(max = 80)
+    @Column(name = "City", length = 80)
+    private String city;
+
+    @Size(max = 120)
+    @Column(name = "PaymentInfo", length = 120)
+    private String paymentInfo;
+
+    @Column(name = "Active", nullable = false)
+    private boolean active = true;
+
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "ROLE", nullable = false)
@@ -72,6 +91,7 @@ public class User {
         this.username = username;
     }
 
+    @JsonIgnore
     public String getPassword() {
         return password;
     }
@@ -102,6 +122,47 @@ public class User {
 
     public void setSalutation(String salutation) {
         this.salutation = salutation;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getZip() {
+        return zip;
+    }
+
+    public void setZip(String zip) {
+        this.zip = zip;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    @JsonIgnore
+    public String getPaymentInfo() {
+        return paymentInfo;
+    }
+
+    public void setPaymentInfo(String paymentInfo) {
+        this.paymentInfo = paymentInfo;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 
     public String getRole() {

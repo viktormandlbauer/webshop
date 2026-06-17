@@ -31,7 +31,7 @@ public class CustomUserDetailsService implements UserDetailsService {
             user = userRepository.findByUsername(identifier);
         }
 
-        if (user == null) {
+        if (user == null || !user.isActive()) {
             throw new UsernameNotFoundException("User not found with identifier: " + identifier);
         }
 
